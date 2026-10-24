@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import os
 import re
 import unicodedata
 
@@ -429,6 +430,14 @@ def fets_clips(model: ModelOntologic) -> list[str]:
     return fets
 
 
+def deffacts_clips(model: ModelOntologic) -> str:
+    """La mateixa projeccio com a deffacts, per carregar-la des de CLIPS pur (run_proves.clp).
+    Es un fitxer GENERAT a partir del RDF: no s'ha d'editar ni versionar."""
+    cos = "\n".join("  " + f for f in fets_clips(model))
+    return ("; GENERAT per ontology_loader.py a partir de " + os.path.basename(str(model.fitxer)) +
+            ". No l'editeu.\n(deffacts DOMINI::topologia-rdf\n" + cos + ")\n")
+
+
 def injecta_model(env, model: ModelOntologic) -> int:
     """Projecta els fets sobre un Environment clipspy ja carregat i resetejat."""
     env.eval("(set-current-module DOMINI)")
@@ -461,9 +470,14 @@ if __name__ == "__main__":
     ap.add_argument("rdf", nargs="?", default=str(ONTOLOGIA_MODEL_DEFECTE), help="ontologia de model (ABox)")
     ap.add_argument("--domini", default=str(ONTOLOGIA_DOMINI_DEFECTE), help="ontologia de domini (TBox)")
     ap.add_argument("--fets", action="store_true", help="mostra els fets CLIPS generats")
+    ap.add_argument("--clp", metavar="FITXER", help="escriu la projeccio com a deffacts (per a run_proves.clp)")
     args = ap.parse_args()
     m = carrega_model(args.rdf, args.domini)
     print(resum(m))
     if args.fets:
         print("\nFets CLIPS:")
         print("\n".join(fets_clips(m)))
+    if args.clp:
+        with open(args.clp, "w", encoding="utf-8", newline="\n") as f:
+            f.write(deffacts_clips(m))
+        print(f"\nDeffacts escrit a {args.clp}")

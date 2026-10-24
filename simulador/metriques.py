@@ -19,6 +19,10 @@ def _oscillacions(acc: pd.Series) -> int:
 
 def per_dia(df: pd.DataFrame) -> pd.DataFrame:
     """Una fila per (etiqueta, controlador, llavor, dia)."""
+    df = df.copy()
+    for col in ("reg_m3", "reg_net_mm", "bomba_kwh", "percolacio_mm"):   # CSV d'abans del reg (v1_9)
+        if col not in df:
+            df[col] = 0.0
     g = df.groupby(CLAU, sort=False)
     out = g.agg(
         energia_kwh=("P_kw", "sum"),
@@ -31,6 +35,10 @@ def per_dia(df: pd.DataFrame) -> pd.DataFrame:
         exposicions=("exposicio_vent", "sum"),
         h_vent_perillos=("vent_real", lambda v: int((v >= 16).sum())),
         moviment_graus=("moviment", "sum"),
+        aigua_reg_m3=("reg_m3", "sum"),
+        regs=("reg_net_mm", lambda x: int((x > 0).sum())),
+        bomba_kwh=("bomba_kwh", "sum"),
+        percolacio_mm=("percolacio_mm", "sum"),
         impasses=("impas", lambda x: int((x.fillna("") != "").sum())),
         chunks_nous=("chunks_nous", "sum"),
         decisions_chunk=("us_chunk", "sum"),
@@ -40,6 +48,7 @@ def per_dia(df: pd.DataFrame) -> pd.DataFrame:
         ms_per_cicle=("ms", lambda x: x[x > 0].mean() if (x > 0).any() else 0.0),
         cicles=("cicle", "nunique"),
     ).reset_index()
+    out["energia_neta_kwh"] = out["energia_kwh"] - out["bomba_kwh"]
     out["rendiment_pct"] = 100 * out["energia_kwh"] / out["energia_opt_kwh"].where(out["energia_opt_kwh"] > 0)
     canvis = (df.sort_values("cicle").groupby(CLAU + ["sector"], sort=False)["accio"]
               .agg(lambda a: int((a != a.shift()).sum() - 1)).groupby(level=CLAU).sum())
@@ -69,7 +78,8 @@ def per_dia(df: pd.DataFrame) -> pd.DataFrame:
 METRIQUES = ["energia_kwh", "rendiment_pct", "h_estres_rad", "h_estres_calor", "h_calor_critica",
              "h_estres_aigua", "violacions", "exposicions", "moviment_graus", "canvis_operador",
              "oscillacions", "oscillacions_angle", "impasses", "chunks_nous", "decisions_chunk", "decisions_rl",
-             "invariants_ko", "aigua_final_pct", "regles_per_cicle", "ms_per_cicle"]
+             "invariants_ko", "aigua_final_pct", "aigua_reg_m3", "regs", "bomba_kwh", "energia_neta_kwh",
+             "percolacio_mm", "regles_per_cicle", "ms_per_cicle"]
 
 
 def resum(df: pd.DataFrame, metriques=METRIQUES) -> pd.DataFrame:

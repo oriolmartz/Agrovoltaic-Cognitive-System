@@ -1,0 +1,10 @@
+parametre,metrica,signe_estable
+gcr,energia_kwh,sí
+gcr,h_estres_calor,sí
+gcr,h_estres_rad,sí
+k_rad,energia_kwh,sí
+k_rad,h_estres_calor,sí
+k_rad,h_estres_rad,sí
+k_sec,energia_kwh,sí
+k_sec,h_estres_calor,sí
+k_sec,h_estres_rad,sí

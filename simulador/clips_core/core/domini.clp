@@ -1,3 +1,6 @@
+; soar v1_9 = v1_6 + marge de 1e-9 a nivell-hidric (com v1_8) + decisio de REG.
+; Els blocs nous porten l'etiqueta 'v1_9'. Font: aquests moduls; soar.clp es genera amb build_clips.py.
+
 ;  DOMINI --------------------------------------------------------------------
 (defmodule DOMINI
   (export deftemplate ?ALL))
@@ -165,7 +168,7 @@
 (deftemplate objectiu
   (slot id (type SYMBOL))
   (slot tipus (allowed-symbols seguretat produccio-cultiu produccio-energia
-                               estabilitat minimitzar-moviment))
+                               estabilitat minimitzar-moviment estalvi-aigua))   ; v1_9: estalvi-aigua
   (slot restriccio (allowed-symbols dura tova))
   (slot estat (allowed-symbols inactiu actiu)))
 
@@ -260,14 +263,12 @@
   (slot aprenentatge (allowed-symbols on off) (default on))  ; rl --set learning
   (slot alfa (type NUMBER) (default 0.3))                    ; rl --set learning-rate
   (slot prior (type NUMBER) (default 0.5))                   ; valor inicial d'un chunk d'empat
-  (slot epsilon (type NUMBER) (default 0.05))                ; diferencia minima per desfer un empat
-  (slot parelles (allowed-symbols on off) (default on)))     ; rajoles de parelles de trets
+  (slot epsilon (type NUMBER) (default 0.05)))               ; diferencia minima per desfer un empat
 
 ; APRENENTATGE | Origen: REFORC | Persistencia: sessio | Modifica: REFORC
 ; Una "rajola" de la funcio de valor: Q(tret, operador). Cada fet fa el paper d'una
 ; regla RL de Soar que nomes comprova un tret de la situacio (tile coding):
 ;   tret = tot | sector=.. | cultiu=.. | risc=..-.. | cobertura=.. | chunk-N
-;          | risc=A+risc=B | risc=A+cobertura=C   (parelles: interaccions entre trets)
 ; El valor d'un operador es la suma de les rajoles actives.
 (deftemplate rl-valor
   (slot tret (type SYMBOL))
@@ -324,6 +325,84 @@
   (slot angle (type NUMBER))
   (multislot riscos)                      ; riscos presents (tipus-nivell)
   (slot resultat (allowed-symbols pendent correcte fallada) (default pendent)))
+
+;  REG (v1_9) ------------------------------------------------------------------
+; Segon actuador de cada sector: el reg per degoteig. Es decideix dins del mateix cicle
+; SOAR (elaboracio -> proposta -> avaluacio -> seleccio -> aplicacio -> explicacio), pero
+; amb fets propis, separats dels del panell: cada sector pot moure el panell I regar en el
+; mateix cicle, i les dues decisions no competeixen (no hi pot haver empat entre regar i
+; orientar-produccio). Fonts del coneixement: dades_reals/FONTS.md, apartat "Reg".
+
+; OBSERVAT | Origen: simulador | Persistencia: 1 cicle | Modifica: capa d'entrada
+; Hora local del cicle (el reg te en compte les hores fresques).
+(deftemplate moment
+  (slot cicle (type INTEGER))
+  (slot hora (type INTEGER) (range 0 23)))
+
+; CONEIXEMENT DEL DOMINI | estatic
+(deftemplate reg-config
+  ; FAO-56: s'ha de regar "abans o en el moment" que s'esgota l'aigua facilment disponible
+  ; (RAW = p * TAW). A partir d'aquesta fraccio de p es pot anticipar el reg (hores fresques).
+  (slot anticipacio (type FLOAT) (default 0.75))
+  ; Diputacio de Barcelona (gestio de l'aigua en horts): si plou 10 mm o mes s'anul.la el reg.
+  (slot pluja-anulla (type FLOAT) (default 10.0))
+  ; FAO-56: la pluja de menys de ~0,2 ETo s'evapora i no compta.
+  (slot pluja-minima (type FLOAT) (default 2.0))
+  ; Diputacio de Barcelona: regar a primera hora del mati o a ultima hora de la tarda.
+  (slot hora-fresca-mati (type INTEGER) (default 8))
+  (slot hora-fresca-tarda (type INTEGER) (default 19)))
+
+; DERIVAT | Origen: elaboracio | Persistencia: 1 cicle | Modifica: DELIBERACIO
+; Quant necessita aigua un sector. anticipada = encara sense estres pero a prop del llindar.
+(deftemplate necessitat-reg
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot nivell (allowed-symbols anticipada mitja alt critic))
+  (slot esgotament (type FLOAT))     ; fraccio de l'aigua disponible (TAW) ja gastada, 0-1
+  (slot p (type FLOAT)))             ; fraccio esgotable sense estres del cultiu
+
+; CANDIDAT D'ACCIO | Origen: PROPOSTA | Persistencia: fins a decisio | Modifica: PROPOSTA/DECISIO/ACCIO
+; dosi = aigua neta que s'afegeix, en % de l'aigua disponible (TAW). Mai mes del que falta
+; per arribar a capacitat de camp (FAO-56: la resta es perdria per percolacio).
+(deftemplate operador-reg
+  (slot id (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot sector (type SYMBOL))
+  (slot nom (allowed-symbols no-regar regar-parcial regar-complet))
+  (slot dosi (type NUMBER) (default 0))
+  (slot estat (allowed-symbols proposat rebutjat seleccionat aplicat)))
+
+; CANDIDAT D'ACCIO | Origen: AVALUACIO | Persistencia: decisio actual
+(deftemplate preferencia-reg
+  (slot op (type SYMBOL))
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot tipus (allowed-symbols acceptable rebuig numerica))
+  (slot valor (type NUMBER) (default 0))
+  (slot font (type SYMBOL)))
+
+; RESULTAT | Origen: SELECCIO | Persistencia: 1 cicle | Modifica: DECISIO
+(deftemplate reg-seleccionat
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot nom (type SYMBOL))
+  (slot dosi (type NUMBER))
+  (slot motiu (type STRING) (default "")))
+
+; RESULTAT | Origen: APLICACIO | Persistencia: fins que el simulador consumeix l'ordre | Modifica: ACCIO
+; Ordre que s'envia a la valvula de reg del sector.
+(deftemplate ordre-reg
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot accio (allowed-symbols no-regar regar-parcial regar-complet))
+  (slot dosi (type NUMBER))
+  (slot motiu (type STRING)))
+
+; RESULTAT | Origen: EXPLICACIO | Persistencia: 1 cicle
+(deftemplate explicacio-reg
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot missatge (type STRING)))
 
 ; =============================================================================
 ; MEMORIA EPISODICA A LLARG TERMINI (equivalent a EpMem de Soar)
@@ -450,15 +529,19 @@
   (objectiu (id Obj_Produccio_Energia) (tipus produccio-energia) (restriccio tova) (estat inactiu))
   (objectiu (id Obj_Estabilitat) (tipus estabilitat) (restriccio tova) (estat inactiu))
   (objectiu (id Obj_Minimitzar_Moviment) (tipus minimitzar-moviment) (restriccio tova) (estat inactiu))
+  (objectiu (id Obj_Estalvi_Aigua) (tipus estalvi-aigua) (restriccio tova) (estat inactiu))   ; v1_9
 
   (prioritat (major Obj_Seguretat) (menor Obj_Produccio_Cultiu))
   (prioritat (major Obj_Produccio_Cultiu) (menor Obj_Produccio_Energia))
   (prioritat (major Obj_Produccio_Energia) (menor Obj_Estabilitat))
   (prioritat (major Obj_Estabilitat) (menor Obj_Minimitzar_Moviment))
+  (prioritat (major Obj_Produccio_Cultiu) (menor Obj_Estalvi_Aigua))                       ; v1_9
 
   (conflicte (objectiu-1 Obj_Produccio_Cultiu) (objectiu-2 Obj_Produccio_Energia))
   (conflicte (objectiu-1 Obj_Seguretat) (objectiu-2 Obj_Produccio_Energia))
   (conflicte (objectiu-1 Obj_Produccio_Energia) (objectiu-2 Obj_Minimitzar_Moviment))
+  (conflicte (objectiu-1 Obj_Produccio_Cultiu) (objectiu-2 Obj_Estalvi_Aigua))              ; v1_9
+  (reg-config)                                                                               ; v1_9
 
   ; quin risc activa quin objectiu (Risc_Dades no n'activa cap: obre un impasse)
   (activa (tipus-risc estres-hidric) (objectiu Obj_Produccio_Cultiu))

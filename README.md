@@ -103,7 +103,8 @@ python clips_core/build_clips.py
 python clips_core/build_clips.py --check-generated
 ```
 
-La v1.8 monolítica original es conserva a `history/clips/`. Des de la integració RDF el nucli actiu **divergeix intencionalment** de v1.8 a nivell de representació: s'ha eliminat la topologia duplicada del `deffacts`. Per tant, `--check-baseline` ja no és una prova de pre-push; només serveix per comparar amb la fita històrica.
+Les versions monolítiques es conserven a `history/clips/` (de la v1_5 a la v1_9). Des de la integració RDF el nucli actiu **divergeix intencionalment** de v1.8 a nivell de representació: s'ha eliminat la topologia duplicada del `deffacts`. Per tant, `--check-baseline` ja no és una prova de pre-push; només serveix per comparar amb la fita històrica.
+
 
 ## Verificació ràpida abans d'un push
 
@@ -118,7 +119,7 @@ python verificacio/e3_llindars.py
 python verificacio/e1_regressio.py
 ```
 
-`E1` continua reproduint les snapshots històriques sense injectar la integració ontològica nova. Les proves sobre `clips_core/soar.clp` carreguen primer `ontologia_domini.rdf` per validar el contracte i després `ontologia_model.rdf` per instanciar la topologia abans de decidir.
+Amb la v1_9, E1 ha de donar fail 0: també la versió canònica (`actual`, 79 proves), que es prova amb la topologia de `ontologia_model.rdf` (E1 la projecta a `clips_core/topologia_rdf.clp`, un fitxer generat). Les snapshots històriques es reprodueixen sense injectar l'ontologia. E0 ha de sortir OK, E3 75/75 i els casos de prova 13/14: `CP01` és una discrepància coneguda i analitzada, i `CP02`–`CP14` passen.
 
 ## Regla d'iteració
 

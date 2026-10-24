@@ -1,0 +1,10 @@
+comprovacio,fotos,fotos_amb_problema,total
+K1_fet_sense_regla,100,0,0
+K2_regla_sense_fet,100,0,0
+K3_signatures_duplicades,100,0,0
+K4_mateixa_condicio_accio_diferent,100,0,0
+K5_rajola_q_duplicada,100,0,0
+K6_q_fora_de_rang,100,0,0
+K7_falten_episodis,100,0,0
+K8_chunks_perduts,100,0,0
+K8_rajoles_perdudes,100,0,0

@@ -66,6 +66,52 @@ def executa(configs: dict[str, dict], dies: list[str], llavors=(0,), processos=N
     return pd.concat(dfs, ignore_index=True)
 
 
+def _treball_bloc(arg):
+    nom, cfg, bloc, dies, llavor = arg
+    sim = S.Simulacio(cfg, llavor)
+    df = sim.executa(dies, etiqueta=nom)
+    df["bloc"] = bloc
+    return df
+
+
+def executa_blocs(configs: dict[str, dict], blocs: dict[str, list[str]], llavors=(0,), processos=None,
+                  experiment: str = "") -> pd.DataFrame:
+    """Com executa(), pero cada feina es un BLOC de dies seguits (p. ex. un mes) en mode
+    sequencial: l'aigua del sol passa d'un dia a l'altre. Unitat de repeticio = (bloc, llavor)."""
+    feines = []
+    for nom, esc in configs.items():
+        cfg = _amb_traca(S.carrega_config(S._fusiona(esc, {"mode_dies": "sequencial"})), experiment)
+        for ll in llavors:
+            feines += [(nom, cfg, b, dies, ll) for b, dies in blocs.items()]
+    # cada bloc (un mes de dies seguits) pot trigar minuts: d'un en un i amb mes marge
+    dfs = paralel.mapa(_treball_bloc, feines, processos or PROCESSOS[0], titol="simulant blocs", cada=1,
+                       mida=1, espera_maxima=900)
+    return pd.concat(dfs, ignore_index=True)
+
+
+PER_BLOC_MITJANA = ("rendiment_pct", "aigua_final_pct", "regles_per_cicle", "ms_per_cicle")
+
+
+def per_bloc(df: pd.DataFrame) -> pd.DataFrame:
+    """Una fila per (etiqueta, bloc, llavor): sumes del bloc (mitjanes per als percentatges)."""
+    d = M.per_dia(df)
+    d = d.merge(df[["dia", "etiqueta", "llavor", "bloc"]].drop_duplicates(), on=["dia", "etiqueta", "llavor"])
+    num = [c for c in M.METRIQUES if c in d]
+    agg = {c: ("mean" if c in PER_BLOC_MITJANA else "sum") for c in num}
+    out = d.groupby(["etiqueta", "bloc", "llavor"], sort=False).agg(agg).reset_index()
+    out["dies"] = d.groupby(["etiqueta", "bloc", "llavor"], sort=False).size().values
+    out["config"] = out["etiqueta"]
+    return out
+
+
+def resum_blocs(pb: pd.DataFrame, metriques: list[str]) -> pd.DataFrame:
+    g = pb.groupby("config", sort=False)
+    files = {"n_blocs": g.size().astype(str)}
+    for m in metriques:
+        files[m] = g[m].mean().map(lambda x: f"{x:.2f}") + " ± " + g[m].std().map(lambda x: f"{x:.2f}")
+    return pd.DataFrame(files).T
+
+
 def analitza(df: pd.DataFrame, metriques: list[str], nom: str) -> dict:
     pd_dia = M.per_dia(df)
     pd_dia["config"] = pd_dia["etiqueta"]
@@ -145,7 +191,7 @@ def E7(n_dies=48, llavors=(0,)):
     dies = S.selecciona_dies(cfg, n_dies, llavor=7)
     df = executa(CONTROLADORS_REF, dies, llavors, experiment=NOM_EXP[0])
     return analitza(df, ["energia_kwh", "h_estres_rad", "h_estres_calor", "h_calor_critica",
-                         "moviment_graus", "exposicions"], "E7_referencies")
+                         "moviment_graus", "exposicions", "h_estres_aigua", "aigua_reg_m3"], "E7_referencies")
 
 
 # ============================================================================ sensibilitat
@@ -302,23 +348,18 @@ def E10(n_execucions=30, n_mostres=400):
 # ============================================================================ E14: escenaris extrems
 
 def E14(n_dies=20, llavors=(0, 1, 2)):
-    """Escenaris adversos (estres del sistema): onada de calor, sequera sense reg i temporal
-    de vent. SOAR contra el seguidor comercial i el panell fix, aparellat per dia i llavor."""
+    """Escenaris adversos (estres del sistema): onada de calor, temporal de vent i sequera
+    (mesos sencers sense aigua de reg). SOAR contra el seguidor comercial i el panell fix."""
     met_r = dades.carrega("ribera")
     met_c = dades.carrega("cantallops")
     tmax = met_r.groupby(met_r.index.date)["temp"].max()
     calents = sorted(str(d) for d in tmax.sort_values(ascending=False).index[:n_dies])
     vmax = met_c.groupby(met_c.index.date)["vent"].max()
     ventosos = sorted(str(d) for d in vmax.sort_values(ascending=False).index[:n_dies])
-    secs = S.selecciona_dies({**S.carrega_config({}), "dies": {"des_de": "2023-07-01", "fins_a": "2023-08-31"}},
-                             n_dies, llavor=14)
     escenaris = {
         # els 20 dies mes calorosos de Ribera de Sio (Tmax 36-42 °C) i encara +3 °C
         "calor": ({"lloc": "ribera", "modificadors": {"temp_delta": 3.0}}, calents,
                   ["h_estres_calor", "h_calor_critica", "h_estres_rad", "energia_kwh"]),
-        # juliol-agost sense reg: l'ombra hauria de reduir l'evapotranspiracio i deixar mes aigua al sol
-        "sequera": ({"lloc": "ribera", "humitat": {"inicial_pct": 75.0, "reg": {"actiu": False}}}, secs,
-                    ["aigua_final_pct", "h_estres_aigua", "energia_kwh"]),
         # els 20 dies amb mes vent de Cantallops, amb les ratxes un 30 % mes fortes
         "vent": ({"lloc": "cantallops", "modificadors": {"vent_factor": 1.3}}, ventosos,
                  ["violacions", "exposicions", "energia_kwh"]),
@@ -339,6 +380,24 @@ def E14(n_dies=20, llavors=(0, 1, 2)):
         resums.append(res.loc[["n_dies"] + mets])
         df.to_csv(os.path.join(carpeta("E14"), f"E14_{nom}_horari.csv"), index=False)
         pd_dia.to_csv(os.path.join(carpeta("E14"), f"E14_{nom}_per_dia.csv"), index=False)
+    # Sequera: mesos sencers de dies seguits (juny-setembre) sense aigua de reg per a ningu.
+    # Nomes queda l'ombra dels panells per protegir el cultiu. Unitat = (mes, llavor).
+    mesos = {m: S.selecciona_dies({**S.carrega_config({}), "dies": {"des_de": f"2023-{m}-01", "fins_a": f"2023-{m}-31"}})
+             for m in ("06", "07", "08", "09")}
+    mets = ["h_estres_aigua", "aigua_final_pct", "percolacio_mm", "energia_kwh"]
+    esc = {"lloc": "ribera", "humitat": {"reg": {"mode": "cap"}}}
+    configs = {f"sequera|{ct}": S._fusiona(esc, {"controlador": {"tipus": ct}}) for ct in ("soar", "seguidor", "fix")}
+    df = executa_blocs(configs, mesos, llavors, experiment="E14")
+    pb = per_bloc(df)
+    pb["config"] = pb["etiqueta"].str.split("|").str[1]
+    t = st.taula_parelles([st.compara_multiples(pb, m, blocs=("bloc", "llavor")) for m in mets])
+    t.insert(0, "escenari", "sequera")
+    tests.append(t)
+    res = resum_blocs(pb, mets)
+    res.insert(0, "escenari", "sequera (per mes)")
+    resums.append(res)
+    df.to_csv(os.path.join(carpeta("E14"), "E14_sequera_horari.csv"), index=False)
+    pb.to_csv(os.path.join(carpeta("E14"), "E14_sequera_per_mes.csv"), index=False)
     resum = pd.concat(resums)
     taula = pd.concat(tests, ignore_index=True)
     resum.to_csv(os.path.join(carpeta("E14"), "E14_resum.csv"))
@@ -386,12 +445,15 @@ def E11(n_dies=20, llavors_random=5):
     dies = S.selecciona_dies(cfg, n_dies, llavor=11)
     df = executa(configs, dies, (0,), experiment=NOM_EXP[0])
     clau = ["dia", "hora", "sector"]
-    ref = df[df["etiqueta"] == "depth"].set_index(clau)[["accio", "angle_ordre"]]
+    cols = ["accio", "angle_ordre", "reg_accio", "reg_dosi_pct"]
+    ref = df[df["etiqueta"] == "depth"].set_index(clau)[cols]
     files = []
     for nom, g in df.groupby("etiqueta", sort=False):
         g = g.set_index(clau)
-        j = g[["accio", "angle_ordre"]].join(ref.add_suffix("_depth"))
-        dif = (j["accio"] != j["accio_depth"]) | ((j["angle_ordre"] - j["angle_ordre_depth"]).abs() > 1e-6)
+        j = g[cols].join(ref.add_suffix("_depth"))
+        dif = ((j["accio"] != j["accio_depth"]) | ((j["angle_ordre"] - j["angle_ordre_depth"]).abs() > 1e-6)
+               | (j["reg_accio"].fillna("") != j["reg_accio_depth"].fillna(""))
+               | ((j["reg_dosi_pct"].fillna(0) - j["reg_dosi_pct_depth"].fillna(0)).abs() > 1e-6))
         files.append({"estrategia": nom, "decisions": len(j), "diferents_de_depth": int(dif.sum()),
                       "pct_diferents": round(100 * dif.mean(), 2),
                       "invariants_ko": int((g["invariants_ko"].fillna("") != "").sum()),
@@ -403,8 +465,9 @@ def E11(n_dies=20, llavors_random=5):
     # quines decisions canvien (per anar a mirar la traca)
     ex = []
     for nom, g in df[df["etiqueta"] != "depth"].groupby("etiqueta"):
-        j = g.set_index(clau)[["accio", "motiu"]].join(ref[["accio"]].add_suffix("_depth"))
-        ex.append(j[j["accio"] != j["accio_depth"]].reset_index().assign(estrategia=nom))
+        j = g.set_index(clau)[["accio", "motiu", "reg_accio"]].join(ref[["accio", "reg_accio"]].add_suffix("_depth"))
+        dif = (j["accio"] != j["accio_depth"]) | (j["reg_accio"].fillna("") != j["reg_accio_depth"].fillna(""))
+        ex.append(j[dif].reset_index().assign(estrategia=nom))
     if ex:
         pd.concat(ex).to_csv(os.path.join(d, "E11_decisions_diferents.csv"), index=False)
     return {"resum": t.set_index("estrategia"), "tests": pd.DataFrame()}
@@ -525,7 +588,7 @@ def aprenentatge(configs: dict[str, dict], n_execucions=10, n_ent=20, n_prova=10
 
 
 def E8(n_execucions=10):
-    """Chunking: amb i sense (v1_7, reforç apagat). Impasses, us dels chunks i cost per cicle."""
+    """Chunking: amb i sense (versio per defecte, reforç apagat). Impasses, us dels chunks i cost per cicle."""
     return aprenentatge({"amb_chunking": {"controlador": {"chunking": True, "reforc": False}},
                          "sense_chunking": {"controlador": {"chunking": False, "reforc": False}}},
                         n_execucions, nom="E8_chunking")
@@ -539,8 +602,43 @@ def E9(n_execucions=10):
                         n_execucions, nom="E9_reforc")
 
 
+# ============================================================================ E15: reg
+
+def E15(n_dies=None, llavors=(0, 1, 2, 3)):
+    """Reg: el sistema decideix el reg (v1_9) contra el reg fix de la finca, un reg FAO-56 de
+    llibre i sense reg. Mesos sencers de dies seguits a Ribera de Sio; els panells, iguals."""
+    mesos = {m: S.selecciona_dies({**S.carrega_config({}), "dies": {"des_de": f"2023-{m}-01", "fins_a": f"2023-{m}-31"}})
+             for m in ("04", "05", "06", "07", "08", "09")}
+    if n_dies:
+        mesos = {m: d[:n_dies] for m, d in mesos.items()}
+    configs = {f"reg_{m}": {"humitat": {"reg": {"mode": m}}} for m in ("soar", "finca", "fao", "cap")}
+    df = executa_blocs(configs, mesos, llavors, experiment="E15")
+    pb = per_bloc(df)
+    mets = ["aigua_reg_m3", "h_estres_aigua", "percolacio_mm", "regs", "bomba_kwh", "energia_neta_kwh",
+            "h_estres_calor"]
+    t = st.taula_parelles([st.compara_multiples(pb, m, blocs=("bloc", "llavor")) for m in mets])
+    d = carpeta("E15")
+    df.to_csv(os.path.join(d, "E15_horari.csv"), index=False)
+    pb.to_csv(os.path.join(d, "E15_per_mes.csv"), index=False)
+    t.to_csv(os.path.join(d, "E15_tests.csv"), index=False)
+    resum = resum_blocs(pb, mets)
+    resum.to_csv(os.path.join(d, "E15_resum.csv"))
+    # per cultiu: aigua i hores d'estres (els tres cultius reaccionen diferent)
+    h = df.copy()
+    h["estres_aigua"] = h["estres_aigua"].astype(int)
+    cult = (h.groupby(["etiqueta", "cultiu", "bloc", "llavor"])
+             .agg(m3=("reg_m3", "sum"), h_estres=("estres_aigua", "sum"), percolacio_mm=("percolacio_mm", "sum"))
+             .groupby(["etiqueta", "cultiu"]).mean().round(1).unstack("cultiu"))
+    cult.to_csv(os.path.join(d, "E15_per_cultiu.csv"))
+    # quan i com rega SOAR
+    s = df[(df["etiqueta"] == "reg_soar") & (df["reg_net_mm"] > 0)]
+    quan = s.groupby(["cultiu", "reg_accio", "hora"]).size().rename("regs").reset_index()
+    quan.to_csv(os.path.join(d, "E15_quan_rega_soar.csv"), index=False)
+    return {"resum": resum, "tests": t, "per_cultiu": cult}
+
+
 EXPERIMENTS = {"E4": E4, "E5": E5, "E6": E6, "E7": E7, "E8": E8, "E9": E9, "E10": E10, "E11": E11,
-               "E12": E12, "E13": E13, "E14": E14}
+               "E12": E12, "E13": E13, "E14": E14, "E15": E15}
 
 
 def main():
@@ -571,6 +669,9 @@ def main():
     if "seguretat" in r:
         print()
         print(r["seguretat"].to_string(index=False))
+    if "per_cultiu" in r:
+        print()
+        print(r["per_cultiu"].to_string())
     print(f"\n[{a.experiment}] {time.time() - t0:.0f} s. Resultats a {os.path.join(RES, a.experiment)}")
 
 

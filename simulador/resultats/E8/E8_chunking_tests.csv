@@ -1,0 +1,8 @@
+metrica,A,B,n,mitjana A,mitjana B,A-B,IC95,p (Holm),efecte,Friedman p
+energia_kwh,amb_chunking,sense_chunking,100,313.98,313.98,0.0,"(0.0, 0.0)",1,+0.00 (negligible),-
+h_estres_rad,amb_chunking,sense_chunking,100,10.71,10.71,0.0,"(0.0, 0.0)",1,+0.00 (negligible),-
+h_estres_calor,amb_chunking,sense_chunking,100,27.52,27.52,0.0,"(0.0, 0.0)",1,+0.00 (negligible),-
+impasses,amb_chunking,sense_chunking,100,0.01,0.47,-0.46,"(-0.59, -0.34)",3.9e-09,-0.63 (gran),-
+decisions_chunk,amb_chunking,sense_chunking,100,33.19,0.0,33.19,"(31.41, 34.91)",2.1e-18,+1.00 (gran),-
+decisions_rl,amb_chunking,sense_chunking,100,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),-
+ms_per_cicle,amb_chunking,sense_chunking,100,37.68,35.62,2.06,"(1.143, 2.988)",8.5e-05,+0.45 (mitja),-

@@ -1,0 +1,27 @@
+,amb_chunking / soar,sense_chunking / soar
+n_dies,100,100
+energia_kwh,313.98 ± 47.68,313.98 ± 47.68
+rendiment_pct,89.88 ± 2.64,89.88 ± 2.64
+h_estres_rad,10.71 ± 2.92,10.71 ± 2.92
+h_estres_calor,27.52 ± 9.21,27.52 ± 9.21
+h_calor_critica,10.14 ± 8.84,10.14 ± 8.84
+h_estres_aigua,0.05 ± 0.22,0.05 ± 0.22
+violacions,0.01 ± 0.10,0.01 ± 0.10
+exposicions,0.05 ± 0.22,0.05 ± 0.22
+moviment_graus,344.64 ± 140.02,344.64 ± 140.02
+canvis_operador,5.72 ± 2.28,5.72 ± 2.28
+oscillacions,0.52 ± 0.96,0.52 ± 0.96
+oscillacions_angle,0.75 ± 1.03,0.75 ± 1.03
+impasses,0.01 ± 0.10,0.47 ± 0.64
+chunks_nous,0.01 ± 0.10,0.00 ± 0.00
+decisions_chunk,33.19 ± 9.00,0.00 ± 0.00
+decisions_rl,0.00 ± 0.00,0.00 ± 0.00
+invariants_ko,0.00 ± 0.00,0.00 ± 0.00
+aigua_final_pct,81.52 ± 4.66,81.52 ± 4.66
+aigua_reg_m3,2.78 ± 5.01,2.78 ± 5.01
+regs,0.39 ± 0.58,0.39 ± 0.58
+bomba_kwh,1.33 ± 2.40,1.33 ± 2.40
+energia_neta_kwh,312.64 ± 46.87,312.64 ± 46.87
+percolacio_mm,0.07 ± 0.26,0.07 ± 0.26
+regles_per_cicle,129.93 ± 7.53,126.16 ± 6.69
+ms_per_cicle,37.68 ± 5.17,35.62 ± 4.60

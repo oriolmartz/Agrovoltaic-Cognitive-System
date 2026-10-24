@@ -25,12 +25,18 @@
 [AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
 [AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
 [AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
 [AVALUACIO -> SELECCIO]
 [SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
 [SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
 [SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
 [SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
 [SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
 [SELECCIO -> APLICACIO]
 [APLICACIO] Sector_3: ORDRE mantenir-posicio -> 30.0 graus.
 [APLICACIO] Sector_2: ORDRE mantenir-posicio -> 30.0 graus.

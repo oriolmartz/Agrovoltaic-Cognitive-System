@@ -13,6 +13,10 @@ Fonts dels llindars (les mateixes que l'ontologia):
   aigua          FAO-56: fraccio esgotable sense estres p (tomaquet 0,40, enciam 0,30, vinya 0,45);
                  la resta (1-p) es parteix en tres trams iguals: mitja, alt, critic
   radiacio       radiacio optima maxima i radiacio d'estres de cada cultiu
+  reg (v1_9)     FAO-56: regar abans o en el moment d'esgotar p; s'anticipa a partir del 75 % de p,
+                 nomes a hores fresques (<= 8 h o >= 19 h, Diputacio de Barcelona) i no a la vinya
+                 (reg deficitari, AWRI); >= 10 mm de pluja prevista anul.la el reg (Diputacio), llevat
+                 d'estres critic; >= 2 mm previstos fan preferir la dosi parcial (FAO-56: pluja efectiva)
 
     python verificacio/e3_llindars.py [--clp ../history/clips/simulator/soar_v1_7.clp]
 """
@@ -43,10 +47,11 @@ PRED_BASE = {"radiacio": 100.0, "temperatura": 20.0, "vent": 3.0, "pluja": 0.0}
 ABS = "absent"   # marca d'una lectura que no arriba
 
 
-def cas(id, descripcio, sector, obs=None, pred=None, panell=None, **esperat):
-    """esperat: risc_<tipus>=nivell|None, accio=, accio_no=, candidat=, no_candidat=, rebutjat="""
+def cas(id, descripcio, sector, obs=None, pred=None, panell=None, hora=12, **esperat):
+    """esperat: risc_<tipus>=nivell|None, accio=, accio_no=, candidat=, no_candidat=, rebutjat=,
+    reg=, reg_no=, dosi= (v1_9)"""
     return {"id": id, "descripcio": descripcio, "sector": sector, "obs": obs or {}, "pred": pred or {},
-            "panell": panell or {}, "esperat": esperat}
+            "panell": panell or {}, "hora": hora, "esperat": esperat}
 
 
 CASOS = [
@@ -134,6 +139,38 @@ CASOS = [
     cas("C06", "vent critic i calor critica alhora: mana la seguretat", S1,
         {"vent": 18.0, "temperatura-cultiu": 36.0, "radiacio": 600.0}, accio="posicio-seguretat",
         rebutjat="orientar-ombra"),
+
+    # ------------------------------------------------------------------ reg (v1_9)
+    # enciam p = 0,30: s'anticipa des d'un esgotament de 0,225 (77,5 % d'aigua)
+    cas("G01", "enciam 77,5 % a les 7 h: 75 % de p, s'anticipa", S2, {"humitat-sol": 77.5}, hora=7,
+        reg="regar-complet", dosi=22.5),
+    cas("G02", "enciam 77,6 % a les 7 h: encara no", S2, {"humitat-sol": 77.6}, hora=7, reg="no-regar"),
+    cas("G03", "enciam 77,5 % a les 13 h: no s'anticipa al migdia", S2, {"humitat-sol": 77.5}, hora=13, reg="no-regar"),
+    cas("G04", "enciam 77,5 % a les 8 h: encara es hora fresca", S2, {"humitat-sol": 77.5}, hora=8, reg_no="no-regar"),
+    cas("G05", "enciam 77,5 % a les 9 h: ja no", S2, {"humitat-sol": 77.5}, hora=9, reg="no-regar"),
+    cas("G06", "enciam 77,5 % a les 18 h: encara no", S2, {"humitat-sol": 77.5}, hora=18, reg="no-regar"),
+    cas("G07", "enciam 77,5 % a les 19 h: hora fresca", S2, {"humitat-sol": 77.5}, hora=19, reg_no="no-regar"),
+    # tomaquet p = 0,40: s'anticipa des de 0,30 (70 %)
+    cas("G08", "tomaquet 70 % a les 7 h: s'anticipa", S1, {"humitat-sol": 70.0}, hora=7, reg="regar-complet", dosi=30.0),
+    cas("G09", "tomaquet 70,1 % a les 7 h: encara no", S1, {"humitat-sol": 70.1}, hora=7, reg="no-regar"),
+    # vinya p = 0,45: no s'anticipa
+    cas("G10", "vinya 55 % a les 7 h: al llindar, no es rega", S3, {"humitat-sol": 55.0}, hora=7, reg="no-regar"),
+    cas("G11", "vinya 54,9 %: estres, reg parcial", S3, {"humitat-sol": 54.9}, reg="regar-parcial", dosi=22.6),
+    # pluja prevista (tomaquet amb estres, 55 %)
+    cas("G12", "tomaquet 55 % i 9,9 mm previstos: es rega, pero parcial", S1, {"humitat-sol": 55.0},
+        {"pluja": 9.9}, hora=7, reg="regar-parcial"),
+    cas("G13", "tomaquet 55 % i 10 mm previstos: no es rega", S1, {"humitat-sol": 55.0}, {"pluja": 10.0}, hora=7,
+        reg="no-regar"),
+    cas("G14", "tomaquet 55 % i 1,9 mm previstos: reg complet", S1, {"humitat-sol": 55.0}, {"pluja": 1.9}, hora=7,
+        reg="regar-complet", dosi=45.0),
+    cas("G15", "tomaquet 55 % i 2 mm previstos: reg parcial", S1, {"humitat-sol": 55.0}, {"pluja": 2.0}, hora=7,
+        reg="regar-parcial", dosi=25.0),
+    # estres critic de l'enciam (esgotament > 0,7667: menys del 23,33 %)
+    cas("G16", "enciam 23,3 % (critic) i 30 mm previstos: es rega igualment", S2, {"humitat-sol": 23.3},
+        {"pluja": 30.0}, reg_no="no-regar"),
+    cas("G17", "enciam 23,4 % (alt) i 30 mm previstos: no es rega", S2, {"humitat-sol": 23.4}, {"pluja": 30.0},
+        reg="no-regar"),
+    cas("G18", "sense lectura d'humitat: no es rega", S2, {"humitat-sol": ABS}, hora=7, reg="no-regar"),
 ]
 
 
@@ -153,12 +190,17 @@ def executa_cas(clp: str, c: dict) -> dict:
         for tp in SENSORS:
             ctrl.escriu_sensor(s, tp, True, "valida" if obs.get(tp) is not None else "absent", 1)
         ctrl.afegeix_entrades(1, s, obs, pred, {"produccio": 10.0, "demanda": 12.0})
+    ctrl.escriu_moment(1, c["hora"])
     r = ctrl.executa_cicle()
     s = c["sector"]
     riscos = dict(r.riscos.get(s, []))
     accio = r.ordres[s][0][0] if r.ordres.get(s) else None
     candidats = set(r.candidats.get(s, {}))
     rebutjats = r.rebutjats.get(s, set())
+    reg, dosi = (r.reg[s][0][0], r.reg[s][0][1]) if r.reg.get(s) else (None, None)
+    if any(k in c["esperat"] for k in ("reg", "reg_no", "dosi")) and not ctrl.te_reg:
+        del ctrl
+        return None                      # versio sense reg: el cas no s'aplica
     fallades = []
     for k, v in c["esperat"].items():
         if k.startswith("risc_"):
@@ -175,13 +217,20 @@ def executa_cas(clp: str, c: dict) -> dict:
             fallades.append(f"{v} NO havia de ser candidat")
         elif k == "rebutjat" and v not in rebutjats:
             fallades.append(f"{v} havia de quedar rebutjat")
-    positiu = any(k in ("accio", "candidat", "rebutjat") or (k.startswith("risc_") and v) for k, v in c["esperat"].items())
-    negatiu = any(k in ("accio_no", "no_candidat") or (k.startswith("risc_") and not v) for k, v in c["esperat"].items())
+        elif k == "reg" and reg != v:
+            fallades.append(f"reg: esperat {v}, obtingut {reg}")
+        elif k == "reg_no" and reg == v:
+            fallades.append(f"reg: NO havia de ser {v}")
+        elif k == "dosi" and (dosi is None or abs(dosi - v) > 1e-6):
+            fallades.append(f"dosi: esperada {v} %, obtinguda {dosi}")
+    positiu = any(k in ("accio", "candidat", "rebutjat", "reg", "dosi") or (k.startswith("risc_") and v) for k, v in c["esperat"].items())
+    negatiu = any(k in ("accio_no", "no_candidat", "reg_no") or (k.startswith("risc_") and not v) for k, v in c["esperat"].items())
     del ctrl
     return {"id": c["id"], "descripcio": c["descripcio"], "sector": s,
             "tipus": "+/-" if positiu and negatiu else ("+" if positiu else "-"),
             "esperat": "; ".join(f"{k}={v if v is not None else 'cap'}" for k, v in c["esperat"].items()),
-            "obtingut": f"accio={accio}; riscos=" + (",".join(f"{t}={n}" for t, n in sorted(riscos.items())) or "cap"),
+            "obtingut": f"accio={accio}; riscos=" + (",".join(f"{t}={n}" for t, n in sorted(riscos.items())) or "cap")
+                        + (f"; reg={reg} ({dosi} %)" if reg else ""),
             "resultat": "PASS" if not fallades else "FAIL", "discrepancia": " | ".join(fallades)}
 
 
@@ -190,7 +239,7 @@ def main():
     ap.add_argument("--clp", default=os.path.join(ARREL, "clips_core", "soar.clp"))
     a = ap.parse_args()
     clp = os.path.abspath(a.clp)
-    df = pd.DataFrame([executa_cas(clp, c) for c in CASOS])
+    df = pd.DataFrame([x for x in (executa_cas(clp, c) for c in CASOS) if x is not None])
     versio = os.path.splitext(os.path.basename(clp))[0]
     os.makedirs(os.path.join(ARREL, "resultats", "E3"), exist_ok=True)
     out = os.path.join(ARREL, "resultats", "E3", f"e3_llindars_{versio}.csv")

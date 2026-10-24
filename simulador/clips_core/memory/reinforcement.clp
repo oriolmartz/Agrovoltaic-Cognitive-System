@@ -7,10 +7,6 @@
 ;   - La funcio de valor Q(situacio, operador) es la SUMA de rajoles Q(tret, operador),
 ;     cada una amb un sol tret de la situacio (tile / coarse coding, Wang & Laird 2007).
 ;     Aixi s'apren de trets que es repeteixen encara que la situacio exacta no torni.
-;   - Una suma de trets sols no pot representar interaccions ("ombra es bo amb radiacio
-;     alta si fa calor, pero no si fa fred"; Sutton & Barto 2018, sec. 9.5). Per aixo hi ha
-;     tambe rajoles de PARELLES de trets: risc x risc i risc x cobertura (tile coding
-;     jerarquic: les rajoles d'un tret aprenen de pressa, les parelles corregeixen).
 ;   - Els chunks apresos en un empat son una rajola mes (tret = nom del chunk), amb
 ;     valor inicial 'prior' tret del subestat, que despres l'experiencia ajusta.
 ;   - Q nomes desfa empats entre els candidats amb mes puntuacio: com a Soar, el reforç
@@ -43,38 +39,9 @@
   (do-for-fact ((?v rl-valor)) (and (eq ?v:tret ?tret) (eq ?v:op ?op)) (bind ?r ?v:q))
   ?r)
 
-(deffunction activa-parelles (?v)
-  (do-for-all-facts ((?k rl-config)) TRUE (modify ?k (parelles ?v)))
-  ?v)
-
-(deffunction rl-prefix (?t ?prefix)
-  (eq (str-index ?prefix (str-cat ?t)) 1))
-
-; Parella en ordre canonic (l'ordre dels riscos a la memoria de treball pot variar).
-(deffunction rl-parella (?a ?b)
-  (if (< (str-compare ?a ?b) 0) then (sym-cat ?a + ?b) else (sym-cat ?b + ?a)))
-
-; Parelles risc x risc i risc x cobertura dels trets d'una situacio.
-(deffunction rl-parelles (?trets)
-  (bind ?riscos (create$))
-  (bind ?cob (create$))
-  (progn$ (?t ?trets)
-    (if (rl-prefix ?t "risc=") then (bind ?riscos (create$ ?riscos ?t)))
-    (if (rl-prefix ?t "cobertura=") then (bind ?cob (create$ ?cob ?t))))
-  (bind ?r (create$))
-  (loop-for-count (?i 1 (length$ ?riscos))
-    (loop-for-count (?j (+ ?i 1) (length$ ?riscos))
-      (bind ?r (create$ ?r (rl-parella (nth$ ?i ?riscos) (nth$ ?j ?riscos)))))
-    (progn$ (?k ?cob)
-      (bind ?r (create$ ?r (sym-cat (nth$ ?i ?riscos) + ?k)))))
-  ?r)
-
-; Rajoles actives per a ?op: trets de la situacio (i les seves parelles) + chunks
-; d'empat que l'han recomanat.
+; Rajoles actives per a ?op: trets de la situacio + chunks d'empat que l'han recomanat.
 (deffunction rl-trets (?s ?op ?c)
-  (bind ?sit (epmem-cue-situacio ?s ?c))
-  (bind ?t (create$ tot ?sit))
-  (if (eq (rl-param parelles) on) then (bind ?t (create$ ?t (rl-parelles ?sit))))
+  (bind ?t (create$ tot (epmem-cue-situacio ?s ?c)))
   (do-for-all-facts ((?p preferencia))
       (and (eq ?p:sector ?s) (eq ?p:cicle ?c) (eq ?p:op ?op) (eq ?p:tipus rl) (rl-es-chunk ?p:font))
     (bind ?t (create$ ?t ?p:font)))

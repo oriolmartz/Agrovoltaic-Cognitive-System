@@ -104,13 +104,22 @@ def taw_mm(theta_cc: float, theta_pm: float, zr_m: float) -> float:
 
 
 def pas_balanc_hidric(aigua_mm: float, taw: float, et0: float, kc: float, pluja: float,
-                      transm: float, gcr: float) -> float:
-    """Una hora de balanc hidric (bucket). L'ombra redueix l'evapotranspiracio.
+                      transm: float, gcr: float, p: float | None = None) -> tuple[float, float, float]:
+    """Una hora de balanc hidric (bucket, FAO-56 eq. 85). L'ombra redueix l'evapotranspiracio.
 
-    ETc = ET0 * Kc * f_ombra, amb f_ombra = transmissio relativa a la de ple sol entre
-    files (1-gcr*0) -> ombra maxima redueix l'ETc proporcionalment a la llum que falta.
+    ETc = ET0 * Kc * f_ombra * Ks, amb f_ombra = transmissio relativa a la de ple sol entre
+    files i Ks el coeficient d'estres hidric (FAO-56 eq. 84): Ks = 1 mentre l'esgotament no
+    passa de RAW = p*TAW; despres Ks = (TAW - Dr) / ((1 - p) TAW), que en funcio de l'aigua
+    que queda es aigua / ((1 - p) TAW). Sense p (versions antigues) Ks = 1.
+    L'aigua que passa de capacitat de camp es perd per percolacio.
+    Retorna (aigua nova, percolacio, ETc real), tot en mm.
     """
     f_ombra = 0.3 + 0.7 * transm          # sota ombra total encara hi ha ~30 % d'ET (difusa, vent)
-    etc = max(et0, 0.0) * kc * f_ombra
+    ks = 1.0
+    if p is not None and taw > 0:
+        ks = max(0.0, min(1.0, aigua_mm / ((1.0 - p) * taw)))
+    etc = max(et0, 0.0) * kc * f_ombra * ks
     nou = aigua_mm + max(pluja, 0.0) - etc
-    return max(0.0, min(taw, nou))
+    perc = max(0.0, nou - taw)
+    etc_real = etc if nou >= 0 else etc + nou
+    return max(0.0, min(taw, nou)), perc, etc_real

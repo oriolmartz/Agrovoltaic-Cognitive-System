@@ -28,6 +28,22 @@
   (assert (traca (pas ?c) (fase aplicacio)
                  (missatge (str-cat ?s ": ordre " ?op " a " ?a " graus")))))
 
+; v1_9: ordre a la valvula de reg.
+(defrule aplica-reg
+  (declare (auto-focus TRUE))
+  (fase (nom aplicacio))
+  (cicle (numero ?c))
+  (reg-seleccionat (sector ?s) (cicle ?c) (nom ?op) (dosi ?d) (motiu ?m))
+  ?o <- (operador-reg (sector ?s) (cicle ?c) (nom ?op) (estat seleccionat))
+  (not (ordre-reg (sector ?s) (cicle ?c)))
+  =>
+  (if (neq ?op no-regar) then
+    (printout t "[APLICACIO] " ?s ": ORDRE DE REG " ?op " -> +" ?d "% de l'aigua disponible." crlf))
+  (modify ?o (estat aplicat))
+  (assert (ordre-reg (sector ?s) (cicle ?c) (accio ?op) (dosi ?d) (motiu ?m)))
+  (assert (traca (pas ?c) (fase aplicacio)
+                 (missatge (str-cat ?s ": reg " ?op " " ?d "%")))))
+
 (defrule aplicacio-a-explicacio
   (declare (salience -10) (auto-focus TRUE))
   ?f <- (fase (nom aplicacio))
@@ -68,6 +84,37 @@
               "   Descartats:" ?descartats crlf
               "   Criteri:    " ?m crlf)
   (assert (explicacio (sector ?s) (cicle ?c) (missatge ?txt))))
+
+; v1_9: explicacio del reg (nomes s'escriu quan hi havia alguna opcio de regar).
+(defrule explica-reg
+  (declare (auto-focus TRUE))
+  (fase (nom explicacio))
+  (cicle (numero ?c))
+  (ordre-reg (sector ?s) (cicle ?c) (accio ?op) (dosi ?d) (motiu ?m))
+  (not (explicacio-reg (sector ?s) (cicle ?c)))
+  =>
+  (bind ?nec "cap")
+  (do-for-fact ((?n necessitat-reg)) (and (eq ?n:sector ?s) (eq ?n:cicle ?c))
+    (bind ?nec (str-cat ?n:nivell " (esgotat " (arrodoneix1 (* 100 ?n:esgotament)) "%)")))
+  (bind ?candidats "")
+  (bind ?descartats "")
+  (bind ?n 0)
+  (do-for-all-facts ((?o operador-reg)) (and (eq ?o:sector ?s) (eq ?o:cicle ?c))
+    (bind ?n (+ ?n 1))
+    (if (eq ?o:estat rebutjat)
+     then (bind ?descartats (str-cat ?descartats " " ?o:nom))
+     else (bind ?candidats (str-cat ?candidats " " ?o:nom "(" (puntuacio-reg ?s ?o:nom ?c) ")"))))
+  (if (eq ?descartats "") then (bind ?descartats " cap"))
+  (bind ?txt (str-cat ?op " (+" ?d "%). Necessitat: " ?nec ". Candidats:" ?candidats
+                      ". Descartats:" ?descartats ". Criteri: " ?m "."))
+  (if (> ?n 1) then
+    (printout t crlf "[EXPLICACIO REG] " ?s ", cicle " ?c crlf
+                "   Accio:      " ?op " (+" ?d "% de l'aigua disponible)" crlf
+                "   Necessitat: " ?nec crlf
+                "   Candidats: " ?candidats crlf
+                "   Descartats:" ?descartats crlf
+                "   Criteri:    " ?m crlf))
+  (assert (explicacio-reg (sector ?s) (cicle ?c) (missatge ?txt))))
 
 (defrule explicacio-a-monitoratge
   (declare (salience -10) (auto-focus TRUE))

@@ -21,11 +21,17 @@
 [AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
 [AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
 [AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
 [AVALUACIO -> SELECCIO]
 
 [SELECCIO] Sector_2: IMPAS D'EMPAT entre orientar-ombra i orientar-produccio (tots dos 6 punts).
 [SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (6 punts).
 [SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (6 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
 [SELECCIO -> IMPAS]
 [IMPAS] Sector_2: subobjectiu resoldre-empat. Obj_Produccio_Cultiu te prioritat sobre Obj_Produccio_Energia -> orientar-ombra millor que orientar-produccio.
 [CHUNKING] Nova regla chunk-1: situacio coneguda, orientar-ombra millor que orientar-produccio (valor ajustable pel reforç).
@@ -98,14 +104,20 @@
 [AVALUACIO] Sector_2: orientar-ombra 2.0 (memoria: a l'episodi #3, cicle 1, va funcionar be, similitud 1.0).
 [AVALUACIO] Sector_1: orientar-produccio 2.0 (memoria: a l'episodi #1, cicle 1, va funcionar be, similitud 1.0).
 [AVALUACIO] Sector_3: orientar-produccio 2.0 (memoria: a l'episodi #2, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
 [chunk-1] Sector_2: situacio coneguda, orientar-ombra millor que orientar-produccio (valor ajustable pel reforç).
 [AVALUACIO -> SELECCIO]
 [SELECCIO] Sector_2: es selecciona orientar-ombra. Criteri: maxima valoracio (10.0 punts).
-[REFORC] Sector_2: orientar-ombra del cicle 1 -> recompensa 1.0 (bona), error 0.5, 7 rajoles actualitzades.
+[REFORC] Sector_2: orientar-ombra del cicle 1 -> recompensa 1.0 (bona), error 0.5, 6 rajoles actualitzades.
 [REFORC] Sector_3: orientar-produccio del cicle 1 -> recompensa 1.0 (bona), error 1.0, 4 rajoles actualitzades.
 [REFORC] Sector_1: orientar-produccio del cicle 1 -> recompensa 1.0 (bona), error 0.85, 4 rajoles actualitzades.
 [SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (10.0 punts).
 [SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (10.0 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
 [SELECCIO -> APLICACIO]
 [APLICACIO] Sector_3: ORDRE orientar-produccio -> -55.0 graus.
 [APLICACIO] Sector_1: ORDRE orientar-produccio -> -55.0 graus.

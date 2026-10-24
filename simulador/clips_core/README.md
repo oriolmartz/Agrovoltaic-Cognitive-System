@@ -23,6 +23,8 @@ clips_core/
 ├── modules.txt                 # ordre de build
 ├── build_clips.py
 ├── soar.clp                    # GENERAT, punt d'entrada de clipspy
+├── run_proves.clp              # proves de la versio canonica (E1 les executa)
+├── topologia_rdf.clp           # GENERAT per E1 a partir del RDF (no es versiona)
 └── run_soar.clp                # smoke test manual; no carrega RDF
 ```
 
@@ -50,3 +52,12 @@ Per comprovar el mapping RDF abans de provar el controlador:
 ```bash
 python verificacio/e0_ontologia.py
 ```
+
+Per passar les proves de la versió canònica (79), executeu E1, que primer projecta la topologia del RDF a
+`topologia_rdf.clp` i avisa si `soar.clp` no està al dia amb els mòduls:
+
+```bash
+python verificacio/e1_regressio.py actual
+```
+
+Un cop generat `topologia_rdf.clp`, també es pot fer a mà: `cd clips_core && clips -f run_proves.clp`.

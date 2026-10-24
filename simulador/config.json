@@ -6,15 +6,17 @@
   "hores": [7, 20],
   "sectors": {
     "Sector_1": {"kwp": 20.0, "gcr": 0.4, "kc": 1.15, "zr_m": 0.7,
-                 "demanda_base_kw": 6.0, "demanda_pic_kw": 8.0},
+                 "area_m2": 250.0, "demanda_base_kw": 6.0, "demanda_pic_kw": 8.0},
     "Sector_2": {"kwp": 20.0, "gcr": 0.4, "kc": 1.00, "zr_m": 0.3,
-                 "demanda_base_kw": 6.0, "demanda_pic_kw": 8.0},
+                 "area_m2": 250.0, "demanda_base_kw": 6.0, "demanda_pic_kw": 8.0},
     "Sector_3": {"kwp": 20.0, "gcr": 0.4, "kc": 0.70, "zr_m": 1.0,
-                 "demanda_base_kw": 6.0, "demanda_pic_kw": 8.0}
+                 "area_m2": 250.0, "demanda_base_kw": 6.0, "demanda_pic_kw": 8.0}
   },
-  "humitat": {"mode": "balanc", "inicial_pct": 85.0,
-              "reg": {"actiu": true, "hora": 7, "llindar_pct": 45.0, "fins_pct": 90.0}},
+  "humitat": {"mode": "balanc", "inicial_pct": 85.0, "ks": true,
+              "reg": {"mode": "auto", "hora": 7, "llindar_pct": 45.0, "fins_pct": 90.0,
+                      "eficiencia": 0.85, "kwh_m3": 0.48}},
   "soroll": {"previsio_vent_sigma": 0.15, "previsio_rad_sigma": 0.15, "previsio_temp_sigma": 1.0,
+             "previsio_pluja_sigma": 0.3, "previsio_pluja_hores": 12,
              "sensor_vent_sigma": 0.3, "sensor_temp_sigma": 0.3, "sensor_rad_sigma": 0.03},
   "sensors": {"p_absent": {"humitat-sol": 0.0, "pluja": 0.0, "radiacio": 0.0, "temperatura-aire": 0.0,
                            "temperatura-cultiu": 0.0, "vent": 0.0},

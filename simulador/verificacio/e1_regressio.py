@@ -3,8 +3,13 @@
 Cada versio s'executa en un proces nou (entorn CLIPS net). Es el pas que s'ha de
 repetir despres de CADA canvi al .clp (validacio incremental, Batarseh 2015).
 
-    python verificacio/e1_regressio.py            # totes les versions historiques
+    python verificacio/e1_regressio.py            # la versio canonica (clips_core) i totes les historiques
     python verificacio/e1_regressio.py v1_7       # nomes una
+    python verificacio/e1_regressio.py actual     # nomes la canonica
+
+La versio canonica es clips_core/soar.clp (generat dels moduls amb build_clips.py) i les seves
+proves son clips_core/run_proves.clp. Abans d'executar-la es comprova que soar.clp esta al dia
+amb els moduls: si algu ha editat un modul i no ha regenerat soar.clp, E1 falla.
 """
 
 from __future__ import annotations
@@ -19,6 +24,15 @@ import time
 
 ARREL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLIPS = os.path.abspath(os.path.join(ARREL, "..", "history", "clips", "simulator"))
+CORE = os.path.join(ARREL, "clips_core")
+
+
+def soar_al_dia() -> bool:
+    """TRUE si clips_core/soar.clp es exactament la concatenacio dels moduls de modules.txt."""
+    moduls = [x.strip() for x in open(os.path.join(CORE, "modules.txt"), encoding="utf-8").read().splitlines()
+              if x.strip() and not x.lstrip().startswith("#")]
+    cont = "".join(open(os.path.join(CORE, m), encoding="utf-8", newline="").read() for m in moduls)
+    return open(os.path.join(CORE, "soar.clp"), encoding="utf-8", newline="").read() == cont
 
 CODI = r"""
 import clips, sys
@@ -37,9 +51,10 @@ r.delete()
 
 
 def executa(versio: str) -> dict:
-    run = os.path.join(CLIPS, f"run_soar_{versio}.clp")
+    carpeta = CORE if versio == "actual" else CLIPS
+    run = os.path.join(CORE, "run_proves.clp") if versio == "actual" else os.path.join(CLIPS, f"run_soar_{versio}.clp")
     t0 = time.time()
-    p = subprocess.run([sys.executable, "-c", CODI, os.path.basename(run)], cwd=CLIPS,
+    p = subprocess.run([sys.executable, "-c", CODI, os.path.basename(run)], cwd=carpeta,
                        capture_output=True, text=True, timeout=600)
     sortida = p.stdout + p.stderr
     passes = re.findall(r"\[PASS\] (.*)", sortida)
@@ -51,7 +66,7 @@ def executa(versio: str) -> dict:
         f.write(sortida)
     for f in ("epmem_prova.dat", "chunks_prova.dat"):
         try:
-            os.remove(os.path.join(CLIPS, f))
+            os.remove(os.path.join(carpeta, f))
         except FileNotFoundError:
             pass
     return {"versio": versio, "pass": len(passes), "fail": len(fails), "fallades": fails,
@@ -59,8 +74,18 @@ def executa(versio: str) -> dict:
 
 
 def main():
-    versions = sys.argv[1:] or sorted(re.search(r"run_soar_(v[\d_]+)\.clp", f).group(1)
-                                      for f in glob.glob(os.path.join(CLIPS, "run_soar_v*.clp")))
+    versions = sys.argv[1:] or (["actual"] + sorted(re.search(r"run_soar_(v[\d_]+)\.clp", f).group(1)
+                                                    for f in glob.glob(os.path.join(CLIPS, "run_soar_v*.clp"))))
+    al_dia = True
+    if "actual" in versions:
+        # la topologia de la versio canonica ve del RDF: es projecta a un deffacts per a run_proves.clp
+        sys.path.insert(0, ARREL)
+        from ontology_loader import ONTOLOGIA_MODEL_DEFECTE, carrega_model, deffacts_clips
+        with open(os.path.join(CORE, "topologia_rdf.clp"), "w", encoding="utf-8", newline="\n") as f:
+            f.write(deffacts_clips(carrega_model(ONTOLOGIA_MODEL_DEFECTE)))
+        al_dia = soar_al_dia()
+        if not al_dia:
+            print("ERROR: clips_core/soar.clp no coincideix amb els moduls. Executa: python clips_core/build_clips.py")
     res = [executa(v) for v in versions]
     print(f"{'versio':8} {'pass':>5} {'fail':>5} {'errors':>7} {'s':>6}")
     for r in res:
@@ -71,7 +96,7 @@ def main():
             print("    CLIPS:", e)
     os.makedirs(os.path.join(ARREL, "resultats", "E1"), exist_ok=True)
     json.dump(res, open(os.path.join(ARREL, "resultats", "E1", "e1_regressio.json"), "w"), indent=2, ensure_ascii=False)
-    sys.exit(1 if any(r["fail"] or r["errors_clips"] for r in res) else 0)
+    sys.exit(1 if not al_dia or any(r["fail"] or r["errors_clips"] for r in res) else 0)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,7 @@
+parametre,metrica,signe_estable
+p_previsio_absent,energia_kwh,sí
+p_previsio_absent,exposicions,sí
+p_previsio_absent,violacions,sí
+previsio_vent_sigma,energia_kwh,sí
+previsio_vent_sigma,exposicions,sí
+previsio_vent_sigma,violacions,sí

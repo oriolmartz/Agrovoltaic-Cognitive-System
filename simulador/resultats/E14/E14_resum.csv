@@ -1,0 +1,15 @@
+,escenari,fix,seguidor,soar
+n_dies,calor,60,60,60
+h_estres_calor,calor,39.30 ± 1.63,39.50 ± 1.44,39.50 ± 1.44
+h_calor_critica,calor,30.90 ± 2.51,31.30 ± 2.43,31.00 ± 2.55
+h_estres_rad,calor,14.10 ± 1.23,16.30 ± 1.89,14.25 ± 1.46
+energia_kwh,calor,369.86 ± 30.86,431.58 ± 34.66,382.21 ± 32.69
+n_dies,vent,60,60,60
+violacions,vent,0.00 ± 0.00,1.13 ± 1.42,0.00 ± 0.00
+exposicions,vent,0.00 ± 0.00,3.52 ± 5.25,0.08 ± 0.42
+energia_kwh,vent,243.50 ± 96.78,251.44 ± 101.60,246.93 ± 98.34
+n_blocs,sequera (per mes),12,12,12
+h_estres_aigua,sequera (per mes),616.75 ± 268.74,660.25 ± 267.45,628.67 ± 266.85
+aigua_final_pct,sequera (per mes),58.77 ± 14.88,56.27 ± 14.71,58.21 ± 14.60
+percolacio_mm,sequera (per mes),9.76 ± 17.66,8.91 ± 16.11,9.11 ± 16.47
+energia_kwh,sequera (per mes),10388.42 ± 1530.59,12118.02 ± 1714.60,10816.76 ± 1514.28

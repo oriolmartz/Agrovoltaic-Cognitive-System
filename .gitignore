@@ -45,3 +45,6 @@ dist/
 # Experiment results are intentionally versionable for reproducibility.
 # If temporary outputs are added later, place them under resultats/tmp/.
 simulador/resultats/tmp/
+
+# Generat per verificacio/e1_regressio.py a partir del RDF (no es versiona)
+simulador/clips_core/topologia_rdf.clp

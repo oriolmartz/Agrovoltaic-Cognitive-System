@@ -38,11 +38,14 @@ PRED = {"radiacio": 300.0, "temperatura": 20.0, "vent": 3.0, "pluja": 0.0}
 ENERGIA = {"produccio": 15.0, "demanda": 12.0}
 
 
-def cicle(obs=None, pred=None, energia=None, falla=(), **esperat):
+def cicle(obs=None, pred=None, energia=None, falla=(), hora=12, **esperat):
     """obs/pred/energia: {sector: {camp: valor}} que sobreescriuen la base.
     falla: panells que NO es mouen despres d'aquest cicle (fallada d'actuador).
-    esperat: {sector: {accio, accio_no, riscos{tipus: nivell|None}, impas, chunk, candidat, rebutjat}}"""
-    return {"obs": obs or {}, "pred": pred or {}, "energia": energia or {}, "falla": set(falla), "esperat": esperat}
+    hora: hora local del cicle (v1_9: el reg te en compte les hores fresques).
+    esperat: {sector: {accio, accio_no, riscos{tipus: nivell|None}, impas, chunk, candidat, rebutjat,
+                       reg, dosi, reg_rebutjat}}"""
+    return {"obs": obs or {}, "pred": pred or {}, "energia": energia or {}, "falla": set(falla), "hora": hora,
+            "esperat": esperat}
 
 
 CASOS = [
@@ -148,6 +151,42 @@ CASOS = [
                  "de radiació a crític, i el sistema ha de fer ombra.",
      "cicles": [cicle(obs={S1: {"radiacio": 500.0, "temperatura-cultiu": 33.0}},
                       **{S1: {"riscos": {"exces-radiacio": "critic", "temperatura": "alt"}, "accio": "orientar-ombra"}})]},
+    # ------------------------------------------------------------------ v1_9: reg
+    {"id": "CP12", "titol": "Reg a primera hora", "cobertura": "protecció del cultiu (reg)", "reg": True,
+     "objectiu": "A les 7 h, l'enciam té un 65 % d'aigua (ha gastat el 35 %, més que el seu p = 30 %): hi ha "
+                 "estrès i s'ha de regar fins a capacitat de camp (+35 %). El tomàquet és al 66 % (ha gastat el "
+                 "34 %, a prop del seu p = 40 %): és hora fresca i és un cultiu sensible, així que s'ha d'anticipar "
+                 "(+34 %). La vinya és al 62 %: no s'anticipa (reg deficitari). El panell decideix a part. A les 8 h, "
+                 "amb el sòl ple, ja no s'ha de regar.",
+     "cicles": [
+         cicle(hora=7, obs={S1: {"humitat-sol": 66.0}, S2: {"humitat-sol": 65.0}, S3: {"humitat-sol": 62.0}},
+               **{S1: {"reg": "regar-complet", "dosi": 34.0}, S2: {"reg": "regar-complet", "dosi": 35.0},
+                  S3: {"reg": "no-regar"}}),
+         cicle(hora=8, obs={S1: {"humitat-sol": 100.0}, S2: {"humitat-sol": 100.0}, S3: {"humitat-sol": 62.0}},
+               **{S1: {"reg": "no-regar"}, S2: {"reg": "no-regar"}, S3: {"reg": "no-regar"}}),
+     ]},
+    {"id": "CP13", "titol": "No es rega perquè plourà", "cobertura": "conflicte cultiu contra estalvi d'aigua (reg)",
+     "reg": True,
+     "objectiu": "A les 19 h, el tomàquet té estrès (55 %), però es preveuen 15 mm de pluja en les pròximes 12 h "
+                 "(≥ 10 mm, Diputació de Barcelona): regar queda rebutjat i no es rega. L'enciam, en canvi, és al "
+                 "20 % (estrès crític): no pot esperar i es rega igualment, però només en part (+65 %, en lloc d'omplir "
+                 "el sòl), perquè la pluja l'acabarà d'omplir.",
+     "cicles": [
+         cicle(hora=19, obs={S1: {"humitat-sol": 55.0}, S2: {"humitat-sol": 20.0}},
+               pred={S: {"pluja": 15.0} for S in SECTORS},
+               **{S1: {"reg": "no-regar", "reg_rebutjat": "regar-complet"},
+                  S2: {"reg": "regar-parcial", "dosi": 65.0}}),
+     ]},
+    {"id": "CP14", "titol": "Reg deficitari de la vinya al llindar", "cobertura": "límits (reg)", "reg": True,
+     "objectiu": "La vinya (p = 0,45) amb un 55,0 % d'aigua és just al llindar sense estrès: no es rega (la vinya "
+                 "no s'anticipa). Amb un 54,9 % ja hi ha estrès: es rega en part, fins a la meitat de p "
+                 "(+22,6 %). Al migdia, si continua amb estrès, també es rega.",
+     "cicles": [
+         cicle(hora=7, obs={S3: {"humitat-sol": 55.0}}, **{S3: {"reg": "no-regar", "riscos": {"estres-hidric": None}}}),
+         cicle(hora=7, obs={S3: {"humitat-sol": 54.9}}, **{S3: {"reg": "regar-parcial", "dosi": 22.6,
+                                                                "riscos": {"estres-hidric": "mitja"}}}),
+         cicle(hora=13, obs={S3: {"humitat-sol": 54.9}}, **{S3: {"reg": "regar-parcial"}}),
+     ]},
 ]
 
 
@@ -176,6 +215,7 @@ def executa_cas(clp, cas):
             for tp in SENSORS:
                 c.escriu_sensor(s, tp, True, "valida" if o.get(tp) is not None else "absent", n)
             c.afegeix_entrades(n, s, o, p, ene[s])
+        c.escriu_moment(n, cy["hora"])
         r = c.executa_cicle()
         traca.append((k, r.sortida))
         for s, esp in cy["esperat"].items():
@@ -201,11 +241,19 @@ def executa_cas(clp, cas):
                 disc.append(f"{esp['candidat']} havia de ser candidat")
             if "rebutjat" in esp and esp["rebutjat"] not in r.rebutjats.get(s, set()):
                 disc.append(f"{esp['rebutjat']} havia de quedar rebutjat")
+            reg = r.reg.get(s, [(None, None, "")])[0]
+            if "reg" in esp and reg[0] != esp["reg"]:
+                disc.append(f"reg esperat {esp['reg']}, obtingut {reg[0]}")
+            if "dosi" in esp and (reg[1] is None or abs(reg[1] - esp["dosi"]) > 1e-6):
+                disc.append(f"dosi esperada {esp['dosi']} %, obtinguda {reg[1]}")
+            if "reg_rebutjat" in esp and esp["reg_rebutjat"] not in r.reg_rebutjats.get(s, set()):
+                disc.append(f"{esp['reg_rebutjat']} havia de quedar rebutjat")
             ok_total &= not disc
             files.append({"cicle": k, "sector": s, "entrada": {kk: obs[s][kk] for kk in ("vent", "temperatura-cultiu", "humitat-sol", "radiacio")},
                           "previsio_vent": pred[s]["vent"], "esperat": esp, "accio": accio, "angle": angle,
                           "riscos": riscos, "impas": imp, "chunk": chunk, "motiu": r.seleccionat.get(s, [("", "")])[0][1],
-                          "explicacio": r.explicacio.get(s, ""), "discrepancies": disc})
+                          "explicacio": r.explicacio.get(s, ""), "reg": reg[0], "dosi": reg[1],
+                          "explicacio_reg": r.reg_explicacio.get(s, ""), "hora": cy["hora"], "discrepancies": disc})
         # actuadors: cada panell va a l'angle ordenat, llevat dels que fallen
         for pid, p in c.panells().items():
             if pid in cy["falla"]:
@@ -218,7 +266,7 @@ def executa_cas(clp, cas):
 
 
 def _linies_rellevants(txt, sectors):
-    claus = ("IMPAS", "CHUNKING", "[chunk-", "SELECCIO ->", "REFORC")
+    claus = ("IMPAS", "CHUNKING", "[chunk-", "SELECCIO ->", "REFORC", "EXPLICACIO REG")
     out = []
     for l in txt.splitlines():
         if any(s in l for s in sectors) or any(k in l for k in claus):
@@ -271,15 +319,20 @@ def main():
         for x in files:
             e = x["entrada"]
             ent = f"{e['vent']} / {x['previsio_vent']} / {e['temperatura-cultiu']} / {e['humitat-sol']} / {e['radiacio']}"
+            if cas.get("reg"):
+                ent += f" ({x['hora']} h)"
             obt = f"{x['accio']} ({x['angle']}°)" + (f"; riscos: " + ", ".join(f"{t}={n}" for t, n in sorted(x['riscos'].items())) if x["riscos"] else "") \
-                + (f"; impasse {x['impas']}" if x["impas"] else "") + ("; chunk" if x["chunk"] else "")
+                + (f"; impasse {x['impas']}" if x["impas"] else "") + ("; chunk" if x["chunk"] else "") \
+                + (f"; reg {x['reg']}" + (f" (+{x['dosi']} %)" if x["reg"] != "no-regar" else "") if cas.get("reg") else "")
             dd.append(f"| {x['cicle']} | {x['sector']} ({CULTIU[x['sector']]}) | {ent} | {_fmt_esperat(x['esperat'])} | {obt} | "
                       f"{'✅' if not x['discrepancies'] else '❌ ' + '; '.join(x['discrepancies'])} |")
         if not ok and cas.get("analisi"):
-            dd += ["", f"**Anàlisi de la discrepància** (feta a mà sobre la v1_8): {cas['analisi']}"]
+            dd += ["", f"**Anàlisi de la discrepància** (feta a mà): {cas['analisi']}"]
         dd += ["", "**Explicació que dona el sistema** (fet `explicacio`):", ""]
         for x in files:
             dd.append(f"- Cicle {x['cicle']}, {x['sector']}: {x['explicacio']}")
+            if cas.get("reg") and x["explicacio_reg"]:
+                dd.append(f"  - Reg: {x['explicacio_reg']}")
         dd += ["", "<details><summary>Traça rellevant del CLIPS</summary>", "", "```"]
         for k, t in traca:
             dd.append(f"--- cicle {k} ---")

@@ -14,6 +14,9 @@ Els resultats de cada experiment queden a `resultats/<E>/`.
   execució de molts dies seguits.
 - **Disseny aparellat.** Totes les configuracions veuen els mateixos dies i el mateix soroll: el
   soroll de cada dia surt de la llavor i de la data. Es comparen diferències dins de cada dia.
+- **Experiments d'aigua (E14 sequera i E15): la unitat és un mes sencer de dies seguits.** L'aigua
+  del sòl passa d'un dia a l'altre, així que els dies d'un mateix mes no són independents. Es
+  comparen mesos (bloc = mes i llavor).
 - **Tests:**
 
   | Cas | Test |
@@ -26,8 +29,9 @@ Els resultats de cada experiment queden a `resultats/<E>/`.
   compta els empats) i un interval de confiança del 95 % de la diferència, per bootstrap.
 - **Mida de la mostra** (`python estadistica.py`): per detectar un efecte mitjà (d = 0,5) amb una
   potència de 0,8 calen 36 dies, i 48 si hi ha 3 comparacions amb Holm. Per això E7 en fa servir 48.
-- **Reproduïbilitat:** el mateix experiment dona exactament els mateixos números en un altre
-  ordinador i un altre sistema operatiu. Comprovat entre Linux i Windows per a E1–E7 i E10–E13: les dades per dia són idèntiques.
+- **Reproduïbilitat:** el mateix experiment ha de donar exactament els mateixos números en un altre
+  ordinador i un altre sistema operatiu. Es va comprovar entre Linux i Windows amb la v1_8 (E1–E7 i
+  E10–E13: dades per dia idèntiques). Amb la v1_9 encara no s'ha tornat a comprovar a Windows.
 
 ## Verificació
 
@@ -35,11 +39,11 @@ Els resultats de cada experiment queden a `resultats/<E>/`.
 |---|---|---|---|---|
 | **E0** | El model RDF és coherent amb l’ontologia de domini i es pot convertir sense duplicació en la topologia que consumeix CLIPS? | Verificació de representació i consistència d’artefactes | Comprova que domini i model tenen IRI diferents, que el model importa el domini amb `owl:imports` i no redeclara l'esquema; valida vocabulari + `domain/range`, genera els fets CLIPS i comprova que ni `domini.clp` ni `config.json` reintrodueixen la topologia manualment | `python verificacio/e0_ontologia.py` |
 | **E1** | Un canvi trenca res que abans funcionava? | Regressió; validació incremental (Batarseh) | Executa el `run_soar_v1_x.clp` de cada versió i compta quantes proves passen | `python verificacio/e1_regressio.py` |
-| **E2** | Hi ha anomalies a la base de regles? | Anomalies de Preece (Menzies §2): deficiència, conflicte, regles mai disparades. A més, una prova metamòrfica de monotonia | 24.500 combinacions d'entrades × 3 cultius, un cicle cadascuna. Es comproven propietats de seguretat, monotonia amb el vent i cobertura de regles | `python verificacio/e2_graella.py` (`--rapid`: 1.890 casos) |
-| **E3** | Les conclusions són correctes als llindars? | Casos positius i negatius amb el resultat esperat escrit abans (VVR de Zlatareva, a Batarseh). Anàlisi de valors límit | 57 casos: just a sota, al llindar i just a sobre de cada llindar de les fonts (vent, temperatura, aigua, radiació) | `python verificacio/e3_llindars.py` |
+| **E2** | Hi ha anomalies a la base de regles? | Anomalies de Preece (Menzies §2): deficiència, conflicte, regles mai disparades. A més, proves metamòrfiques de monotonia | 24.500 combinacions d'entrades × 3 cultius, un cicle cadascuna: seguretat, monotonia amb el vent i cobertura de regles. A la v1_9, una segona graella per al **reg** (1.680 combinacions d'humitat, pluja prevista, hora i dèficit d'energia) amb 7 propietats (R1–R7) i la monotonia de la dosi | `python verificacio/e2_graella.py` (`--rapid`: 1.890 casos + la graella del reg) |
+| **E3** | Les conclusions són correctes als llindars? | Casos positius i negatius amb el resultat esperat escrit abans (VVR de Zlatareva, a Batarseh). Anàlisi de valors límit | 57 casos: just a sota, al llindar i just a sobre de cada llindar de les fonts (vent, temperatura, aigua, radiació). A la v1_9, 18 més de **reg** (G01–G18): anticipació al 75 % de p, hores fresques, la vinya, 2 i 10 mm de pluja prevista, estrès crític, sensor absent | `python verificacio/e3_llindars.py` |
 | **E11** | La decisió depèn de l'ordre en què es disparen les regles? Per a què serveix la salience? | Agenda de CLIPS (enunciat, apartat 3.7.2) i no determinisme (Menzies §5) | Els mateixos 20 dies amb: (1) les estratègies `depth`, `breadth`, `lex` i `mea`; (2) `simplicity` i `complexity`, que ordenen per **especificitat**; (3) `random` amb 5 llavors; (4) dues variants del `.clp` amb la **salience** canviada: les transicions de fase a 0 en lloc de −10, o cap salience. Es compara cada decisió amb la de `depth` | `python experiments.py E11` |
-| **E13** | El coneixement que s'aprèn és consistent i complet? | Bases de coneixement que evolucionen (Rashid): restriccions d'integritat i completesa entre versions | 5 execucions de 20 dies seguits. Al final de cada dia es fa una foto dels chunks, els valors Q i els episodis, i es comproven 8 restriccions (K1–K8) | `python experiments.py E13` |
-| **Invariants** | Es compleixen sempre les propietats bàsiques? | Verificació en temps d'execució (Menzies §6.1.2) | A cada cicle de qualsevol simulació: una ordre per sector, angle dins dels límits, mai un operador rebutjat, seguretat amb vent, fase final correcta | columna `invariants_ko` de tots els resultats |
+| **E13** | El coneixement que s'aprèn és consistent i complet? | Bases de coneixement que evolucionen (Rashid): restriccions d'integritat i completesa entre versions | 5 execucions de 20 dies seguits. Al final de cada dia es fa una foto dels chunks, els valors Q i els episodis, i es comproven 9 restriccions (K1–K8) | `python experiments.py E13` |
+| **Invariants** | Es compleixen sempre les propietats bàsiques? | Verificació en temps d'execució (Menzies §6.1.2) | A cada cicle de qualsevol simulació: una ordre per sector, angle dins dels límits, mai un operador rebutjat, seguretat amb vent, fase final correcta. Amb la v1_9, també: una ordre de reg per sector (I10), dosi no més gran del que falta (I11) i mai un reg rebutjat (I12) | columna `invariants_ko` de tots els resultats |
 
 Les restriccions d'E13:
 
@@ -54,6 +58,19 @@ Les restriccions d'E13:
 | K7 | hi ha un episodi per sector i cicle |
 | K8 | no es perden chunks ni rajoles d'un dia a l'altre |
 
+Les propietats del reg a E2 (v1_9), per a cada sector:
+
+| | Comprova que… |
+|---|---|
+| R1 | hi ha exactament una ordre de reg |
+| R2 | la dosi no passa del que falta per arribar a capacitat de camp (FAO-56) |
+| R3 | amb 10 mm o més de pluja prevista, i sense estrès crític, no es rega |
+| R4 | sense lectura d'humitat, no es rega |
+| R5 | sense necessitat (menys del 75 % de p), no es rega |
+| R6 | amb estrès hídric i menys de 10 mm previstos, sempre es rega |
+| R7 | la vinya no s'anticipa (sense estrès, no es rega) |
+| Monotonia | amb menys aigua al sòl, i la resta igual, la dosi no baixa |
+
 ## Validació
 
 | | Pregunta | Perspectiva | Com | Ordre |
@@ -62,10 +79,11 @@ Les restriccions d'E13:
 | **E5** | I si falla el sensor de vent? | Robustesa (no determinisme) | El sensor no dona lectura un 0, 5 o 20 % de les vegades. 40 dies de vent × 3 llavors | `python experiments.py E5` |
 | **E6** | Detecta i gestiona les fallades d'actuador? | Robustesa | Cada panell té un 5 % de probabilitat de no moure's. 40 dies × 3 llavors | `python experiments.py E6` |
 | **E7** | Què guanya i què perd SOAR respecte d'un seguidor normal? | Comparació amb sistemes de referència, a falta d'un expert humà (Batarseh) | SOAR, el seguidor comercial i el panell fix, amb 48 dies reals de Ribera de Sió | `python experiments.py E7 --dies 48` |
-| **E8** | El chunking fa la seva feina? | Sistemes adaptatius: validesa externa (Menzies §7.2.2) | Amb chunking i sense, sense reforç. S'aprèn durant 20 dies d'abril a juny i es mesura en 10 dies de juliol a setembre (no vistos) | `python experiments.py E8 --dies 10` |
+| **E8** | El chunking fa la seva feina? | Sistemes adaptatius: validesa externa (Menzies §7.2.2) | Amb chunking i sense, sense reforç (versió per defecte, v1_9). S'aprèn durant 20 dies d'abril a juny i es mesura en 10 dies de juliol a setembre (no vistos) | `python experiments.py E8 --dies 10` |
 | **E9** | El reforç millora el sistema? | Sistemes adaptatius: validesa externa | v1_5 (sense reforç), v1_6 (trets sols) i v1_7 (parelles), amb el mateix protocol que E8 | `python experiments.py E9 --dies 10` |
 | **E10** | La funció Q pot aprendre interaccions entre trets? | Prova de capacitat de caixa blanca d'un component adaptatiu | Les funcions `REFORC` del CLIPS s'entrenen amb mostres sintètiques d'una tasca AND i d'una tasca XOR. 30 llavors, de 10 a 400 mostres | `python experiments.py E10` |
-| **E14** | I en condicions extremes? | Proves d'estrès (escenaris adversos) amb dades reals modificades | Tres escenaris, SOAR contra el seguidor comercial i el panell fix, 20 dies × 3 llavors cadascun. **Calor:** els 20 dies més calorosos de Ribera de Sió (36–42 °C) amb +3 °C. **Sequera:** juliol i agost sense reg. **Vent:** els 20 dies amb més vent de Cantallops, amb les ratxes un 30 % més fortes | `python experiments.py E14` |
+| **E14** | I en condicions extremes? | Proves d'estrès (escenaris adversos) amb dades reals modificades | Tres escenaris, SOAR contra el seguidor comercial i el panell fix. **Calor:** els 20 dies més calorosos de Ribera de Sió (36–42 °C) amb +3 °C, × 3 llavors. **Vent:** els 20 dies amb més vent de Cantallops, amb les ratxes un 30 % més fortes, × 3 llavors. **Sequera:** de juny a setembre, cada mes sencer amb els dies seguits i **sense aigua de reg per a ningú** (només hi ha l'ombra dels panells), × 3 llavors | `python experiments.py E14` |
+| **E15** | El reg que decideix el sistema és millor que un reg fix? | Comparació amb sistemes de referència (Batarseh) i extensió avaluada amb hipòtesi i línia base (enunciat, apartat 3.9) | **Hipòtesi:** SOAR gasta menys aigua que un reg de llibre amb el mateix estrès o menys. Els mateixos panells (v1_9) amb 4 maneres de regar: **soar** (les ordres del CLIPS), **fao** (FAO-56 de llibre: cada dia a les 7 h, si s'ha esgotat la RAW, s'omple el sòl), **finca** (a les 7 h, si és per sota del 45 %, s'omple fins al 90 %) i **cap**. De l'abril al setembre a Ribera de Sió, cada mes amb els dies seguits, × 4 llavors (24 blocs) | `python experiments.py E15` |
 | **E12** | Les conclusions depenen dels números que vam triar a dit? | Anàlisi de sensibilitat (Batarseh) | Un paràmetre cada cop: GCR, `k_rad`, `k_sec`, el soroll i la disponibilitat de la previsió. Es mira si el signe de la diferència entre SOAR i el seguidor es manté | `python experiments.py E12` |
 
 ## Casos de prova documentats
@@ -87,10 +105,13 @@ i la traça completa de cada cas:
 | CP09 | Vent 6 → 13 → 18 → 18 → 8 m/s en 5 hores | canvis temporals |
 | CP10 | Enciam amb un 20 % d'aigua | protecció del cultiu |
 | CP11 | Tomàquet amb radiació i calor altes alhora | elaboració combinada |
+| CP12 | Reg a primera hora: l'enciam amb estrès i el tomàquet a prop del llindar; la vinya no s'anticipa | reg |
+| CP13 | No es rega perquè es preveuen 15 mm, llevat de l'enciam amb estrès crític | conflicte (reg) |
+| CP14 | Vinya al llindar exacte (55,0 %) i just a sota (54,9 %): reg deficitari | límits (reg) |
 | Cas no vist | Un dia real de tramuntana a Cantallops (27/03/2023) que no es va fer servir per desenvolupar les regles: `python simulador.py escenaris/cas_no_vist_tramuntana.json` (i `--controlador seguidor` per comparar) | casos no vistos |
 
 ## Opcions comunes
 
 - `--processos N`: quants processos fer servir en paral·lel. Per defecte, tots els nuclis.
 - `--traca`: desa la traça completa del CLIPS a `resultats/<E>/traca/`.
-- `--dies N`: a E4, E5, E6, E7, E11, E12 i E14, nombre de dies. A E8, E9, E10 i E13, nombre d'execucions.
+- `--dies N`: a E4, E5, E6, E7, E11, E12 i E14, nombre de dies. A E8, E9, E10 i E13, nombre d'execucions. A E15, nombre de dies de cada mes (per a una prova ràpida).

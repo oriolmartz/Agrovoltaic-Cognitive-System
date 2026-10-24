@@ -17,10 +17,16 @@
 [AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
 [AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
 [AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
 [AVALUACIO -> SELECCIO]
 [SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (3 punts).
 [SELECCIO] Sector_2: es selecciona orientar-produccio. Criteri: maxima valoracio (3 punts).
 [SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (3 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
 [SELECCIO -> APLICACIO]
 [APLICACIO] Sector_3: ORDRE orientar-produccio -> 30.0 graus.
 [APLICACIO] Sector_2: ORDRE orientar-produccio -> 30.0 graus.
@@ -87,6 +93,9 @@
 [AVALUACIO] Sector_1: orientar-produccio 2.0 (memoria: a l'episodi #1, cicle 1, va funcionar be, similitud 1.0).
 [AVALUACIO] Sector_2: orientar-produccio 2.0 (memoria: a l'episodi #2, cicle 1, va funcionar be, similitud 1.0).
 [AVALUACIO] Sector_3: orientar-produccio -1.5 (memoria: a l'episodi #3, cicle 1, va funcionar malament, similitud 0.75).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
 [AVALUACIO -> SELECCIO]
 [SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (7.0 punts).
 [REFORC] Sector_3: orientar-produccio del cicle 1 -> recompensa -1.0 (dolenta), error -1.0, 4 rajoles actualitzades.
@@ -95,6 +104,9 @@
 [SELECCIO] Sector_2: es selecciona orientar-produccio. Criteri: maxima valoracio (7.0 punts).
 [SELECCIO] Sector_3: orientar-produccio queda descartat (AV9-fallada).
 [SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
 [SELECCIO -> APLICACIO]
 [APLICACIO] Sector_3: ORDRE mantenir-posicio -> 20.0 graus.
 [APLICACIO] Sector_2: ORDRE orientar-produccio -> 30.0 graus.

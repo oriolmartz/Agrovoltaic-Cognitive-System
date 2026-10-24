@@ -1,0 +1,3 @@
+config,cicles_sector,cicles_amb_ratxa>=16,violacions,taxa_violacio_en_perill,cota_sup_95%,invariants_ko
+seguidor,3990,567,58,0.10229276895943562,0.12567754470186082,0
+soar,3990,567,0,0.0,0.005269545413484014,0

@@ -1,0 +1,7 @@
+tasca,metrica,A,B,n,mitjana A,mitjana B,A-B,IC95,p (Holm),efecte,Friedman p
+AND,encert_pct,v1_6 (trets sols),v1_8 parelles off,30,100.0,100.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+AND,encert_pct,v1_6 (trets sols),v1_8 parelles on,30,100.0,100.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+AND,encert_pct,v1_8 parelles off,v1_8 parelles on,30,100.0,100.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+XOR,encert_pct,v1_6 (trets sols),v1_8 parelles off,30,50.0,50.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),9.4e-14
+XOR,encert_pct,v1_6 (trets sols),v1_8 parelles on,30,50.0,100.0,-50.0,"(-54.167, -45.833)",1e-06,-1.00 (gran),9.4e-14
+XOR,encert_pct,v1_8 parelles off,v1_8 parelles on,30,50.0,100.0,-50.0,"(-54.167, -45.833)",1e-06,-1.00 (gran),9.4e-14

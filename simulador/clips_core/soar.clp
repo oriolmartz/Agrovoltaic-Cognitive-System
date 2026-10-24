@@ -1,3 +1,6 @@
+; soar v1_9 = v1_6 + marge de 1e-9 a nivell-hidric (com v1_8) + decisio de REG.
+; Els blocs nous porten l'etiqueta 'v1_9'. Font: aquests moduls; soar.clp es genera amb build_clips.py.
+
 ;  DOMINI --------------------------------------------------------------------
 (defmodule DOMINI
   (export deftemplate ?ALL))
@@ -165,7 +168,7 @@
 (deftemplate objectiu
   (slot id (type SYMBOL))
   (slot tipus (allowed-symbols seguretat produccio-cultiu produccio-energia
-                               estabilitat minimitzar-moviment))
+                               estabilitat minimitzar-moviment estalvi-aigua))   ; v1_9: estalvi-aigua
   (slot restriccio (allowed-symbols dura tova))
   (slot estat (allowed-symbols inactiu actiu)))
 
@@ -260,14 +263,12 @@
   (slot aprenentatge (allowed-symbols on off) (default on))  ; rl --set learning
   (slot alfa (type NUMBER) (default 0.3))                    ; rl --set learning-rate
   (slot prior (type NUMBER) (default 0.5))                   ; valor inicial d'un chunk d'empat
-  (slot epsilon (type NUMBER) (default 0.05))                ; diferencia minima per desfer un empat
-  (slot parelles (allowed-symbols on off) (default on)))     ; rajoles de parelles de trets
+  (slot epsilon (type NUMBER) (default 0.05)))               ; diferencia minima per desfer un empat
 
 ; APRENENTATGE | Origen: REFORC | Persistencia: sessio | Modifica: REFORC
 ; Una "rajola" de la funcio de valor: Q(tret, operador). Cada fet fa el paper d'una
 ; regla RL de Soar que nomes comprova un tret de la situacio (tile coding):
 ;   tret = tot | sector=.. | cultiu=.. | risc=..-.. | cobertura=.. | chunk-N
-;          | risc=A+risc=B | risc=A+cobertura=C   (parelles: interaccions entre trets)
 ; El valor d'un operador es la suma de les rajoles actives.
 (deftemplate rl-valor
   (slot tret (type SYMBOL))
@@ -324,6 +325,84 @@
   (slot angle (type NUMBER))
   (multislot riscos)                      ; riscos presents (tipus-nivell)
   (slot resultat (allowed-symbols pendent correcte fallada) (default pendent)))
+
+;  REG (v1_9) ------------------------------------------------------------------
+; Segon actuador de cada sector: el reg per degoteig. Es decideix dins del mateix cicle
+; SOAR (elaboracio -> proposta -> avaluacio -> seleccio -> aplicacio -> explicacio), pero
+; amb fets propis, separats dels del panell: cada sector pot moure el panell I regar en el
+; mateix cicle, i les dues decisions no competeixen (no hi pot haver empat entre regar i
+; orientar-produccio). Fonts del coneixement: dades_reals/FONTS.md, apartat "Reg".
+
+; OBSERVAT | Origen: simulador | Persistencia: 1 cicle | Modifica: capa d'entrada
+; Hora local del cicle (el reg te en compte les hores fresques).
+(deftemplate moment
+  (slot cicle (type INTEGER))
+  (slot hora (type INTEGER) (range 0 23)))
+
+; CONEIXEMENT DEL DOMINI | estatic
+(deftemplate reg-config
+  ; FAO-56: s'ha de regar "abans o en el moment" que s'esgota l'aigua facilment disponible
+  ; (RAW = p * TAW). A partir d'aquesta fraccio de p es pot anticipar el reg (hores fresques).
+  (slot anticipacio (type FLOAT) (default 0.75))
+  ; Diputacio de Barcelona (gestio de l'aigua en horts): si plou 10 mm o mes s'anul.la el reg.
+  (slot pluja-anulla (type FLOAT) (default 10.0))
+  ; FAO-56: la pluja de menys de ~0,2 ETo s'evapora i no compta.
+  (slot pluja-minima (type FLOAT) (default 2.0))
+  ; Diputacio de Barcelona: regar a primera hora del mati o a ultima hora de la tarda.
+  (slot hora-fresca-mati (type INTEGER) (default 8))
+  (slot hora-fresca-tarda (type INTEGER) (default 19)))
+
+; DERIVAT | Origen: elaboracio | Persistencia: 1 cicle | Modifica: DELIBERACIO
+; Quant necessita aigua un sector. anticipada = encara sense estres pero a prop del llindar.
+(deftemplate necessitat-reg
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot nivell (allowed-symbols anticipada mitja alt critic))
+  (slot esgotament (type FLOAT))     ; fraccio de l'aigua disponible (TAW) ja gastada, 0-1
+  (slot p (type FLOAT)))             ; fraccio esgotable sense estres del cultiu
+
+; CANDIDAT D'ACCIO | Origen: PROPOSTA | Persistencia: fins a decisio | Modifica: PROPOSTA/DECISIO/ACCIO
+; dosi = aigua neta que s'afegeix, en % de l'aigua disponible (TAW). Mai mes del que falta
+; per arribar a capacitat de camp (FAO-56: la resta es perdria per percolacio).
+(deftemplate operador-reg
+  (slot id (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot sector (type SYMBOL))
+  (slot nom (allowed-symbols no-regar regar-parcial regar-complet))
+  (slot dosi (type NUMBER) (default 0))
+  (slot estat (allowed-symbols proposat rebutjat seleccionat aplicat)))
+
+; CANDIDAT D'ACCIO | Origen: AVALUACIO | Persistencia: decisio actual
+(deftemplate preferencia-reg
+  (slot op (type SYMBOL))
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot tipus (allowed-symbols acceptable rebuig numerica))
+  (slot valor (type NUMBER) (default 0))
+  (slot font (type SYMBOL)))
+
+; RESULTAT | Origen: SELECCIO | Persistencia: 1 cicle | Modifica: DECISIO
+(deftemplate reg-seleccionat
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot nom (type SYMBOL))
+  (slot dosi (type NUMBER))
+  (slot motiu (type STRING) (default "")))
+
+; RESULTAT | Origen: APLICACIO | Persistencia: fins que el simulador consumeix l'ordre | Modifica: ACCIO
+; Ordre que s'envia a la valvula de reg del sector.
+(deftemplate ordre-reg
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot accio (allowed-symbols no-regar regar-parcial regar-complet))
+  (slot dosi (type NUMBER))
+  (slot motiu (type STRING)))
+
+; RESULTAT | Origen: EXPLICACIO | Persistencia: 1 cicle
+(deftemplate explicacio-reg
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot missatge (type STRING)))
 
 ; =============================================================================
 ; MEMORIA EPISODICA A LLARG TERMINI (equivalent a EpMem de Soar)
@@ -450,15 +529,19 @@
   (objectiu (id Obj_Produccio_Energia) (tipus produccio-energia) (restriccio tova) (estat inactiu))
   (objectiu (id Obj_Estabilitat) (tipus estabilitat) (restriccio tova) (estat inactiu))
   (objectiu (id Obj_Minimitzar_Moviment) (tipus minimitzar-moviment) (restriccio tova) (estat inactiu))
+  (objectiu (id Obj_Estalvi_Aigua) (tipus estalvi-aigua) (restriccio tova) (estat inactiu))   ; v1_9
 
   (prioritat (major Obj_Seguretat) (menor Obj_Produccio_Cultiu))
   (prioritat (major Obj_Produccio_Cultiu) (menor Obj_Produccio_Energia))
   (prioritat (major Obj_Produccio_Energia) (menor Obj_Estabilitat))
   (prioritat (major Obj_Estabilitat) (menor Obj_Minimitzar_Moviment))
+  (prioritat (major Obj_Produccio_Cultiu) (menor Obj_Estalvi_Aigua))                       ; v1_9
 
   (conflicte (objectiu-1 Obj_Produccio_Cultiu) (objectiu-2 Obj_Produccio_Energia))
   (conflicte (objectiu-1 Obj_Seguretat) (objectiu-2 Obj_Produccio_Energia))
   (conflicte (objectiu-1 Obj_Produccio_Energia) (objectiu-2 Obj_Minimitzar_Moviment))
+  (conflicte (objectiu-1 Obj_Produccio_Cultiu) (objectiu-2 Obj_Estalvi_Aigua))              ; v1_9
+  (reg-config)                                                                               ; v1_9
 
   ; quin risc activa quin objectiu (Risc_Dades no n'activa cap: obre un impasse)
   (activa (tipus-risc estres-hidric) (objectiu Obj_Produccio_Cultiu))
@@ -854,6 +937,7 @@
     (case produccio-energia then 3)
     (case estabilitat then 2)
     (case minimitzar-moviment then 1)
+    (case estalvi-aigua then 1)          ; v1_9
     (default 0)))
 
 ; baix dins l'optim, mitja fins a mig cami del limit absolut,
@@ -865,11 +949,11 @@
    else critic))))
 
 ; ?h = % d'aigua disponible que queda al sol; ?p = fraccio esgotable sense estres
-; v1_8: les comparacions porten un marge de 1e-9. Sense, 1 - 70/100 val 0.30000000000000004
+; v1_8/v1_9: les comparacions porten un marge de 1e-9. Sense, 1 - 70/100 val 0.30000000000000004
 ; (coma flotant) i l'enciam al limit exacte (70 %, p = 0.30) sortia amb estres mitja (E3, cas A07).
 (deffunction nivell-hidric (?h ?p)
-  (bind ?eps 1.0e-9)
   (bind ?e (- 1 (/ ?h 100)))
+  (bind ?eps 1.0e-9)
   (bind ?tram (/ (- 1 ?p) 3))
   (if (<= ?e (+ ?p ?eps)) then baix
    else (if (<= ?e (+ ?p ?tram ?eps)) then mitja
@@ -944,6 +1028,45 @@
       (bind ?m (abs (- ?o:angle-objectiu ?p:angle)))))
   ?m)
 
+
+; --- v1_9: funcions del reg ------------------------------------------------------
+
+(deffunction nivell-necessitat (?n)
+  (switch ?n
+    (case anticipada then 1)
+    (case mitja then 2)
+    (case alt then 3)
+    (case critic then 4)
+    (default 0)))
+
+; TRUE si l'hora del cicle es fresca (primera hora del mati o ultima de la tarda).
+(deffunction es-hora-fresca (?c)
+  (bind ?r FALSE)
+  (do-for-fact ((?m moment)) (eq ?m:cicle ?c)
+    (do-for-fact ((?k reg-config)) TRUE
+      (if (or (<= ?m:hora ?k:hora-fresca-mati) (>= ?m:hora ?k:hora-fresca-tarda))
+       then (bind ?r TRUE))))
+  ?r)
+
+; Puntuacio d'un operador de reg: suma de les seves valoracions numeriques.
+(deffunction puntuacio-reg (?s ?op ?c)
+  (bind ?total 0)
+  (do-for-all-facts ((?p preferencia-reg))
+      (and (eq ?p:sector ?s) (eq ?p:op ?op) (eq ?p:cicle ?c) (eq ?p:tipus numerica))
+    (bind ?total (+ ?total ?p:valor)))
+  ?total)
+
+; Dosi d'un operador de reg proposat (per desfer empats a favor de qui gasta menys aigua).
+(deffunction dosi-reg (?s ?op ?c)
+  (bind ?d 0)
+  (do-for-fact ((?o operador-reg)) (and (eq ?o:sector ?s) (eq ?o:cicle ?c) (eq ?o:nom ?op))
+    (bind ?d ?o:dosi))
+  ?d)
+
+(deffunction arrodoneix1 (?x) (/ (round (* 10 ?x)) 10))
+
+; Les dosis s'arrodoneixen cap avall: mai mes aigua de la que falta.
+(deffunction trunca1 (?x) (/ (integer (* 10 (+ ?x 1.0e-9))) 10))
 
 ; --- PERCEPCIO: comprovar que les dades son fiables -------------------------
 
@@ -1149,7 +1272,7 @@
 (defrule activa-objectius-base
   (declare (auto-focus TRUE))
   (fase (nom elaboracio))
-  ?o <- (objectiu (id ?id) (tipus produccio-energia|estabilitat|minimitzar-moviment) (estat inactiu))
+  ?o <- (objectiu (id ?id) (tipus produccio-energia|estabilitat|minimitzar-moviment|estalvi-aigua) (estat inactiu))
   =>
   (modify ?o (estat actiu)))
 
@@ -1162,6 +1285,41 @@
   ?o <- (objectiu (id ?id) (estat inactiu))
   =>
   (printout t "[ELABORACIO] El risc " ?tr " de " ?s " activa l'objectiu " ?id "." crlf)
+  (modify ?o (estat actiu)))
+
+; v1_9: quant necessita regar cada sector. Mateixa escala que l'estres hidric (FAO-56),
+; mes un nivell 'anticipada': encara no hi ha estres, pero ja s'ha gastat el 75 % de l'aigua
+; que el cultiu pot gastar sense patir (FAO-56: regar abans o en el moment d'arribar-hi).
+(defrule elabora-necessitat-reg
+  (declare (auto-focus TRUE))
+  (fase (nom elaboracio))
+  (cicle (numero ?c))
+  (sector (id ?s) (cultiu ?cu))
+  (cultiu (id ?cu) (tipus ?tc))
+  (llindars-cultiu (tipus ?tc) (fraccio-esgotament-p ?p))
+  (reg-config (anticipacio ?an))
+  (observacio (sector ?s) (cicle ?c) (humitat-sol ?h&:(numberp ?h)))
+  (not (necessitat-reg (sector ?s) (cicle ?c)))
+  =>
+  (bind ?e (max 0.0 (- 1 (/ ?h 100))))
+  (bind ?n (nivell-hidric ?h ?p))
+  (if (eq ?n baix) then
+    (bind ?n (if (>= (+ ?e 1.0e-9) (* ?an ?p)) then anticipada else cap)))
+  (if (neq ?n cap) then
+    (printout t "[ELABORACIO] " ?s ": s'ha gastat el " (arrodoneix1 (* 100 ?e)) "% de l'aigua disponible ("
+                ?tc " tolera " (* 100 ?p) "%). Necessitat de reg " ?n "." crlf)
+    (assert (necessitat-reg (sector ?s) (cicle ?c) (nivell ?n) (esgotament ?e) (p ?p)))
+    (assert (traca (pas ?c) (fase elaboracio)
+                   (missatge (str-cat ?s ": necessitat de reg " ?n))))))
+
+; v1_9: la necessitat de reg activa l'objectiu de protegir el cultiu (com ho fa l'estres hidric).
+(defrule activa-objectiu-per-necessitat-reg
+  (declare (auto-focus TRUE))
+  (fase (nom elaboracio))
+  (cicle (numero ?c))
+  (necessitat-reg (sector ?s) (cicle ?c))
+  ?o <- (objectiu (tipus produccio-cultiu) (estat inactiu))
+  =>
   (modify ?o (estat actiu)))
 
 (defrule elaboracio-a-proposta
@@ -1248,6 +1406,61 @@
   (assert (operador (id (sym-cat ?s -dades- ?c)) (cicle ?c) (sector ?s)
                     (nom sollicitar-dades) (angle-objectiu ?a) (estat proposat)))
   (assert (preferencia (op sollicitar-dades) (sector ?s) (cicle ?c) (tipus acceptable) (font R5))))
+
+; --- v1_9: PROPOSTA del reg -------------------------------------------------------
+; No regar sempre es una opcio.
+(defrule proposa-no-regar
+  (declare (auto-focus TRUE))
+  (fase (nom proposta))
+  (cicle (numero ?c))
+  (sector (id ?s))
+  (not (operador-reg (sector ?s) (cicle ?c) (nom no-regar)))
+  =>
+  (assert (operador-reg (id (sym-cat ?s -no-regar- ?c)) (cicle ?c) (sector ?s) (nom no-regar)
+                        (dosi 0) (estat proposat)))
+  (assert (preferencia-reg (op no-regar) (sector ?s) (cicle ?c) (tipus acceptable) (font RG1))))
+
+; Les dues dosis possibles:
+;   regar-complet: torna el sol a capacitat de camp (dosi = el que falta; FAO-56)
+;   regar-parcial: el deixa a mig cami del llindar d'estres (esgotament = p/2)
+(deffunction proposa-dosis-reg (?s ?c ?e ?p ?per)
+  (bind ?dc (trunca1 (* 100 ?e)))
+  (bind ?dp (trunca1 (* 100 (- ?e (/ ?p 2)))))
+  (printout t "[PROPOSTA] " ?s ": regar-complet (+" ?dc "% de l'aigua disponible) i regar-parcial (+"
+              ?dp "%), " ?per "." crlf)
+  (assert (operador-reg (id (sym-cat ?s -regar-complet- ?c)) (cicle ?c) (sector ?s) (nom regar-complet)
+                        (dosi ?dc) (estat proposat)))
+  (assert (preferencia-reg (op regar-complet) (sector ?s) (cicle ?c) (tipus acceptable) (font RG2)))
+  (if (> ?dp 0) then
+    (assert (operador-reg (id (sym-cat ?s -regar-parcial- ?c)) (cicle ?c) (sector ?s) (nom regar-parcial)
+                          (dosi ?dp) (estat proposat)))
+    (assert (preferencia-reg (op regar-parcial) (sector ?s) (cicle ?c) (tipus acceptable) (font RG3)))))
+
+; Amb estres hidric, es pot regar a qualsevol hora: amb degoteig, si el cultiu necessita
+; aigua es pot regar tambe de dia (Penn State Extension).
+(defrule proposa-regar
+  (declare (auto-focus TRUE))
+  (fase (nom proposta))
+  (cicle (numero ?c))
+  (necessitat-reg (sector ?s) (cicle ?c) (nivell mitja|alt|critic) (esgotament ?e) (p ?p))
+  (not (operador-reg (sector ?s) (cicle ?c) (nom regar-complet)))
+  =>
+  (proposa-dosis-reg ?s ?c ?e ?p "hi ha estres hidric"))
+
+; Sense estres pero a prop del llindar, nomes a les hores fresques (Diputacio de Barcelona) i
+; nomes per als cultius sensibles. La vinya (sensibilitat baixa) no s'anticipa: un estres
+; moderat li va be (reg deficitari controlat, AWRI) i es rega quan l'estres ja hi es.
+(defrule proposa-regar-anticipat
+  (declare (auto-focus TRUE))
+  (fase (nom proposta))
+  (cicle (numero ?c))
+  (necessitat-reg (sector ?s) (cicle ?c) (nivell anticipada) (esgotament ?e) (p ?p))
+  (sector (id ?s) (cultiu ?cu))
+  (cultiu (id ?cu) (sensibilitat ~baix))
+  (test (es-hora-fresca ?c))
+  (not (operador-reg (sector ?s) (cicle ?c) (nom regar-complet)))
+  =>
+  (proposa-dosis-reg ?s ?c ?e ?p "a prop del llindar i hora fresca"))
 
 (defrule proposta-a-avaluacio
   (declare (salience -10) (auto-focus TRUE))
@@ -1441,6 +1654,113 @@
   (assert (traca (pas ?c) (fase avaluacio)
                  (missatge (str-cat ?s ": " ?op " " ?val " per memoria episodica (episodi " ?m ")")))))
 
+; --- v1_9: AVALUACIO del reg ------------------------------------------------------
+
+; Restriccio dura: si es preveu prou pluja no es rega (Diputacio de Barcelona: 10 mm),
+; llevat que l'estres sigui critic (el cultiu no pot esperar que plogui).
+(defrule avalua-reg-pluja-forta
+  (declare (auto-focus TRUE))
+  (fase (nom avaluacio))
+  (cicle (numero ?c))
+  (reg-config (pluja-anulla ?pa))
+  (prediccio (sector ?s) (cicle ?c) (pluja ?pl&:(numberp ?pl)&:(>= ?pl ?pa)))
+  (operador-reg (sector ?s) (cicle ?c) (nom ?op&regar-parcial|regar-complet))
+  (not (necessitat-reg (sector ?s) (cicle ?c) (nivell critic)))
+  (not (preferencia-reg (op ?op) (sector ?s) (cicle ?c) (tipus rebuig)))
+  =>
+  (printout t "[AVALUACIO] " ?s ": REBUIG de " ?op " (es preveuen " ?pl " mm de pluja)." crlf)
+  (assert (preferencia-reg (op ?op) (sector ?s) (cicle ?c) (tipus rebuig) (font AVR1-pluja-prevista)))
+  (assert (traca (pas ?c) (fase avaluacio)
+                 (missatge (str-cat ?s ": " ?op " rebutjat, es preveuen " ?pl " mm de pluja")))))
+
+; Com mes necessitat, mes val regar (objectiu de protegir el cultiu).
+(defrule avalua-reg-cultiu
+  (declare (auto-focus TRUE))
+  (fase (nom avaluacio))
+  (cicle (numero ?c))
+  (objectiu (tipus produccio-cultiu) (estat actiu))
+  (necessitat-reg (sector ?s) (cicle ?c) (nivell ?n))
+  (operador-reg (sector ?s) (cicle ?c) (nom ?op&regar-parcial|regar-complet))
+  (not (preferencia-reg (op ?op) (sector ?s) (cicle ?c) (font AVR2-cultiu)))
+  =>
+  (bind ?v (* (pes-objectiu produccio-cultiu) (nivell-necessitat ?n)))
+  (printout t "[AVALUACIO] " ?s ": " ?op " +" ?v " (cultiu, necessitat de reg " ?n ")." crlf)
+  (assert (preferencia-reg (op ?op) (sector ?s) (cicle ?c) (tipus numerica) (valor ?v) (font AVR2-cultiu))))
+
+; Quina dosi segons la sensibilitat del cultiu: els sensibles (enciam: p petita i arrels
+; someres, FAO-56 taula 22) millor plens; la vinya, reg deficitari (AWRI).
+(defrule avalua-reg-sensibilitat
+  (declare (auto-focus TRUE))
+  (fase (nom avaluacio))
+  (cicle (numero ?c))
+  (sector (id ?s) (cultiu ?cu))
+  (cultiu (id ?cu) (tipus ?tc) (sensibilitat ?sb))
+  (operador-reg (sector ?s) (cicle ?c) (nom ?op&regar-parcial|regar-complet))
+  (not (preferencia-reg (op ?op) (sector ?s) (cicle ?c) (font AVR3-sensibilitat)))
+  =>
+  (bind ?v 0)
+  (if (eq ?op regar-complet) then
+    (if (or (eq ?sb alt) (eq ?sb critic)) then (bind ?v 2))
+    (if (eq ?sb mitja) then (bind ?v 1)))
+  (if (and (eq ?op regar-parcial) (eq ?sb baix)) then (bind ?v 2))
+  (if (> ?v 0) then
+    (printout t "[AVALUACIO] " ?s ": " ?op " +" ?v " (" ?tc ", sensibilitat " ?sb ")." crlf)
+    (assert (preferencia-reg (op ?op) (sector ?s) (cicle ?c) (tipus numerica) (valor ?v)
+                             (font AVR3-sensibilitat)))))
+
+; A les hores fresques es perd menys aigua per evaporacio (Diputacio de Barcelona; Clemson).
+(defrule avalua-reg-hora-fresca
+  (declare (auto-focus TRUE))
+  (fase (nom avaluacio))
+  (cicle (numero ?c))
+  (operador-reg (sector ?s) (cicle ?c) (nom ?op&regar-parcial|regar-complet))
+  (test (es-hora-fresca ?c))
+  (not (preferencia-reg (op ?op) (sector ?s) (cicle ?c) (font AVR4-hora)))
+  =>
+  (printout t "[AVALUACIO] " ?s ": " ?op " +1 (hora fresca)." crlf)
+  (assert (preferencia-reg (op ?op) (sector ?s) (cicle ?c) (tipus numerica) (valor 1) (font AVR4-hora))))
+
+; Si es preveu una mica de pluja, no cal omplir el sol: l'aigua de mes es perdria.
+(defrule avalua-reg-pluja-moderada
+  (declare (auto-focus TRUE))
+  (fase (nom avaluacio))
+  (cicle (numero ?c))
+  (reg-config (pluja-minima ?pm))
+  (prediccio (sector ?s) (cicle ?c) (pluja ?pl&:(numberp ?pl)&:(>= ?pl ?pm)))
+  (operador-reg (sector ?s) (cicle ?c) (nom regar-complet))
+  (not (preferencia-reg (op regar-complet) (sector ?s) (cicle ?c) (font AVR5-pluja)))
+  =>
+  (printout t "[AVALUACIO] " ?s ": regar-complet -3 (es preveuen " ?pl " mm de pluja)." crlf)
+  (assert (preferencia-reg (op regar-complet) (sector ?s) (cicle ?c) (tipus numerica) (valor -3)
+                           (font AVR5-pluja))))
+
+; La bomba gasta energia (0,28-0,68 kWh/m3, Hardy & Garrido): si el sector no cobreix la seva
+; demanda, regar ara costa. Conflicte entre protegir el cultiu i l'energia.
+(defrule avalua-reg-energia
+  (declare (auto-focus TRUE))
+  (fase (nom avaluacio))
+  (cicle (numero ?c))
+  (objectiu (tipus produccio-energia) (estat actiu))
+  (energia (sector ?s) (cicle ?c) (produccio-actual ?prod) (demanda ?dem&:(< ?prod ?dem)))
+  (operador-reg (sector ?s) (cicle ?c) (nom ?op&regar-parcial|regar-complet))
+  (not (preferencia-reg (op ?op) (sector ?s) (cicle ?c) (font AVR6-bomba)))
+  =>
+  (printout t "[AVALUACIO] " ?s ": " ?op " -1 (la bomba gasta energia i el sector no cobreix la demanda)." crlf)
+  (assert (preferencia-reg (op ?op) (sector ?s) (cicle ?c) (tipus numerica) (valor -1) (font AVR6-bomba))))
+
+; No regar estalvia aigua.
+(defrule avalua-reg-estalvi
+  (declare (auto-focus TRUE))
+  (fase (nom avaluacio))
+  (cicle (numero ?c))
+  (objectiu (tipus estalvi-aigua) (estat actiu))
+  (operador-reg (sector ?s) (cicle ?c) (nom no-regar))
+  (not (preferencia-reg (op no-regar) (sector ?s) (cicle ?c) (font AVR7-estalvi)))
+  =>
+  (bind ?v (pes-objectiu estalvi-aigua))
+  (printout t "[AVALUACIO] " ?s ": no-regar +" ?v " (estalvi d'aigua)." crlf)
+  (assert (preferencia-reg (op no-regar) (sector ?s) (cicle ?c) (tipus numerica) (valor ?v) (font AVR7-estalvi))))
+
 (defrule avaluacio-a-seleccio
   (declare (salience -10) (auto-focus TRUE))
   ?f <- (fase (nom avaluacio))
@@ -1460,10 +1780,6 @@
 ;   - La funcio de valor Q(situacio, operador) es la SUMA de rajoles Q(tret, operador),
 ;     cada una amb un sol tret de la situacio (tile / coarse coding, Wang & Laird 2007).
 ;     Aixi s'apren de trets que es repeteixen encara que la situacio exacta no torni.
-;   - Una suma de trets sols no pot representar interaccions ("ombra es bo amb radiacio
-;     alta si fa calor, pero no si fa fred"; Sutton & Barto 2018, sec. 9.5). Per aixo hi ha
-;     tambe rajoles de PARELLES de trets: risc x risc i risc x cobertura (tile coding
-;     jerarquic: les rajoles d'un tret aprenen de pressa, les parelles corregeixen).
 ;   - Els chunks apresos en un empat son una rajola mes (tret = nom del chunk), amb
 ;     valor inicial 'prior' tret del subestat, que despres l'experiencia ajusta.
 ;   - Q nomes desfa empats entre els candidats amb mes puntuacio: com a Soar, el reforç
@@ -1496,38 +1812,9 @@
   (do-for-fact ((?v rl-valor)) (and (eq ?v:tret ?tret) (eq ?v:op ?op)) (bind ?r ?v:q))
   ?r)
 
-(deffunction activa-parelles (?v)
-  (do-for-all-facts ((?k rl-config)) TRUE (modify ?k (parelles ?v)))
-  ?v)
-
-(deffunction rl-prefix (?t ?prefix)
-  (eq (str-index ?prefix (str-cat ?t)) 1))
-
-; Parella en ordre canonic (l'ordre dels riscos a la memoria de treball pot variar).
-(deffunction rl-parella (?a ?b)
-  (if (< (str-compare ?a ?b) 0) then (sym-cat ?a + ?b) else (sym-cat ?b + ?a)))
-
-; Parelles risc x risc i risc x cobertura dels trets d'una situacio.
-(deffunction rl-parelles (?trets)
-  (bind ?riscos (create$))
-  (bind ?cob (create$))
-  (progn$ (?t ?trets)
-    (if (rl-prefix ?t "risc=") then (bind ?riscos (create$ ?riscos ?t)))
-    (if (rl-prefix ?t "cobertura=") then (bind ?cob (create$ ?cob ?t))))
-  (bind ?r (create$))
-  (loop-for-count (?i 1 (length$ ?riscos))
-    (loop-for-count (?j (+ ?i 1) (length$ ?riscos))
-      (bind ?r (create$ ?r (rl-parella (nth$ ?i ?riscos) (nth$ ?j ?riscos)))))
-    (progn$ (?k ?cob)
-      (bind ?r (create$ ?r (sym-cat (nth$ ?i ?riscos) + ?k)))))
-  ?r)
-
-; Rajoles actives per a ?op: trets de la situacio (i les seves parelles) + chunks
-; d'empat que l'han recomanat.
+; Rajoles actives per a ?op: trets de la situacio + chunks d'empat que l'han recomanat.
 (deffunction rl-trets (?s ?op ?c)
-  (bind ?sit (epmem-cue-situacio ?s ?c))
-  (bind ?t (create$ tot ?sit))
-  (if (eq (rl-param parelles) on) then (bind ?t (create$ ?t (rl-parelles ?sit))))
+  (bind ?t (create$ tot (epmem-cue-situacio ?s ?c)))
   (do-for-all-facts ((?p preferencia))
       (and (eq ?p:sector ?s) (eq ?p:cicle ?c) (eq ?p:op ?op) (eq ?p:tipus rl) (rl-es-chunk ?p:font))
     (bind ?t (create$ ?t ?p:font)))
@@ -1754,6 +2041,53 @@
   (assert (operador-seleccionat (sector ?s) (cicle ?c) (nom ?op) (motiu ?motiu)))
   (assert (traca (pas ?c) (fase seleccio)
                  (missatge (str-cat ?s ": seleccionat " ?op ", " ?motiu)))))
+
+; --- v1_9: SELECCIO del reg ---------------------------------------------------------
+; Mateix procediment que el panell: es descarten els rebutjats i es tria la valoracio mes
+; alta. Si dos operadors empaten, guanya el que gasta menys aigua (objectiu estalvi-aigua);
+; per aixo el reg no te impasses.
+
+(defrule descarta-reg-rebutjat
+  (declare (auto-focus TRUE))
+  (fase (nom seleccio))
+  (cicle (numero ?c))
+  ?o <- (operador-reg (sector ?s) (cicle ?c) (nom ?op) (estat proposat))
+  (preferencia-reg (sector ?s) (cicle ?c) (op ?op) (tipus rebuig) (font ?f))
+  =>
+  (printout t "[SELECCIO] " ?s ": " ?op " queda descartat (" ?f ")." crlf)
+  (modify ?o (estat rebutjat)))
+
+(defrule selecciona-reg
+  (declare (auto-focus TRUE))
+  (fase (nom seleccio))
+  (cicle (numero ?c))
+  ?o <- (operador-reg (sector ?s) (cicle ?c) (nom ?op) (dosi ?d) (estat proposat))
+  ; abans cal haver descartat els rebutjats
+  (not (and (operador-reg (sector ?s) (cicle ?c) (nom ?r) (estat proposat))
+            (preferencia-reg (sector ?s) (cicle ?c) (op ?r) (tipus rebuig))))
+  ; ningu el supera
+  (not (and (operador-reg (sector ?s) (cicle ?c) (nom ?x&~?op) (estat proposat))
+            (test (> (puntuacio-reg ?s ?x ?c) (puntuacio-reg ?s ?op ?c)))))
+  ; si algu l'iguala, ha de gastar mes aigua
+  (not (and (operador-reg (sector ?s) (cicle ?c) (nom ?x&~?op) (dosi ?dx&:(< ?dx ?d)) (estat proposat))
+            (test (= (puntuacio-reg ?s ?x ?c) (puntuacio-reg ?s ?op ?c)))))
+  (not (reg-seleccionat (sector ?s) (cicle ?c)))
+  =>
+  (bind ?p (puntuacio-reg ?s ?op ?c))
+  (bind ?motiu (str-cat "maxima valoracio (" ?p " punts)"))
+  (do-for-fact ((?x operador-reg))
+      (and (eq ?x:sector ?s) (eq ?x:cicle ?c) (neq ?x:nom ?op) (eq ?x:estat proposat)
+           (= (puntuacio-reg ?s ?x:nom ?c) ?p))
+    (bind ?motiu (str-cat "empat amb " ?x:nom " (" ?p " punts) desfet per estalvi d'aigua")))
+  (if (and (not (any-factp ((?x operador-reg)) (and (eq ?x:sector ?s) (eq ?x:cicle ?c)
+                                                    (neq ?x:nom ?op) (eq ?x:estat proposat))))
+           (any-factp ((?x operador-reg)) (and (eq ?x:sector ?s) (eq ?x:cicle ?c) (eq ?x:estat rebutjat))))
+   then (bind ?motiu "unica opcio que compleix les restriccions dures"))
+  (printout t "[SELECCIO] " ?s ": reg " ?op ". Criteri: " ?motiu "." crlf)
+  (modify ?o (estat seleccionat))
+  (assert (reg-seleccionat (sector ?s) (cicle ?c) (nom ?op) (dosi ?d) (motiu ?motiu)))
+  (assert (traca (pas ?c) (fase seleccio)
+                 (missatge (str-cat ?s ": reg " ?op ", " ?motiu)))))
 
 (defrule seleccio-a-impas
   (declare (salience -10) (auto-focus TRUE))
@@ -2274,6 +2608,22 @@
   (assert (traca (pas ?c) (fase aplicacio)
                  (missatge (str-cat ?s ": ordre " ?op " a " ?a " graus")))))
 
+; v1_9: ordre a la valvula de reg.
+(defrule aplica-reg
+  (declare (auto-focus TRUE))
+  (fase (nom aplicacio))
+  (cicle (numero ?c))
+  (reg-seleccionat (sector ?s) (cicle ?c) (nom ?op) (dosi ?d) (motiu ?m))
+  ?o <- (operador-reg (sector ?s) (cicle ?c) (nom ?op) (estat seleccionat))
+  (not (ordre-reg (sector ?s) (cicle ?c)))
+  =>
+  (if (neq ?op no-regar) then
+    (printout t "[APLICACIO] " ?s ": ORDRE DE REG " ?op " -> +" ?d "% de l'aigua disponible." crlf))
+  (modify ?o (estat aplicat))
+  (assert (ordre-reg (sector ?s) (cicle ?c) (accio ?op) (dosi ?d) (motiu ?m)))
+  (assert (traca (pas ?c) (fase aplicacio)
+                 (missatge (str-cat ?s ": reg " ?op " " ?d "%")))))
+
 (defrule aplicacio-a-explicacio
   (declare (salience -10) (auto-focus TRUE))
   ?f <- (fase (nom aplicacio))
@@ -2314,6 +2664,37 @@
               "   Descartats:" ?descartats crlf
               "   Criteri:    " ?m crlf)
   (assert (explicacio (sector ?s) (cicle ?c) (missatge ?txt))))
+
+; v1_9: explicacio del reg (nomes s'escriu quan hi havia alguna opcio de regar).
+(defrule explica-reg
+  (declare (auto-focus TRUE))
+  (fase (nom explicacio))
+  (cicle (numero ?c))
+  (ordre-reg (sector ?s) (cicle ?c) (accio ?op) (dosi ?d) (motiu ?m))
+  (not (explicacio-reg (sector ?s) (cicle ?c)))
+  =>
+  (bind ?nec "cap")
+  (do-for-fact ((?n necessitat-reg)) (and (eq ?n:sector ?s) (eq ?n:cicle ?c))
+    (bind ?nec (str-cat ?n:nivell " (esgotat " (arrodoneix1 (* 100 ?n:esgotament)) "%)")))
+  (bind ?candidats "")
+  (bind ?descartats "")
+  (bind ?n 0)
+  (do-for-all-facts ((?o operador-reg)) (and (eq ?o:sector ?s) (eq ?o:cicle ?c))
+    (bind ?n (+ ?n 1))
+    (if (eq ?o:estat rebutjat)
+     then (bind ?descartats (str-cat ?descartats " " ?o:nom))
+     else (bind ?candidats (str-cat ?candidats " " ?o:nom "(" (puntuacio-reg ?s ?o:nom ?c) ")"))))
+  (if (eq ?descartats "") then (bind ?descartats " cap"))
+  (bind ?txt (str-cat ?op " (+" ?d "%). Necessitat: " ?nec ". Candidats:" ?candidats
+                      ". Descartats:" ?descartats ". Criteri: " ?m "."))
+  (if (> ?n 1) then
+    (printout t crlf "[EXPLICACIO REG] " ?s ", cicle " ?c crlf
+                "   Accio:      " ?op " (+" ?d "% de l'aigua disponible)" crlf
+                "   Necessitat: " ?nec crlf
+                "   Candidats: " ?candidats crlf
+                "   Descartats:" ?descartats crlf
+                "   Criteri:    " ?m crlf))
+  (assert (explicacio-reg (sector ?s) (cicle ?c) (missatge ?txt))))
 
 (defrule explicacio-a-monitoratge
   (declare (salience -10) (auto-focus TRUE))

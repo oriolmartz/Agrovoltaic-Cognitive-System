@@ -31,7 +31,7 @@ ESPERA_MAXIMA = 180   # segons sense cap feina acabada -> es considera penjat
 
 
 def mapa(funcio, elements, processos=None, initializer=None, initargs=(), titol="", cada=None,
-         espera_maxima=ESPERA_MAXIMA):
+         espera_maxima=ESPERA_MAXIMA, mida=None):
     """Com Pool.map, en ordre, pero amb progres, Ctrl+C i deteccio de processos penjats."""
     elements = list(elements)
     n = len(elements)
@@ -40,7 +40,8 @@ def mapa(funcio, elements, processos=None, initializer=None, initargs=(), titol=
     t0 = time.time()
     if titol:
         print(f"{titol}: {n} feines amb {processos} processos", flush=True)
-    mida = max(1, min(50, n // (processos * 8) or 1))
+    # mida = feines per tros; les feines llargues (blocs de dies seguits) van d'una en una
+    mida = mida or max(1, min(50, n // (processos * 8) or 1))
     trossos = [elements[i:i + mida] for i in range(0, n, mida)]
     fets = [0]
     seguent = [cada]

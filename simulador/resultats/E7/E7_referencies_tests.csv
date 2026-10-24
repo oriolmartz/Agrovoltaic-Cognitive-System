@@ -1,0 +1,25 @@
+metrica,A,B,n,mitjana A,mitjana B,A-B,IC95,p (Holm),efecte,Friedman p
+energia_kwh,fix,seguidor,48,340.52,396.67,-56.15,"(-59.065, -53.083)",2.1e-14,-1.00 (gran),1.4e-21
+energia_kwh,fix,soar,48,340.52,367.76,-27.24,"(-29.135, -25.274)",2.1e-14,-1.00 (gran),1.4e-21
+energia_kwh,seguidor,soar,48,396.67,367.76,28.91,"(25.521, 32.399)",2.1e-14,+1.00 (gran),1.4e-21
+h_estres_rad,fix,seguidor,48,12.62,15.0,-2.38,"(-2.646, -2.104)",4.5e-09,-1.00 (gran),3.5e-19
+h_estres_rad,fix,soar,48,12.62,13.73,-1.1,"(-1.312, -0.896)",5.2e-08,-0.95 (gran),3.5e-19
+h_estres_rad,seguidor,soar,48,15.0,13.73,1.27,"(1.021, 1.542)",5.2e-08,+0.95 (gran),3.5e-19
+h_estres_calor,fix,seguidor,48,22.88,23.44,-0.56,"(-0.771, -0.375)",3.3e-05,-0.70 (gran),2e-08
+h_estres_calor,fix,soar,48,22.88,23.27,-0.4,"(-0.583, -0.229)",0.00035,-0.55 (gran),2e-08
+h_estres_calor,seguidor,soar,48,23.44,23.27,0.17,"(0.062, 0.271)",0.0047,+0.30 (mitja),2e-08
+h_calor_critica,fix,seguidor,48,6.75,7.02,-0.27,"(-0.417, -0.146)",0.00062,-0.46 (mitja),2.1e-06
+h_calor_critica,fix,soar,48,6.75,6.73,0.02,"(0.0, 0.062)",0.32,+0.04 (negligible),2.1e-06
+h_calor_critica,seguidor,soar,48,7.02,6.73,0.29,"(0.167, 0.438)",0.00055,+0.49 (mitja),2.1e-06
+moviment_graus,fix,seguidor,48,0.0,497.76,-497.76,"(-504.875, -491.925)",4.7e-11,-1.00 (gran),2.6e-19
+moviment_graus,fix,soar,48,0.0,418.58,-418.58,"(-438.417, -398.112)",3.1e-09,-1.00 (gran),2.6e-19
+moviment_graus,seguidor,soar,48,497.76,418.58,79.18,"(59.546, 99.4)",1.3e-07,+0.88 (gran),2.6e-19
+exposicions,fix,seguidor,48,0.0,1.83,-1.83,"(-3.188, -0.75)",0.0061,-0.43 (mitja),2.1e-05
+exposicions,fix,soar,48,0.0,0.1,-0.1,"(-0.25, 0.0)",0.1,-0.12 (petit),2.1e-05
+exposicions,seguidor,soar,48,1.83,0.1,1.73,"(0.667, 3.083)",0.0065,+0.40 (mitja),2.1e-05
+h_estres_aigua,fix,seguidor,48,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+h_estres_aigua,fix,soar,48,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+h_estres_aigua,seguidor,soar,48,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+aigua_reg_m3,fix,seguidor,48,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),3.1e-07
+aigua_reg_m3,fix,soar,48,0.0,1.16,-1.16,"(-1.69, -0.697)",0.0019,-0.52 (gran),3.1e-07
+aigua_reg_m3,seguidor,soar,48,0.0,1.16,-1.16,"(-1.69, -0.697)",0.0019,-0.52 (gran),3.1e-07

@@ -3,8 +3,8 @@
 Cada cicle de decisio es una hora. A l'hora h:
   1. el controlador VEU el que han mesurat els sensors l'hora anterior (h-1) i la
      previsio per a l'hora h (valor real + soroll);
-  2. decideix i ordena un angle per sector;
-  3. els actuadors mouen els panells (o fallen);
+  2. decideix i ordena un angle per sector (i, a partir de v1_9, si cal regar);
+  3. els actuadors mouen els panells (o fallen) i s'aplica el reg;
   4. el simulador calcula el que PASSA de debo durant l'hora h amb l'angle real:
      energia, llum i temperatura del cultiu, aigua al sol, i si el panell estava
      exposat a una ratxa perillosa.
@@ -102,6 +102,7 @@ class Entrada:
     energia: dict       # sector -> {produccio, demanda}
     panells: dict       # id -> {angle, angle-optim-produccio, disponible, estat-mecanic}
     sensors: dict       # sector -> {sensor: True si la lectura ha arribat}
+    hora: int = 12      # hora local del cicle
 
 
 class ControladorSOAR:
@@ -139,6 +140,7 @@ class ControladorSOAR:
                 ok = e.sensors[s][tp]
                 c.escriu_sensor(s, tp, operatiu=True, qualitat="valida" if ok else "absent", c=n)
             c.afegeix_entrades(n, s, e.obs[s], e.pred.get(s), e.energia[s])
+        c.escriu_moment(n, e.hora)
         t0 = time.perf_counter()
         r = c.executa_cicle()
         ms = 1000 * (time.perf_counter() - t0)
@@ -155,6 +157,8 @@ class ControladorSOAR:
                 "us_chunk": any(f.startswith("chunk-") for f, _, _ in fonts),
                 "us_rl": any(f == "RL" for f, _, _ in fonts),
                 "riscos": ";".join(f"{t}={n}" for t, n in sorted(r.riscos.get(s, []))),
+                "reg": (r.reg[s][0][0], r.reg[s][0][1]) if r.reg.get(s) else None,
+                "reg_motiu": r.reg[s][0][2] if r.reg.get(s) else "",
                 "invariants": self._invariants(e, r, s),
             }
         out["_cicle"] = {"regles": r.regles_disparades, "ms": ms, "sortida": r.sortida,
@@ -191,6 +195,15 @@ class ControladorSOAR:
             ko.append("I6-fase")
         if getattr(self, "_cicle_desquadrat", False):
             ko.append("I9-cicle-no-tancat")
+        if self.c.te_reg:                                   # v1_9: decisio de reg
+            regs = r.reg.get(s, [])
+            if len(regs) != 1:
+                ko.append("I10-una-ordre-reg")
+            h = e.obs[s].get("humitat-sol")
+            if regs and h is not None and regs[0][1] > 100 - h + 1e-6:
+                ko.append("I11-dosi-excessiva")
+            if regs and regs[0][0] in r.reg_rebutjats.get(s, set()):
+                ko.append("I12-reg-rebutjat")
         return ",".join(ko)
 
     def coneixement(self) -> dict:
@@ -215,7 +228,7 @@ class _Basic:
             pan = {**self.domini["panells"][pid], **e.panells[pid]}
             acc, ang = self.angle(s, e, pan)
             out[s] = {"accio": acc, "angle": ang, "motiu": self.nom, "impas": "", "us_chunk": False,
-                      "us_rl": False, "riscos": "", "invariants": ""}
+                      "us_rl": False, "riscos": "", "reg": None, "reg_motiu": "", "invariants": ""}
         out["_cicle"] = {"regles": 0, "ms": 0.0, "chunks_nous": [], "chunks_nous_tipus": [],
                          "fase_final": "", "fets": 0, "regles_noms": []}
         return out
@@ -271,6 +284,7 @@ class Simulacio:
         self.aigua_mm = {s: self.taw[s] * hcfg["inicial_pct"] / 100 for s in SECTORS}
         self.ultima = None                                          # l'hora anterior (el que veuen els sensors)
         self.cicle = 1
+        self._acc = {s: {"net": 0.0, "brut": 0.0, "kwh": 0.0, "perc": 0.0} for s in SECTORS}
 
     def _fila(self, t: pd.Timestamp) -> dict:
         m = self.cfg["modificadors"]
@@ -308,16 +322,72 @@ class Simulacio:
             t_c = fisica.temperatura_cultiu(fila["temp"], rad_c, aigua_abans,
                                             k_rad=mod.get("k_rad", 0.006), k_sec=mod.get("k_sec", 2.0))
             if hcfg["mode"] == "balanc":
-                self.aigua_mm[s] = fisica.pas_balanc_hidric(self.aigua_mm[s], self.taw[s], fila["et0"],
-                                                            sc["kc"], fila["pluja"], tau, sc["gcr"])
-                reg = hcfg["reg"]
-                if reg["actiu"] and t.hour == reg["hora"] and self._aigua_pct(s) < reg["llindar_pct"]:
-                    self.aigua_mm[s] = self.taw[s] * reg["fins_pct"] / 100
+                p_cultiu = self.ll[s]["fraccio-esgotament-p"] if hcfg.get("ks", True) else None
+                self.aigua_mm[s], perc, _ = fisica.pas_balanc_hidric(
+                    self.aigua_mm[s], self.taw[s], fila["et0"], sc["kc"], fila["pluja"], tau, sc["gcr"], p_cultiu)
+                self._acc[s]["perc"] += perc
             out["sectors"][s] = {"angle": a, "rad_cultiu": rad_c, "t_cultiu": t_c, "P_kw": p,
                                  "P_opt_kw": p_opt, "aigua_pct": self._aigua_pct(s, fila)}
         return out
 
+    # ------------------------------------------------------------------ reg
+    def mode_reg(self, decisio=None) -> str:
+        """Qui decideix el reg: 'soar' (les ordres del CLIPS, v1_9), 'finca' (reg fix de la finca:
+        a l'hora fixada, si l'aigua es per sota del llindar, s'omple fins a fins_pct), 'fao' (reg
+        FAO-56 de llibre: a l'hora fixada, si s'ha esgotat la RAW, s'omple fins a capacitat de camp)
+        o 'cap' (sense aigua de reg). 'auto' = 'soar' si el controlador dona ordres de reg i, si no,
+        'finca'."""
+        reg = self.cfg["humitat"]["reg"]
+        mode = reg.get("mode", "auto")
+        if reg.get("actiu") is False:          # escenaris antics
+            mode = "cap"
+        if mode == "auto":
+            if decisio is None:                # hores de nit: el mateix que l'ultima decisio
+                return getattr(self, "_ultim_mode_reg", "finca")
+            te = any(decisio[s].get("reg") is not None for s in SECTORS)
+            mode = "soar" if te else "finca"
+            self._ultim_mode_reg = mode
+        return mode
+
+    def _rega(self, t, decisio=None):
+        """Aplica el reg de l'hora t (abans del balanc de l'hora). Les dosis son netes (el que
+        arriba al sol); l'aigua bruta inclou l'eficiencia del degoteig i la bomba en gasta energia."""
+        if self.cfg["humitat"]["mode"] != "balanc":
+            return
+        reg = self.cfg["humitat"]["reg"]
+        mode = self.mode_reg(decisio)
+        for s in SECTORS:
+            falta = self.taw[s] - self.aigua_mm[s]
+            net = 0.0
+            if mode == "soar" and decisio is not None and decisio[s].get("reg"):
+                acc, dosi = decisio[s]["reg"]
+                if acc != "no-regar":
+                    net = dosi / 100.0 * self.taw[s]
+            elif mode == "finca" and t.hour == reg["hora"] and self._aigua_pct(s) < reg["llindar_pct"]:
+                net = self.taw[s] * reg["fins_pct"] / 100 - self.aigua_mm[s]
+            elif mode == "fao" and t.hour == reg["hora"]:
+                if self._aigua_pct(s) <= 100 * (1 - self.ll[s]["fraccio-esgotament-p"]) + 1e-9:
+                    net = falta
+            net = max(0.0, min(net, falta))
+            if net <= 0:
+                continue
+            self.aigua_mm[s] += net
+            brut = net / reg.get("eficiencia", 0.85)
+            m3 = brut * self.cfg["sectors"][s].get("area_m2", 250.0) / 1000.0
+            a = self._acc[s]
+            a["net"] += net
+            a["brut"] += brut
+            a["kwh"] += m3 * reg.get("kwh_m3", 0.48)
+
     # ------------------------------------------------------------------ percepcio (el que veu el controlador)
+    def _pluja_prevista(self, t) -> float:
+        """Pluja real de les proximes N hores (la previsio n'hi afegeix soroll)."""
+        if not hasattr(self, "_pluja_n"):
+            n = int(self.cfg["soroll"].get("previsio_pluja_hores", 12))
+            pl = self.meteo["pluja"].fillna(0.0) * self.cfg["modificadors"]["pluja_factor"]
+            self._pluja_n = pl[::-1].rolling(n, min_periods=1).sum()[::-1]
+        return float(self._pluja_n.get(t, 0.0))
+
     def _sensors(self, s):
         sc = self.cfg["sensors"]
         ok = {tp: bool(self.rng.random() >= sc["p_absent"].get(tp, 0.0)) for tp in SENSORS}
@@ -353,7 +423,7 @@ class Simulacio:
                 pred[s] = {"radiacio": round(fila["ghi"] * lnv(sn["previsio_rad_sigma"]), 1),
                            "temperatura": round(fila["temp"] + self.rng.normal(0, sn["previsio_temp_sigma"]), 1),
                            "vent": round(fila["vent"] * lnv(sn["previsio_vent_sigma"]), 1),
-                           "pluja": round(fila["pluja"], 1)}
+                           "pluja": round(self._pluja_prevista(t) * lnv(sn.get("previsio_pluja_sigma", 0.3)), 1)}
             hora = t.hour - 0.5
             ene[s] = {"produccio": round(ps["P_kw"], 2) if ps else 0.0,
                       "demanda": round(fisica.demanda_kw(hora, sc["demanda_base_kw"], sc["demanda_pic_kw"]), 2)}
@@ -365,7 +435,7 @@ class Simulacio:
                 disp, mec = "no", "avariat"
             panells[pid] = {"angle": round(self.angle[pid], 2), "angle-optim-produccio": round(opt_ara, 1),
                             "disponible": disp, "estat-mecanic": mec}
-        return Entrada(self.cicle, obs, pred, ene, panells, sens)
+        return Entrada(self.cicle, obs, pred, ene, panells, sens, hora=t.hour)
 
     # ------------------------------------------------------------------ actuadors
     def _panell_avariat(self, pid):
@@ -414,6 +484,7 @@ class Simulacio:
                     continue
                 fila = self._fila(t)
                 if not (h0 <= t.hour <= h1):
+                    self._rega(t)
                     fis = self._hora_fisica(t, fila)
                     self.ultima = {"fila": fila, **fis}
                     continue
@@ -422,6 +493,7 @@ class Simulacio:
                 if traca:
                     self._escriu_traca(traca, t, ent, dec)
                 mov = self._actua(dec)
+                self._rega(t, dec)
                 fis = self._hora_fisica(t, fila)
                 files += self._registres(dia, t, fila, ent, dec, fis, mov, ctrl, etiqueta)
                 self.ultima = {"fila": fila, **fis}
@@ -465,6 +537,9 @@ class Simulacio:
             fs = fis["sectors"][s]
             d = dec[s]
             estowat = abs(fs["angle"] - pan["angle-seguretat"]) <= pan["tolerancia-angle"]
+            acc = self._acc[s]
+            self._acc[s] = {"net": 0.0, "brut": 0.0, "kwh": 0.0, "perc": 0.0}
+            reg = d.get("reg")
             files.append({
                 "etiqueta": etiqueta, "controlador": ctrl.nom, "llavor": self.llavor, "lloc": self.cfg["lloc"],
                 "dia": dia, "hora": t.hour, "cicle": ent.cicle, "sector": s, "cultiu": ll["cultiu"],
@@ -484,6 +559,12 @@ class Simulacio:
                 "exposicio_vent": (fila["vent"] >= pan["vent-avis"]) and not estowat,
                 "riscos": d["riscos"], "impas": d["impas"], "us_chunk": d["us_chunk"], "us_rl": d["us_rl"],
                 "motiu": d["motiu"], "invariants_ko": d["invariants"],
+                "reg_mode": self.mode_reg(dec), "reg_accio": reg[0] if reg else None,
+                "reg_dosi_pct": reg[1] if reg else None, "reg_motiu": d.get("reg_motiu", ""),
+                "reg_net_mm": acc["net"], "reg_brut_mm": acc["brut"],
+                "reg_m3": acc["brut"] * self.cfg["sectors"][s].get("area_m2", 250.0) / 1000.0,
+                "bomba_kwh": acc["kwh"], "percolacio_mm": acc["perc"],
+                "pluja_prevista": (ent.pred.get(s) or {}).get("pluja"),
                 "chunks_nous": len(info["chunks_nous"]) if s == SECTORS[0] else 0,
                 "regles": info["regles"] if s == SECTORS[0] else 0,
                 "ms": info["ms"] if s == SECTORS[0] else 0.0,

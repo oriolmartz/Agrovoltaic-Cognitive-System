@@ -3,7 +3,8 @@
 Aquest fitxer NO conte regles de decisio del domini: coneix el contracte de memoria
 de treball i delega la projeccio RDF a ontology_loader.py (plantilles observacio, prediccio, energia,
 estat-sensor, panell, fase, cicle; sortides operador-seleccionat, ordre-actuador,
-explicacio, risc, impas, fragment-apres, preferencia).
+explicacio, risc, impas, fragment-apres, preferencia). A partir de v1_9, tambe
+l'entrada 'moment' (hora del cicle) i les sortides ordre-reg i explicacio-reg.
 
 Un cicle de decisio des de Python:
     1. escriure l'estat dels panells (angle real, angle optim, disponibilitat)
@@ -33,7 +34,10 @@ SENSORS = _MODEL_DEFECTE.tipus_sensors
 #  fragment-apres son memoria a llarg termini i NO s'esborren mai.)
 FETS_DE_CICLE = ("observacio", "prediccio", "energia", "risc", "operador", "preferencia",
                  "operador-seleccionat", "impas", "ordre-actuador", "explicacio",
-                 "episodi", "rl-traca")
+                 "episodi", "rl-traca",
+                 # v1_9: decisio de reg
+                 "moment", "necessitat-reg", "operador-reg", "preferencia-reg", "reg-seleccionat",
+                 "ordre-reg", "explicacio-reg")
 MARGE_NETEJA = 3
 SORTIDA_SILENCIADA = False   # paralel.py ho posa a True als processos fills
 TIPUS_IMPAS = {"resoldre-dades": "dades-insuficients", "resoldre-empat": "empat",
@@ -84,6 +88,9 @@ class ResultatCicle:
     fonts_pref: dict = field(default_factory=dict)    # sector -> {font, ...} (chunk-*, RL...)
     candidats: dict = field(default_factory=dict)     # sector -> {op: estat}
     rebutjats: dict = field(default_factory=dict)     # sector -> {op}
+    reg: dict = field(default_factory=dict)           # sector -> [(accio, dosi %, motiu)]   (v1_9)
+    reg_explicacio: dict = field(default_factory=dict)
+    reg_rebutjats: dict = field(default_factory=dict)  # sector -> {op}
     regles_disparades: int = 0
     regles: list = field(default_factory=list)        # noms de regles disparades (si watch)
     sortida: str = ""
@@ -268,6 +275,7 @@ class ControladorCLIPS:
         self.env.eval("(set-current-module DOMINI)")      # les plantilles son de DOMINI
         existents = {t.name for t in self.env.templates()}
         assert "observacio" in existents, "no es troben les plantilles de DOMINI"
+        self.te_reg = "ordre-reg" in existents          # v1_9: el sistema tambe decideix el reg
         cos = "".join(f"(do-for-all-facts ((?f {t})) (<= ?f:cicle ?limit) (retract ?f))"
                       for t in FETS_DE_CICLE if t in existents)
         self.env.build(
@@ -319,6 +327,11 @@ class ControladorCLIPS:
                 f" (produccio-actual {_sym(energia['produccio'])})"
                 f" (demanda {_sym(energia['demanda'])}))")
 
+    def escriu_moment(self, c: int, hora: int):
+        """Hora local del cicle (nomes les versions amb reg la fan servir)."""
+        if self.te_reg:
+            self.env.assert_string(f"(moment (cicle {int(c)}) (hora {int(hora)}))")
+
     def injecta(self, text_fet: str):
         """Per a proves: afegir un fet arbitrari (p. ex. una preferencia que forci un empat)."""
         self.env.assert_string(text_fet)
@@ -354,7 +367,8 @@ class ControladorCLIPS:
         for f in self.env.facts():
             t = f.template.name
             if t in ("ordre-actuador", "operador-seleccionat", "explicacio", "risc", "impas",
-                     "preferencia", "operador") and int(f["cicle"]) != c:
+                     "preferencia", "operador", "ordre-reg", "explicacio-reg",
+                     "preferencia-reg") and int(f["cicle"]) != c:
                 continue
             if t == "ordre-actuador":
                 r.ordres.setdefault(str(f["sector"]), []).append((str(f["accio"]), float(f["angle-objectiu"])))
@@ -374,6 +388,13 @@ class ControladorCLIPS:
                     r.rebutjats.setdefault(str(f["sector"]), set()).add(str(f["op"]))
             elif t == "operador":
                 r.candidats.setdefault(str(f["sector"]), {})[str(f["nom"])] = str(f["estat"])
+            elif t == "ordre-reg":
+                r.reg.setdefault(str(f["sector"]), []).append((str(f["accio"]), float(f["dosi"]), str(f["motiu"])))
+            elif t == "explicacio-reg":
+                r.reg_explicacio[str(f["sector"])] = str(f["missatge"])
+            elif t == "preferencia-reg":
+                if str(f["tipus"]) == "rebuig":
+                    r.reg_rebutjats.setdefault(str(f["sector"]), set()).add(str(f["op"]))
             elif t == "fragment-apres":
                 nom = str(f["nom"])
                 if nom not in self._chunks_coneguts:

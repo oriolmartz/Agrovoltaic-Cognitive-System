@@ -164,6 +164,53 @@
   (assert (traca (pas ?c) (fase seleccio)
                  (missatge (str-cat ?s ": seleccionat " ?op ", " ?motiu)))))
 
+; --- v1_9: SELECCIO del reg ---------------------------------------------------------
+; Mateix procediment que el panell: es descarten els rebutjats i es tria la valoracio mes
+; alta. Si dos operadors empaten, guanya el que gasta menys aigua (objectiu estalvi-aigua);
+; per aixo el reg no te impasses.
+
+(defrule descarta-reg-rebutjat
+  (declare (auto-focus TRUE))
+  (fase (nom seleccio))
+  (cicle (numero ?c))
+  ?o <- (operador-reg (sector ?s) (cicle ?c) (nom ?op) (estat proposat))
+  (preferencia-reg (sector ?s) (cicle ?c) (op ?op) (tipus rebuig) (font ?f))
+  =>
+  (printout t "[SELECCIO] " ?s ": " ?op " queda descartat (" ?f ")." crlf)
+  (modify ?o (estat rebutjat)))
+
+(defrule selecciona-reg
+  (declare (auto-focus TRUE))
+  (fase (nom seleccio))
+  (cicle (numero ?c))
+  ?o <- (operador-reg (sector ?s) (cicle ?c) (nom ?op) (dosi ?d) (estat proposat))
+  ; abans cal haver descartat els rebutjats
+  (not (and (operador-reg (sector ?s) (cicle ?c) (nom ?r) (estat proposat))
+            (preferencia-reg (sector ?s) (cicle ?c) (op ?r) (tipus rebuig))))
+  ; ningu el supera
+  (not (and (operador-reg (sector ?s) (cicle ?c) (nom ?x&~?op) (estat proposat))
+            (test (> (puntuacio-reg ?s ?x ?c) (puntuacio-reg ?s ?op ?c)))))
+  ; si algu l'iguala, ha de gastar mes aigua
+  (not (and (operador-reg (sector ?s) (cicle ?c) (nom ?x&~?op) (dosi ?dx&:(< ?dx ?d)) (estat proposat))
+            (test (= (puntuacio-reg ?s ?x ?c) (puntuacio-reg ?s ?op ?c)))))
+  (not (reg-seleccionat (sector ?s) (cicle ?c)))
+  =>
+  (bind ?p (puntuacio-reg ?s ?op ?c))
+  (bind ?motiu (str-cat "maxima valoracio (" ?p " punts)"))
+  (do-for-fact ((?x operador-reg))
+      (and (eq ?x:sector ?s) (eq ?x:cicle ?c) (neq ?x:nom ?op) (eq ?x:estat proposat)
+           (= (puntuacio-reg ?s ?x:nom ?c) ?p))
+    (bind ?motiu (str-cat "empat amb " ?x:nom " (" ?p " punts) desfet per estalvi d'aigua")))
+  (if (and (not (any-factp ((?x operador-reg)) (and (eq ?x:sector ?s) (eq ?x:cicle ?c)
+                                                    (neq ?x:nom ?op) (eq ?x:estat proposat))))
+           (any-factp ((?x operador-reg)) (and (eq ?x:sector ?s) (eq ?x:cicle ?c) (eq ?x:estat rebutjat))))
+   then (bind ?motiu "unica opcio que compleix les restriccions dures"))
+  (printout t "[SELECCIO] " ?s ": reg " ?op ". Criteri: " ?motiu "." crlf)
+  (modify ?o (estat seleccionat))
+  (assert (reg-seleccionat (sector ?s) (cicle ?c) (nom ?op) (dosi ?d) (motiu ?motiu)))
+  (assert (traca (pas ?c) (fase seleccio)
+                 (missatge (str-cat ?s ": reg " ?op ", " ?motiu)))))
+
 (defrule seleccio-a-impas
   (declare (salience -10) (auto-focus TRUE))
   ?f <- (fase (nom seleccio))

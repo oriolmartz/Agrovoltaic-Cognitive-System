@@ -1,18 +1,17 @@
 {
-  "versio": "soar",
-  "casos": 1890,
-  "decisions": 5670,
-  "segons": 79.4,
+  "versio": "soar_v1_9",
+  "casos": 24500,
+  "decisions": 73500,
+  "segons": 417.1,
   "violacions_per_propietat": {},
   "violacions_monotonia_vent": 0,
-  "regles_total": 63,
-  "regles_disparades": 37,
-  "cobertura_regles_pct": 58.7,
+  "regles_total": 79,
+  "regles_disparades": 55,
+  "cobertura_regles_pct": 69.6,
   "regles_no_disparades": [
     "ACCIO::avisa-fallada-actuador",
     "ACCIO::detecta-oscillacio",
     "DECISIO::desfa-empat-per-reforc",
-    "DECISIO::detecta-impas-empat",
     "DECISIO::detecta-impas-sense-candidat",
     "DELIBERACIO::avalua-estabilitat",
     "DELIBERACIO::avalua-memoria",
@@ -24,7 +23,6 @@
     "DELIBERACIO::percep-fallada-actuador",
     "DELIBERACIO::percep-sense-observacio",
     "DELIBERACIO::percep-sensor-no-valid",
-    "IMPAS::resol-empat",
     "IMPAS::resol-sense-candidat",
     "MEMORIA::epmem-emmagatzema",
     "MEMORIA::epmem-neteja-consultes",
@@ -37,13 +35,26 @@
     "REFORC::rl-registra"
   ],
   "decisions_per_accio": {
-    "posicio-seguretat": 4514,
-    "mantenir-posicio": 508,
-    "sollicitar-dades": 324,
-    "orientar-ombra": 324
+    "posicio-seguretat": 57892,
+    "orientar-ombra": 5692,
+    "mantenir-posicio": 5168,
+    "sollicitar-dades": 4200,
+    "orientar-produccio": 548
   },
   "impasses": {
-    "cap": 4860,
-    "dades-insuficients": 810
+    "cap": 62580,
+    "dades-insuficients": 10500,
+    "empat": 420
+  },
+  "reg": {
+    "casos": 1680,
+    "decisions": 5040,
+    "violacions_per_propietat": {},
+    "violacions_monotonia_dosi": 0,
+    "decisions_per_accio": {
+      "no-regar": 2960,
+      "regar-parcial": 1306,
+      "regar-complet": 774
+    }
   }
 }
