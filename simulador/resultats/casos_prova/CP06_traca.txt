@@ -1,0 +1,143 @@
+
+######################################################################
+# CP06 - cicle 1
+######################################################################
+[PERCEPCIO] Sector_2: falten lectures (vent=absent, temp-cultiu=16.0, humitat=90.0, radiacio=150.0). Risc de dades critic.
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (30.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_2: orientar-produccio (30.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA] Sector_2: sollicitar-dades (no es mou el panell).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+
+[SELECCIO] Sector_2: IMPAS DE DADES INSUFICIENTS. Sense lectura fiable de vent no es pot saber si moure el panell es segur.
+[SELECCIO -> IMPAS]
+[IMPAS] Sector_2: subobjectiu resoldre-dades. Falta la lectura de vent i ni la previsio ni l'historial indiquen vent fort. Es demanen dades i es mante la posicio.
+[CHUNKING] Nova regla chunk-1: sense lectura de vent i res no indica vent fort, sollicitar-dades requerida i panell en hold.
+[IMPAS -> SELECCIO]
+[SELECCIO] Sector_2: es selecciona sollicitar-dades. Criteri: preferencia requerida (IMPAS-dades).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE sollicitar-dades -> 30.0 graus.
+[APLICACIO] Sector_3: ORDRE mantenir-posicio -> 30.0 graus.
+[APLICACIO] Sector_1: ORDRE mantenir-posicio -> 30.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 1
+   Accio:      mantenir-posicio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (4 punts)
+
+[EXPLICACIO] Sector_3, cicle 1
+   Accio:      mantenir-posicio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (4 punts)
+
+[EXPLICACIO] Sector_2, cicle 1
+   Accio:      sollicitar-dades a 30.0 graus
+   Riscos:     dades=critic
+   Candidats:  mantenir-posicio(4) orientar-produccio(3) sollicitar-dades(1000)
+   Descartats: cap
+   Criteri:    preferencia requerida (IMPAS-dades)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #1: Sector_1, cicle 1, mantenir-posicio.
+[EPMEM] NOU EPISODI #2: Sector_3, cicle 1, mantenir-posicio.
+[EPMEM] NOU EPISODI #3: Sector_2, cicle 1, sollicitar-dades.
+[MONITORATGE] Sector_2: cal demanar al simulador les lectures que falten (risc de dades critic).
+[FI DEL CICLE 1] Ordres enviades. Esperant les dades del cicle 2.
+
+
+######################################################################
+# CP06 - cicle 2
+######################################################################
+[PERCEPCIO] Sector_2: falten lectures (vent=absent, temp-cultiu=16.0, humitat=90.0, radiacio=150.0). Risc de dades critic.
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_2: l'episodi #3 (sollicitar-dades) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_3: l'episodi #2 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #1 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (30.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_2: orientar-produccio (30.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA] Sector_2: sollicitar-dades (no es mou el panell).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: sollicitar-dades +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: sollicitar-dades 2.0 (memoria: a l'episodi #3, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_1: mantenir-posicio 2.0 (memoria: a l'episodi #1, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: mantenir-posicio 2.0 (memoria: a l'episodi #2, cicle 1, va funcionar be, similitud 1.0).
+[chunk-1] Sector_2: sense lectura de vent i res no indica vent fort, sollicitar-dades requerida i panell en hold.
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_2: es selecciona sollicitar-dades. Criteri: preferencia requerida (chunk-1).
+[REFORC] Sector_2: sollicitar-dades del cicle 1 -> recompensa 1.0 (bona), error 1.0, 6 rajoles actualitzades.
+[REFORC] Sector_3: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 1.0, 4 rajoles actualitzades.
+[REFORC] Sector_1: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 0.85, 4 rajoles actualitzades.
+[SELECCIO] Sector_1: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE mantenir-posicio -> 30.0 graus.
+[APLICACIO] Sector_1: ORDRE mantenir-posicio -> 30.0 graus.
+[APLICACIO] Sector_2: ORDRE sollicitar-dades -> 30.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_2, cicle 2
+   Accio:      sollicitar-dades a 30.0 graus
+   Riscos:     dades=critic
+   Candidats:  mantenir-posicio(4) orientar-produccio(3) sollicitar-dades(1004.0)
+   Descartats: cap
+   Criteri:    preferencia requerida (chunk-1)
+
+[EXPLICACIO] Sector_1, cicle 2
+   Accio:      mantenir-posicio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(8.0) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (8.0 punts)
+
+[EXPLICACIO] Sector_3, cicle 2
+   Accio:      mantenir-posicio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(8.0) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (8.0 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #4: Sector_2, cicle 2, sollicitar-dades.
+[EPMEM] NOU EPISODI #5: Sector_1, cicle 2, mantenir-posicio.
+[EPMEM] NOU EPISODI #6: Sector_3, cicle 2, mantenir-posicio.
+[MONITORATGE] Sector_2: cal demanar al simulador les lectures que falten (risc de dades critic).
+[FI DEL CICLE 2] Ordres enviades. Esperant les dades del cicle 3.
+

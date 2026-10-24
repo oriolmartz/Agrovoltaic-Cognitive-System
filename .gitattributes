@@ -1,0 +1,2 @@
+# CLIPS sources are kept with LF so generated builds are reproducible on Windows/Linux/macOS.
+*.clp text eol=lf

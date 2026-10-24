@@ -1,0 +1,6 @@
+# Versions provades (Linux i Windows). Calen Python 3.11, 3.12 o 3.13.
+clipspy==1.0.6
+numpy==2.4.4
+pandas==3.1.0
+scipy==1.17.1
+tzdata==2026.5   # zona horaria Europe/Madrid a Windows (Python no la porta)

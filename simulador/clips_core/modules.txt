@@ -1,0 +1,9 @@
+core/domini.clp
+memory/episodic.clp
+reasoning/deliberacio.clp
+memory/reinforcement.clp
+reasoning/decisio.clp
+memory/chunking.clp
+core/main.clp
+deliberation/impasses.clp
+action/accio.clp

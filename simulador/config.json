@@ -1,0 +1,28 @@
+{
+  "_comentari": "Parametres per defecte del simulador. Un escenari pot sobreescriure qualsevol clau.",
+  "clp": "clips_core/soar.clp",
+  "lloc": "ribera",
+  "hores": [7, 20],
+  "sectors": {
+    "Sector_1": {"panells": ["Panell_1_1", "Panell_1_2"], "kwp": 20.0, "gcr": 0.4, "kc": 1.15, "zr_m": 0.7,
+                 "demanda_base_kw": 6.0, "demanda_pic_kw": 8.0},
+    "Sector_2": {"panells": ["Panell_2_1", "Panell_2_2"], "kwp": 20.0, "gcr": 0.4, "kc": 1.00, "zr_m": 0.3,
+                 "demanda_base_kw": 6.0, "demanda_pic_kw": 8.0},
+    "Sector_3": {"panells": ["Panell_3_1", "Panell_3_2"], "kwp": 20.0, "gcr": 0.4, "kc": 0.70, "zr_m": 1.0,
+                 "demanda_base_kw": 6.0, "demanda_pic_kw": 8.0}
+  },
+  "humitat": {"mode": "balanc", "inicial_pct": 85.0,
+              "reg": {"actiu": true, "hora": 7, "llindar_pct": 45.0, "fins_pct": 90.0}},
+  "soroll": {"previsio_vent_sigma": 0.15, "previsio_rad_sigma": 0.15, "previsio_temp_sigma": 1.0,
+             "sensor_vent_sigma": 0.3, "sensor_temp_sigma": 0.3, "sensor_rad_sigma": 0.03},
+  "sensors": {"p_absent": {"humitat-sol": 0.0, "pluja": 0.0, "radiacio": 0.0, "temperatura-aire": 0.0,
+                           "temperatura-cultiu": 0.0, "vent": 0.0},
+              "p_previsio_absent": 0.0,
+              "forcats": []},
+  "actuadors": {"p_fallada": 0.0, "fallades": [], "informa_avaria": false},
+  "model": {"k_rad": 0.006, "k_sec": 2.0},
+  "modificadors": {"temp_delta": 0.0, "vent_factor": 1.0, "rad_factor": 1.0, "pluja_factor": 1.0},
+  "controlador": {"tipus": "soar", "reforc": null, "parelles": null, "chunking": null, "epmem": null,
+                  "estrategia": null},
+  "mode_dies": "independents"
+}

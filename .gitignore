@@ -1,0 +1,47 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables
+.env
+.env.*
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Operating system
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python build / packaging
+build/
+dist/
+*.egg-info/
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+
+# CLIPS runtime persistence generated during executions
+*.dat
+
+# Experiment results are intentionally versionable for reproducibility.
+# If temporary outputs are added later, place them under resultats/tmp/.
+simulador/resultats/tmp/
