@@ -1,8 +1,8 @@
 {
-  "versio": "soar_v1_9",
+  "versio": "soar",
   "casos": 24500,
   "decisions": 73500,
-  "segons": 417.1,
+  "segons": 411.7,
   "violacions_per_propietat": {},
   "violacions_monotonia_vent": 0,
   "regles_total": 79,

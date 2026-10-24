@@ -1,0 +1,936 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#"
+   xmlns:dom="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#"
+   xmlns:owl="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Estat_Operador">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Reg"/>
+    <rdfs:range rdf:nodeID="N97b53b39cec14ffb8fe81684c6fe68a1"/>
+    <rdfs:comment xml:lang="ca">Cicle de vida d'un operador de reg.</rdfs:comment>
+    <rdfs:label xml:lang="ca">estat de l'operador</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Ncc6038df377342e2ac2ab7f751da6ef5">
+    <xsd:minInclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</xsd:minInclusive>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#RG2_Regar_Complet">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <Codi_Font>RG2</Codi_Font>
+    <rdfs:comment xml:lang="ca">Proposta. regar-complet és acceptable amb estrès hídric (proposa-regar) o amb necessitat anticipada a hora fresca i sensibilitat no baixa (proposa-regar-anticipat). Amb degoteig es pot regar a qualsevol hora si hi ha estrès (Penn State Extension). La vinya (sensibilitat baixa) no s'anticipa: un estrès moderat li va bé (reg deficitari controlat, AWRI).</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N3eeacf416fdb4504b8b5cab1309b45cc">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#sobre_operador"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nef546827f59e42628edcd9f4aa28ebd2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Dosi"/>
+    <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</owl:hasValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N531940700c464e878544305da9991167">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:intersectionOf rdf:nodeID="N2efe20ab0d88435e9bf7913e3c79a5bf"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Numerica">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:equivalentClass rdf:nodeID="N6fc5986a83ac46e695ff61d1a8a2d107"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Reg"/>
+    <rdfs:subClassOf rdf:nodeID="N9a1778a808b54bc7b7f8040599d53c24"/>
+    <rdfs:comment xml:lang="ca">Restricció tova amb valor. La puntuació d'un operador és la suma dels seus valors (funció puntuacio-reg).</rdfs:comment>
+    <rdfs:label xml:lang="ca">Preferència numèrica</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Reg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Fet_Reg_Cicle"/>
+    <rdfs:subClassOf rdf:nodeID="N3eeacf416fdb4504b8b5cab1309b45cc"/>
+    <rdfs:subClassOf rdf:nodeID="N87b042c1af984773966a886fc61b7b27"/>
+    <rdfs:subClassOf rdf:nodeID="N1ad4b39393674409a94dbbdbdceb3780"/>
+    <rdfs:comment xml:lang="ca">Valoració d'un operador de reg (plantilla CLIPS preferencia-reg). A diferència del panell, el reg només té tres tipus: acceptable, rebuig i numerica.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Preferència de reg</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nf6edbca527d041d0aba7e10db4e749dd">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#tria_operador"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#envia_a_valvula">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Ordre_Reg"/>
+    <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Valvula_Reg"/>
+    <rdfs:comment xml:lang="ca">Vàlvula de reg destinatària de l'ordre.</rdfs:comment>
+    <rdfs:label xml:lang="ca">s'envia a la vàlvula</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N15449aa5f6484002ae5d0d6b12f0eb0c">
+    <rdf:first rdf:nodeID="N0f2e8b917b304f2faeb9806e23fe5527"/>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR7_Estalvi">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <serveix_objectiu rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Obj_Estalvi_Aigua"/>
+    <Codi_Font>AVR7-estalvi</Codi_Font>
+    <rdfs:comment xml:lang="ca">Valor = pes de l'objectiu estalvi d'aigua (1), només a no-regar i amb l'objectiu actiu.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nf75e42fbae1e49a384db88765b985345">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>mitja</rdf:first>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#explica_ordre">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Explicacio_Reg"/>
+    <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Ordre_Reg"/>
+    <rdfs:comment xml:lang="ca">Ordre que justifica el text.</rdfs:comment>
+    <rdfs:label xml:lang="ca">explica l'ordre</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Reg_Seleccionat">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Decisio_Reg"/>
+    <rdfs:subClassOf rdf:nodeID="Nf6edbca527d041d0aba7e10db4e749dd"/>
+    <rdfs:comment xml:lang="ca">Operador de reg guanyador d'un sector i cicle (plantilla CLIPS reg-seleccionat; 1 cicle de persistència). Procediment: es descarten els rebutjats, es tria la puntuació més alta i, si hi ha empat, guanya el de dosi menor (objectiu d'estalvi d'aigua). Per això el reg no té impasses.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Reg seleccionat</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#te_font">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Reg"/>
+    <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <rdfs:comment xml:lang="ca">Regla que ha generat la preferència.</rdfs:comment>
+    <rdfs:label xml:lang="ca">té font</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#executa_seleccio">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Ordre_Reg"/>
+    <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Reg_Seleccionat"/>
+    <rdfs:comment xml:lang="ca">Selecció de la qual surt l'ordre.</rdfs:comment>
+    <rdfs:label xml:lang="ca">executa selecció</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Ordre_Reg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Decisio_Reg"/>
+    <rdfs:subClassOf rdf:nodeID="N4a31a86e80cb4bd9bb2c03bcd408b8dd"/>
+    <rdfs:comment xml:lang="ca">Ordre enviada a la vàlvula del sector (plantilla CLIPS ordre-reg). Persisteix fins que el simulador la consumeix. Les ordres no-regar existeixen però no s'imprimeixen.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Ordre de reg</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nc54bac94b3364256a0b9ec7c1967456e">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>rebutjat</rdf:first>
+    <rdf:rest rdf:nodeID="N2d5a832ec76b4eb4817ef1f55c9d4d2c"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N7a64a2776f2d4c498f51683fbc0ce901">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR4_Hora_Fresca"/>
+    <rdf:rest rdf:nodeID="N191eea43bc6b42318dfd1ef41325ec18"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#sobre_operador">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Reg"/>
+    <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Reg"/>
+    <rdfs:comment xml:lang="ca">Operador valorat. A CLIPS és el nom de l'acció més sector i cicle; aquí és l'operador concret que identifiquen.</rdfs:comment>
+    <rdfs:label xml:lang="ca">sobre operador</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR6_Bomba">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <serveix_objectiu rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Obj_Produccio_Energia"/>
+    <Codi_Font>AVR6-bomba</Codi_Font>
+    <Valor_Fix rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-1.0</Valor_Fix>
+    <rdfs:comment xml:lang="ca">-1 si l'objectiu d'energia és actiu i la producció del sector no cobreix la demanda (Estat_Energia): la bomba gasta energia (0,28-0,68 kWh/m3, Hardy i Garrido). Conflicte cultiu contra energia.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nbfbe41336ee24eafb2d9aed034c5af35">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>alt</rdf:first>
+    <rdf:rest rdf:nodeID="N7558b92e8dcd474685f22cc88b24bd7a"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Acceptable">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:equivalentClass rdf:nodeID="N4b706b71af6a48f3b3d1045bc6b33dd7"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Reg"/>
+    <rdfs:comment xml:lang="ca">L'operador és candidat. La generen les regles de proposta (RG1, RG2, RG3).</rdfs:comment>
+    <rdfs:label xml:lang="ca">Preferència acceptable</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR5_Pluja_Moderada">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <Codi_Font>AVR5-pluja</Codi_Font>
+    <Valor_Fix rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-3.0</Valor_Fix>
+    <rdfs:comment xml:lang="ca">-3 a regar-complet si es preveu pluja &gt;= Pluja_Minima_Mm (2 mm): no cal omplir el sol, l'aigua de més es perdria.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#deriva_de">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Necessitat_Reg"/>
+    <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Observacio_Humitat_Sol"/>
+    <rdfs:comment xml:lang="ca">Lectura d'humitat del sol de la qual es deriva la necessitat (esgotament = 1 - Valor/100).</rdfs:comment>
+    <rdfs:label xml:lang="ca">deriva de</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Rebuig">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:equivalentClass rdf:nodeID="N5c0b706381ac4421afe3840f9c807241"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Reg"/>
+    <rdfs:comment xml:lang="ca">Restricció dura: l'operador queda descartat. Només la genera AVR1 (pluja prevista).</rdfs:comment>
+    <rdfs:label xml:lang="ca">Preferència de rebuig</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Cicle_Reg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Fet_Reg_Cicle"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:comment xml:lang="ca">Cicle de decisió. dom:Cicle només s'aplica a Estat, Observacio, Prediccio i Risc; per això el motor de decisió usa aquesta.</rdfs:comment>
+    <rdfs:label xml:lang="ca">cicle (decisió de reg)</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Explicacio_Reg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Fet_Reg_Cicle"/>
+    <rdfs:subClassOf rdf:nodeID="N383c134cf6624beb9bb7817892b82b1f"/>
+    <rdfs:comment xml:lang="ca">Justificació en text d'una ordre de reg: necessitat, candidats amb puntuació, descartats i criteri (plantilla CLIPS explicacio-reg). Només s'escriu quan ja hi ha ordre.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Explicació del reg</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Hora_Fresca_Tarda">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Configuracio_Reg"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:comment xml:lang="ca">És fresca l'hora h amb h &gt;= aquest valor (Diputació de Barcelona).</rdfs:comment>
+    <rdfs:label xml:lang="ca">primera hora fresca de la tarda</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N0f2e8b917b304f2faeb9806e23fe5527">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Tipus_Preferencia"/>
+    <owl:hasValue>rebuig</owl:hasValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#RG3_Regar_Parcial">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <Codi_Font>RG3</Codi_Font>
+    <rdfs:comment xml:lang="ca">Proposta. regar-parcial és acceptable sempre que la dosi calculada sigui positiva.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nad0cc24066c2424bbdb674e82fa6fdd6">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+    <owl:members rdf:nodeID="N65e39839a1d84f75ae19a01b72d455e3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nc4e6ebe8b530475c81aa5581e839f2b9">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#sobre_sector"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR4_Hora_Fresca">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <Codi_Font>AVR4-hora</Codi_Font>
+    <Valor_Fix rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</Valor_Fix>
+    <rdfs:comment xml:lang="ca">+1 per regar a hora fresca: es perd menys aigua per evaporació (Diputació de Barcelona; Clemson).</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nefa21abbd2de40c2b83b8f8153400c31">
+    <rdf:first rdf:nodeID="Nd04a0ca278c24ed8bb68707ee3059411"/>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N65e39839a1d84f75ae19a01b72d455e3">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_No_Regar"/>
+    <rdf:rest rdf:nodeID="N24f70ed769ff424aadcc6bd66a860fb5"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N30105eb84fd5420c87fb94494ea6393e">
+    <xsd:minInclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</xsd:minInclusive>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N2a59294cc8fc43b1b190e6654db01438">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Hora"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#activa_objectiu">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Necessitat_Reg"/>
+    <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Objectiu"/>
+    <rdfs:comment xml:lang="ca">La necessitat de reg activa l'objectiu de protegir el cultiu (com ho fa l'estrès hídric amb dom:activa; aquesta propietat és pròpia perquè dom:activa té domini Risc).</rdfs:comment>
+    <rdfs:label xml:lang="ca">activa objectiu</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N101279074955466da818bcff25954424">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Reg"/>
+    <rdf:rest rdf:nodeID="Ne71766df86874d31ba86beb825728876"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N5d7939cbf159400b8291ea60f2dd88cc">
+    <rdf:first rdf:nodeID="N31816fc4796b4e1f9fce81e5c17e0b26"/>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#sobre_sector">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Fet_Reg_Cicle"/>
+    <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Sector"/>
+    <rdfs:comment xml:lang="ca">Sector al qual correspon el fet de decisió.</rdfs:comment>
+    <rdfs:label xml:lang="ca">sobre sector</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Regar_Complet">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:equivalentClass rdf:nodeID="N3923fc6509d24e0d843de632e34be227"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Reg"/>
+    <rdfs:comment xml:lang="ca">Es proposa amb estrès hídric (mitja, alt, critic) o, en anticipada, només a hora fresca i en cultius de sensibilitat no baixa. Torna el sol a capacitat de camp. Dosi = 100 x esgotament, truncada a 0,1.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Operador regar-complet</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nf392cf15cf934e80a862a30e399c6304">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>numerica</rdf:first>
+    <rdf:rest rdf:nodeID="N7c1d246ef9304b858ad5ebbc8ae1fd64"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nde8c77071cf045a3998ac0ce69ff626c">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Numerica"/>
+    <rdf:rest rdf:nodeID="Nce2d6efc818f4c59b96f6dcd9972c25c"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Obj_Estalvi_Aigua">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Objectiu_Estalvi_Aigua"/>
+    <dom:Tipus_Restriccio>tova</dom:Tipus_Restriccio>
+    <dom:entra_conflicte rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Obj_Produccio_Cultiu"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Necessitat_Reg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:nodeID="Ne8d8dc4e51374e6fbcbd01c9965cafc1"/>
+    <rdfs:subClassOf rdf:nodeID="Nbbd167fbefa44e2893b0613e352700c0"/>
+    <rdfs:comment xml:lang="ca">Estat derivat d'un sector: quant necessita aigua en un cicle (plantilla CLIPS necessitat-reg). El deriva elabora-necessitat-reg a partir de la humitat del sol i de la fracció esgotable p del cultiu (dom:Fraccio_Esgotament_p). Només existeix si hi ha necessitat (nivell anticipada o superior). Escala: anticipada &lt; mitja &lt; alt &lt; critic; la resta és la d'estrès hídric (Risc_Estres_Hidric).</rdfs:comment>
+    <rdfs:label xml:lang="ca">Necessitat de reg</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N5cc48255f101467fb4132916809d90e1">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#RG2_Regar_Complet"/>
+    <rdf:rest rdf:nodeID="N5b494c8d36714a5da245eee0348ccce1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Config_Reg_Defecte">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Configuracio_Reg"/>
+    <Anticipacio rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.75</Anticipacio>
+    <Hora_Fresca_Mati rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</Hora_Fresca_Mati>
+    <Hora_Fresca_Tarda rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">19</Hora_Fresca_Tarda>
+    <Pluja_Anulla_Mm rdf:datatype="http://www.w3.org/2001/XMLSchema#double">10.0</Pluja_Anulla_Mm>
+    <Pluja_Minima_Mm rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2.0</Pluja_Minima_Mm>
+    <rdfs:comment xml:lang="ca">Fonts (soar.clp i dades_reals/FONTS.md, apartat Reg): anticipació, FAO-56; pluja que anul·la el reg (10 mm) i hores fresques (8 h i 19 h), Diputació de Barcelona; pluja mínima (2 mm, aprox. 0,2 ETo), FAO-56.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Configuració de reg per defecte</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N9d27fe6699ae4433be4132e8a5c0fa1b">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Regar_Parcial"/>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Pluja_Anulla_Mm">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Configuracio_Reg"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:comment xml:lang="ca">Si es preveu pluja &gt;= aquest valor, s'anul·la el reg (Diputació de Barcelona, gestió de l'aigua en horts).</rdfs:comment>
+    <rdfs:label xml:lang="ca">pluja que anul·la el reg (mm)</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <owl:imports rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini"/>
+    <rdfs:comment xml:lang="ca">Mòdul de l'ontologia del reg (soar.clp v1_9, bloc REG). Importa OntologiaDomini i hi afegeix el segon actuador de cada sector: necessitat hídrica, operadors candidats, preferències, selecció, ordre a la vàlvula i explicació. Les dosis són en % de l'aigua disponible (TAW), segons FAO-56.
+
+Mapa de plantilles CLIPS: moment -&gt; Observacio_Hora; reg-config -&gt; Configuracio_Reg (individu Config_Reg_Defecte); necessitat-reg -&gt; Necessitat_Reg; operador-reg -&gt; Operador_Reg; preferencia-reg -&gt; Preferencia_Reg (+ Font_Preferencia_Reg); reg-seleccionat -&gt; Reg_Seleccionat; ordre-reg -&gt; Ordre_Reg (+ Valvula_Reg); explicacio-reg -&gt; Explicacio_Reg.
+
+Reutilitza del domini: Estat, Observacio, Observacio_Humitat_Sol, Sector, Objectiu, te_estat, te_component, Obj_Produccio_Cultiu, Obj_Produccio_Energia, Fraccio_Esgotament_p (p del cultiu), Sensibilitat (Estat_Cultiu) i Valor_Previst de Prediccio_Pluja. La secció EXTENSIO DEL DOMINI (Objectiu_Estalvi_Aigua) hauria de passar a ontologia_domini.rdf, perquè afegeix vocabulari d'objectius.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Ontologia del reg per degoteig</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Ne8d8dc4e51374e6fbcbd01c9965cafc1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#activa_objectiu"/>
+    <owl:hasValue rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Obj_Produccio_Cultiu"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N8a7ff545531e46f88e40c4bea88048cf">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+    <owl:onDatatype rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <owl:withRestrictions rdf:nodeID="N47552980000f49b0bc0fb58886032d4a"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N4b706b71af6a48f3b3d1045bc6b33dd7">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:intersectionOf rdf:nodeID="N6d9bb84a00e34e768b5e0bbedf68fe87"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Hora_Fresca_Mati">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Configuracio_Reg"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:comment xml:lang="ca">És fresca l'hora h amb h &lt;= aquest valor (Diputació de Barcelona).</rdfs:comment>
+    <rdfs:label xml:lang="ca">última hora fresca del matí</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Fet_Reg_Cicle">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:nodeID="Nc4e6ebe8b530475c81aa5581e839f2b9"/>
+    <rdfs:subClassOf rdf:nodeID="N4784fca8e6724e0e9604430d24043345"/>
+    <rdfs:comment xml:lang="ca">Fet del procés de decisió del reg, indexat per sector i cicle com els fets de decisió de soar.clp. A diferència de dom:Cicle (només Estat, Observacio, Prediccio i Risc), aquests fets són del motor de decisió i usen Cicle_Reg.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Fet de decisió de reg</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Fet_Reg_Accio">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Fet_Reg_Cicle"/>
+    <rdfs:subClassOf rdf:nodeID="N01b6f16d6d4a4c6987dca61956143aa2"/>
+    <rdfs:comment xml:lang="ca">Superclasse d'operador, selecció i ordre: tots porten una acció de reg i una dosi.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Fet de reg amb acció i dosi</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Tipus_Preferencia">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Reg"/>
+    <rdfs:range rdf:nodeID="N9bf1c897cf8746aabd857bc77b907ab2"/>
+    <rdfs:comment xml:lang="ca">acceptable (candidat), rebuig (restricció dura) o numerica (restricció tova).</rdfs:comment>
+    <rdfs:label xml:lang="ca">tipus de preferència</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N5ace4d40d3eb40cca11e4ef3b2796304">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR2_Cultiu"/>
+    <rdf:rest rdf:nodeID="N50e9e95879b04bcb8ac98da94ed1bbfb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Configuracio_Reg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:comment xml:lang="ca">Paràmetres estàtics del criteri de reg (plantilla CLIPS reg-config).</rdfs:comment>
+    <rdfs:label xml:lang="ca">Configuració del reg</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N3923fc6509d24e0d843de632e34be227">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:intersectionOf rdf:nodeID="Ndbe5b8f4cac44f558ac370d6a450728f"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Hora">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Observacio_Hora"/>
+    <rdfs:range rdf:nodeID="Na7031492f3604756a06b33673803a16a"/>
+    <rdfs:comment xml:lang="ca">Hora local, entre 0 i 23.</rdfs:comment>
+    <rdfs:label xml:lang="ca">hora</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Valor_Preferencia">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Reg"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:comment xml:lang="ca">Valor de la restricció tova.</rdfs:comment>
+    <rdfs:label xml:lang="ca">valor de la preferència</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Accio_Reg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Fet_Reg_Accio"/>
+    <rdfs:range rdf:nodeID="N6f44418bafb4447bb49a31a390366f0d"/>
+    <rdfs:comment xml:lang="ca">no-regar és sempre una opció; regar-complet torna el sol a capacitat de camp; regar-parcial el deixa a mig camí del llindar d'estrès (esgotament = p/2). Slot nom d'operador-reg i reg-seleccionat, i accio d'ordre-reg.</rdfs:comment>
+    <rdfs:label xml:lang="ca">acció de reg</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N57d4f29d95e84ff789e66a39a518883f">
+    <rdf:first rdf:nodeID="N102a673084184c619a7cfeb66b284ae2"/>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Regar_Parcial">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:equivalentClass rdf:nodeID="N05faf8647c184a18b6d856c38d44f7fe"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Reg"/>
+    <rdfs:comment xml:lang="ca">Només es proposa si la dosi és positiva (esgotament &gt; p/2). Deixa el sol a mig camí del llindar d'estrès. Dosi = 100 x (esgotament - p/2), truncada a 0,1.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Operador regar-parcial</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N036e648036dd4d5597ac65eb1017d452">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#RG1_No_Regar"/>
+    <rdf:rest rdf:nodeID="N5cc48255f101467fb4132916809d90e1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR3_Sensibilitat">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <Codi_Font>AVR3-sensibilitat</Codi_Font>
+    <rdfs:comment xml:lang="ca">Valor segons dom:Sensibilitat de l'Estat_Cultiu. regar-complet: +2 si alta o critica, +1 si mitja. regar-parcial: +2 si baixa. Els cultius sensibles (enciam: p petita i arrels someres, FAO-56 taula 22) millor plens; la vinya, reg deficitari (AWRI).</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N6f44418bafb4447bb49a31a390366f0d">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+    <owl:oneOf rdf:nodeID="N1d89695d590e45828aaa8de81c58ee5b"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N7558b92e8dcd474685f22cc88b24bd7a">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>anticipada</rdf:first>
+    <rdf:rest rdf:nodeID="N640945a4873a4d9aba14c0e8fc36ccbe"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N01b6f16d6d4a4c6987dca61956143aa2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Accio_Reg"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N1ad4b39393674409a94dbbdbdceb3780">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Tipus_Preferencia"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N640945a4873a4d9aba14c0e8fc36ccbe">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>critic</rdf:first>
+    <rdf:rest rdf:nodeID="N726222f45a4640e99144ab883c482fb3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Ne5635198183e48edb3c40eef97a9f4dc">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>regar-complet</rdf:first>
+    <rdf:rest rdf:nodeID="N32dd2b1bf0334aab876ff6110793c572"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N2d5a832ec76b4eb4817ef1f55c9d4d2c">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>seleccionat</rdf:first>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR1_Pluja_Prevista">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <Codi_Font>AVR1-pluja-prevista</Codi_Font>
+    <Exempta_Per_Nivell>critic</Exempta_Per_Nivell>
+    <rdfs:comment xml:lang="ca">Restricció dura (rebuig). Si es preveu pluja &gt;= Pluja_Anulla_Mm (10 mm) a la Prediccio_Pluja del sector, es rebutgen regar-parcial i regar-complet, llevat que la necessitat sigui crítica. Font: Diputació de Barcelona.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nce2d6efc818f4c59b96f6dcd9972c25c">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Rebuig"/>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Nivell_Necessitat">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Necessitat_Reg"/>
+    <rdfs:range rdf:nodeID="Nf68a3fe793e34f6482bedcf7caf001b0"/>
+    <rdfs:comment xml:lang="ca">Nivell de necessitat de reg. Ordinal usat a AVR2: anticipada 1, mitja 2, alt 3, critic 4. Llindars: anticipada si esgotament &gt;= Anticipacio x p sense estrès; mitja si p &lt; e &lt;= p + t; alt si p + t &lt; e &lt;= p + 2t; critic altrament, amb t = (1 - p)/3 i marge de 1e-9.</rdfs:comment>
+    <rdfs:label xml:lang="ca">nivell de necessitat</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Anticipacio">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Configuracio_Reg"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:comment xml:lang="ca">Fracció de p a partir de la qual es pot anticipar el reg (FAO-56: regar abans o en el moment que s'esgota l'aigua fàcilment disponible, RAW = p x TAW).</rdfs:comment>
+    <rdfs:label xml:lang="ca">anticipació</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Ne594719520644ef09bf4fa3cb7fe0345">
+    <rdf:first rdf:nodeID="Nb544675ef6d1496f8c6f971f5bb7e9cd"/>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Reg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Fet_Reg_Accio"/>
+    <rdfs:subClassOf rdf:nodeID="N966b19092d3542ec9b87f92972f8cec8"/>
+    <rdfs:comment xml:lang="ca">Candidat d'acció de reg per a un sector i cicle (equivalent a un operador de SOAR; plantilla CLIPS operador-reg). La dosi és l'aigua neta afegida, en % de l'aigua disponible (TAW). Mai supera el que falta per arribar a capacitat de camp (FAO-56: la resta es perdria per percolació).</rdfs:comment>
+    <rdfs:label xml:lang="ca">Operador de reg</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Ne71766df86874d31ba86beb825728876">
+    <rdf:first rdf:nodeID="N24e14bf560d949ae8986f80f7f42b615"/>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Esgotament">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Necessitat_Reg"/>
+    <rdfs:range rdf:nodeID="N9f76bdb0684d4d40b53a5f657e4c0738"/>
+    <rdfs:comment xml:lang="ca">Fracció de l'aigua disponible (TAW) ja gastada: max(0, 1 - humitat-sol/100).</rdfs:comment>
+    <rdfs:label xml:lang="ca">esgotament</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Valvula_Reg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:comment xml:lang="ca">Actuador de reg per degoteig d'un sector. soar.clp no en té cap fet: l'ordre s'adreça «a la vàlvula de reg del sector». Si el model RDF encara no en declara, l'ordre queda sense destinatari explícit.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Vàlvula de reg</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#te_valvula_reg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#te_component"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Sector"/>
+    <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Valvula_Reg"/>
+    <rdfs:comment xml:lang="ca">Sector -&gt; Valvula_Reg. Subpropietat de dom:te_component (com te_panell); la inversa dom:pertany_sector s'infereix.</rdfs:comment>
+    <rdfs:label xml:lang="ca">té vàlvula de reg</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nfaec27d12f61423a853575c8721c995c">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Acceptable"/>
+    <rdf:rest rdf:nodeID="Nde8c77071cf045a3998ac0ce69ff626c"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Dosi">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Fet_Reg_Accio"/>
+    <rdfs:range rdf:nodeID="N8a7ff545531e46f88e40c4bea88048cf"/>
+    <rdfs:comment xml:lang="ca">Aigua neta afegida, en % de l'aigua disponible (TAW). OWL no pot expressar que no superi 100 x esgotament; ho garanteix proposa-dosis-reg.</rdfs:comment>
+    <rdfs:label xml:lang="ca">dosi</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N709c526bd9ec48de9d25775ed06af36d">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>critic</rdf:first>
+    <rdf:rest rdf:nodeID="Nf75e42fbae1e49a384db88765b985345"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N31816fc4796b4e1f9fce81e5c17e0b26">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Accio_Reg"/>
+    <owl:hasValue>no-regar</owl:hasValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#RG1_No_Regar">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <Codi_Font>RG1</Codi_Font>
+    <rdfs:comment xml:lang="ca">Proposta. No regar sempre és una opció (acceptable).</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N87b042c1af984773966a886fc61b7b27">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#te_font"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N67d4120df9af49b5860dfb5a3bcbed1a">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>aplicat</rdf:first>
+    <rdf:rest rdf:nodeID="N4823fc8a88cf43178a6a892da31b5952"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Sector">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N4a31a86e80cb4bd9bb2c03bcd408b8dd">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#executa_seleccio"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Missatge">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Explicacio_Reg"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:comment xml:lang="ca">Text de l'explicació.</rdfs:comment>
+    <rdfs:label xml:lang="ca">missatge</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Pluja_Minima_Mm">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Configuracio_Reg"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:comment xml:lang="ca">La pluja de menys de ~0,2 ETo s'evapora i no compta (FAO-56).</rdfs:comment>
+    <rdfs:label xml:lang="ca">pluja mínima que compta (mm)</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_No_Regar">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:equivalentClass rdf:nodeID="N531940700c464e878544305da9991167"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Reg"/>
+    <rdfs:subClassOf rdf:nodeID="Nef546827f59e42628edcd9f4aa28ebd2"/>
+    <rdfs:comment xml:lang="ca">Sempre es proposa (regla proposa-no-regar, font RG1). Dosi 0.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Operador no-regar</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N97b53b39cec14ffb8fe81684c6fe68a1">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+    <owl:oneOf rdf:nodeID="N67d4120df9af49b5860dfb5a3bcbed1a"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#serveix_objectiu">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Objectiu"/>
+    <rdfs:comment xml:lang="ca">Objectiu que ha d'estar actiu perquè la regla valori l'operador.</rdfs:comment>
+    <rdfs:label xml:lang="ca">serveix objectiu</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N5b494c8d36714a5da245eee0348ccce1">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#RG3_Regar_Parcial"/>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N1d89695d590e45828aaa8de81c58ee5b">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>no-regar</rdf:first>
+    <rdf:rest rdf:nodeID="Ne5635198183e48edb3c40eef97a9f4dc"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N946e8457e6ed406a9bc873aedd2dfbcf">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+    <owl:distinctMembers rdf:nodeID="Nee5cfe93667e4f15a8b32a4097f1a187"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N2efe20ab0d88435e9bf7913e3c79a5bf">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Reg"/>
+    <rdf:rest rdf:nodeID="N5d7939cbf159400b8291ea60f2dd88cc"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N9f76bdb0684d4d40b53a5f657e4c0738">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+    <owl:onDatatype rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <owl:withRestrictions rdf:nodeID="N7e22449fe61949998561755fd66c10dc"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N47552980000f49b0bc0fb58886032d4a">
+    <rdf:first rdf:nodeID="N23a3e5eba409437fb85f0c8bdb8641b7"/>
+    <rdf:rest rdf:nodeID="N8b76d7d8dd3243e297bef68fad0d62ae"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N9394c43e9cd34be488c0bb40b70ea9bd">
+    <xsd:maxInclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</xsd:maxInclusive>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Objectiu_Estalvi_Aigua">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Objectiu"/>
+    <rdfs:comment xml:lang="ca">EXTENSIÓ DEL DOMINI: objectiu tou de la v1_9 (no regar estalvia aigua). Hauria de viure a ontologia_domini.rdf; és aquí perquè el domini actual només té cinc objectius. Pes 1 a pes-objectiu.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Objectiu d'estalvi d'aigua</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nd1a316053a17468bbbfa5a204e5f589e">
+    <rdf:first rdf:nodeID="N9394c43e9cd34be488c0bb40b70ea9bd"/>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N9d4580e39ea446f693cc535a47191ef9">
+    <rdf:first rdf:nodeID="N46089a432ada4f84abcd76674afb6948"/>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N191eea43bc6b42318dfd1ef41325ec18">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR5_Pluja_Moderada"/>
+    <rdf:rest rdf:nodeID="Nc948d1ef67424df687fbabea15d6b85b"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N32dd2b1bf0334aab876ff6110793c572">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>regar-parcial</rdf:first>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N6d9bb84a00e34e768b5e0bbedf68fe87">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Reg"/>
+    <rdf:rest rdf:nodeID="Nefa21abbd2de40c2b83b8f8153400c31"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Obj_Produccio_Energia">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#te_necessitat_reg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#te_estat"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Sector"/>
+    <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Necessitat_Reg"/>
+    <rdfs:comment xml:lang="ca">Sector -&gt; Necessitat_Reg. Segueix el patró de te_estat_energia, te_estat_panell, etc.</rdfs:comment>
+    <rdfs:label xml:lang="ca">té necessitat de reg</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N383c134cf6624beb9bb7817892b82b1f">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#explica_ordre"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Observacio">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N7c1d246ef9304b858ad5ebbc8ae1fd64">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>rebuig</rdf:first>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N4cabd6c3b82d462aad8102d9213de4df">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>alt</rdf:first>
+    <rdf:rest rdf:nodeID="N46ff99d5c051467e9e723d7c6a6fbd38"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Obj_Produccio_Cultiu">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <dom:entra_conflicte rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Obj_Estalvi_Aigua"/>
+    <dom:te_prioritat rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Obj_Estalvi_Aigua"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N4823fc8a88cf43178a6a892da31b5952">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>proposat</rdf:first>
+    <rdf:rest rdf:nodeID="Nc54bac94b3364256a0b9ec7c1967456e"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:comment xml:lang="ca">Regla que genera una preferència. Cada individu porta el símbol exacte que CLIPS escriu al slot font (Codi_Font), per a traçabilitat.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Font d'una preferència de reg</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Valor_Fix">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:comment xml:lang="ca">Valor constant que la regla assigna. Les fonts que el calculen (AVR2, AVR3, AVR7) no en tenen.</rdfs:comment>
+    <rdfs:label xml:lang="ca">valor fix</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Observacio_Humitat_Sol">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N5c0b706381ac4421afe3840f9c807241">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:intersectionOf rdf:nodeID="N89533dfe8c104fbf99b17bfa83305137"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N9d40f0517a56491daaff05c182d6e368">
+    <rdf:first rdf:nodeID="N30105eb84fd5420c87fb94494ea6393e"/>
+    <rdf:rest rdf:nodeID="N57d4f29d95e84ff789e66a39a518883f"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nee5cfe93667e4f15a8b32a4097f1a187">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR1_Pluja_Prevista"/>
+    <rdf:rest rdf:nodeID="N5ace4d40d3eb40cca11e4ef3b2796304"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR2_Cultiu">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <serveix_objectiu rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Obj_Produccio_Cultiu"/>
+    <Codi_Font>AVR2-cultiu</Codi_Font>
+    <rdfs:comment xml:lang="ca">Valor = pes de l'objectiu producció de cultiu (3) x ordinal del nivell de necessitat. Només amb l'objectiu actiu. A regar-parcial i regar-complet.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N24e14bf560d949ae8986f80f7f42b615">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Accio_Reg"/>
+    <owl:hasValue>regar-parcial</owl:hasValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N4ae8771d8eee4abaaff9965efde8f216">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+    <owl:oneOf rdf:nodeID="N4cabd6c3b82d462aad8102d9213de4df"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N0fb7b0e0e6624e0885b4f3b36bd13951">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Reg"/>
+    <rdf:rest rdf:nodeID="N9d4580e39ea446f693cc535a47191ef9"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N17e66cbf2d2a434384031d6851acef32">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Motiu"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nf3576ec1d1b24cf5bd8fc11e4f3abc6d">
+    <xsd:maxInclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#double">100.0</xsd:maxInclusive>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nc948d1ef67424df687fbabea15d6b85b">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR6_Bomba"/>
+    <rdf:rest rdf:nodeID="Nad22a68df7d64eff9e9867ebddc59f79"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Codi_Font">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:comment xml:lang="ca">Símbol exacte del slot font de preferencia-reg a CLIPS.</rdfs:comment>
+    <rdfs:label xml:lang="ca">codi de la font</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#tria_operador">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Reg_Seleccionat"/>
+    <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Reg"/>
+    <rdfs:comment xml:lang="ca">Operador guanyador de la selecció.</rdfs:comment>
+    <rdfs:label xml:lang="ca">tria operador</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Decisio_Reg">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Fet_Reg_Accio"/>
+    <rdfs:subClassOf rdf:nodeID="N17e66cbf2d2a434384031d6851acef32"/>
+    <rdfs:comment xml:lang="ca">Resultat de la deliberació (selecció o ordre): ja té un criteri (Motiu) que l'ha justificada.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Decisió de reg</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Exempta_Per_Nivell">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Font_Preferencia_Reg"/>
+    <rdfs:range rdf:nodeID="N4ae8771d8eee4abaaff9965efde8f216"/>
+    <rdfs:comment xml:lang="ca">Nivell de necessitat per al qual la regla deixa de ser aplicable. AVR1 no rebutja si l'estrès és crític.</rdfs:comment>
+    <rdfs:label xml:lang="ca">s'exempta per nivell</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N46ff99d5c051467e9e723d7c6a6fbd38">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>anticipada</rdf:first>
+    <rdf:rest rdf:nodeID="N709c526bd9ec48de9d25775ed06af36d"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nf68a3fe793e34f6482bedcf7caf001b0">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+    <owl:oneOf rdf:nodeID="Nbfbe41336ee24eafb2d9aed034c5af35"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N8b76d7d8dd3243e297bef68fad0d62ae">
+    <rdf:first rdf:nodeID="Nf3576ec1d1b24cf5bd8fc11e4f3abc6d"/>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N102a673084184c619a7cfeb66b284ae2">
+    <xsd:maxInclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">23</xsd:maxInclusive>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Motiu">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Decisio_Reg"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:comment xml:lang="ca">Criteri que ha decidit: màxima valoració, empat desfet per estalvi d'aigua o única opció que compleix les restriccions dures.</rdfs:comment>
+    <rdfs:label xml:lang="ca">motiu</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N9a1778a808b54bc7b7f8040599d53c24">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Valor_Preferencia"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Na7031492f3604756a06b33673803a16a">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+    <owl:onDatatype rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <owl:withRestrictions rdf:nodeID="N9d40f0517a56491daaff05c182d6e368"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Objectiu">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N24f70ed769ff424aadcc6bd66a860fb5">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Regar_Complet"/>
+    <rdf:rest rdf:nodeID="N9d27fe6699ae4433be4132e8a5c0fa1b"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nb31cb795acb2432782bb740342fe6f87">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>acceptable</rdf:first>
+    <rdf:rest rdf:nodeID="Nf392cf15cf934e80a862a30e399c6304"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nbbd167fbefa44e2893b0613e352700c0">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Nivell_Necessitat"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Ndbe5b8f4cac44f558ac370d6a450728f">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Operador_Reg"/>
+    <rdf:rest rdf:nodeID="Ne594719520644ef09bf4fa3cb7fe0345"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N6fc5986a83ac46e695ff61d1a8a2d107">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:intersectionOf rdf:nodeID="N0fb7b0e0e6624e0885b4f3b36bd13951"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nb544675ef6d1496f8c6f971f5bb7e9cd">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Accio_Reg"/>
+    <owl:hasValue>regar-complet</owl:hasValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N4784fca8e6724e0e9604430d24043345">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Cicle_Reg"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N89533dfe8c104fbf99b17bfa83305137">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Preferencia_Reg"/>
+    <rdf:rest rdf:nodeID="N15449aa5f6484002ae5d0d6b12f0eb0c"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N05faf8647c184a18b6d856c38d44f7fe">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:intersectionOf rdf:nodeID="N101279074955466da818bcff25954424"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Observacio_Hora">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Observacio"/>
+    <rdfs:subClassOf rdf:nodeID="N2a59294cc8fc43b1b190e6654db01438"/>
+    <rdfs:comment xml:lang="ca">Hora local d'un cicle (plantilla CLIPS moment). Observat, 1 cicle de persistència. El reg la fa servir per saber si és hora fresca. És global de la planta: no cal observa_a.</rdfs:comment>
+    <rdfs:label xml:lang="ca">Observació d'hora</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N7e22449fe61949998561755fd66c10dc">
+    <rdf:first rdf:nodeID="Ncc6038df377342e2ac2ab7f751da6ef5"/>
+    <rdf:rest rdf:nodeID="Nd1a316053a17468bbbfa5a204e5f589e"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N966b19092d3542ec9b87f92972f8cec8">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Estat_Operador"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nad22a68df7d64eff9e9867ebddc59f79">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR7_Estalvi"/>
+    <rdf:rest rdf:nodeID="N036e648036dd4d5597ac65eb1017d452"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N9bf1c897cf8746aabd857bc77b907ab2">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+    <owl:oneOf rdf:nodeID="Nb31cb795acb2432782bb740342fe6f87"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Naa2cf585f70049a48f2b2da07dec35b9">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+    <owl:members rdf:nodeID="Nfaec27d12f61423a853575c8721c995c"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N726222f45a4640e99144ab883c482fb3">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+    <rdf:first>mitja</rdf:first>
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#te_estat">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#te_component">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N46089a432ada4f84abcd76674afb6948">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Tipus_Preferencia"/>
+    <owl:hasValue>numerica</owl:hasValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N23a3e5eba409437fb85f0c8bdb8641b7">
+    <xsd:minInclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</xsd:minInclusive>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N50e9e95879b04bcb8ac98da94ed1bbfb">
+    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#AVR3_Sensibilitat"/>
+    <rdf:rest rdf:nodeID="N7a64a2776f2d4c498f51683fbc0ce901"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nd04a0ca278c24ed8bb68707ee3059411">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+    <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaReg#Tipus_Preferencia"/>
+    <owl:hasValue>acceptable</owl:hasValue>
+  </rdf:Description>
+</rdf:RDF>

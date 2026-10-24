@@ -339,7 +339,9 @@
   (slot cicle (type INTEGER))
   (slot hora (type INTEGER) (range 0 23)))
 
-; CONEIXEMENT DEL DOMINI | estatic
+; CONEIXEMENT DEL DOMINI | estatic | Origen del fet: ../../ontologia_reg.rdf (Config_Reg_Defecte),
+; projectat per ontology_loader.py. Els valors per defecte de sota nomes documenten els mateixos
+; valors; E0 comprova que coincideixen amb l'ontologia.
 (deftemplate reg-config
   ; FAO-56: s'ha de regar "abans o en el moment" que s'esgota l'aigua facilment disponible
   ; (RAW = p * TAW). A partir d'aquesta fraccio de p es pot anticipar el reg (hores fresques).
@@ -529,19 +531,18 @@
   (objectiu (id Obj_Produccio_Energia) (tipus produccio-energia) (restriccio tova) (estat inactiu))
   (objectiu (id Obj_Estabilitat) (tipus estabilitat) (restriccio tova) (estat inactiu))
   (objectiu (id Obj_Minimitzar_Moviment) (tipus minimitzar-moviment) (restriccio tova) (estat inactiu))
-  (objectiu (id Obj_Estalvi_Aigua) (tipus estalvi-aigua) (restriccio tova) (estat inactiu))   ; v1_9
+  ; Obj_Estalvi_Aigua (v1_9) ja no es instancia aqui: el defineix ../../ontologia_reg.rdf
+  ; i ontology_loader.py el projecta junt amb la seva prioritat i el seu conflicte.
 
   (prioritat (major Obj_Seguretat) (menor Obj_Produccio_Cultiu))
   (prioritat (major Obj_Produccio_Cultiu) (menor Obj_Produccio_Energia))
   (prioritat (major Obj_Produccio_Energia) (menor Obj_Estabilitat))
   (prioritat (major Obj_Estabilitat) (menor Obj_Minimitzar_Moviment))
-  (prioritat (major Obj_Produccio_Cultiu) (menor Obj_Estalvi_Aigua))                       ; v1_9
 
   (conflicte (objectiu-1 Obj_Produccio_Cultiu) (objectiu-2 Obj_Produccio_Energia))
   (conflicte (objectiu-1 Obj_Seguretat) (objectiu-2 Obj_Produccio_Energia))
   (conflicte (objectiu-1 Obj_Produccio_Energia) (objectiu-2 Obj_Minimitzar_Moviment))
-  (conflicte (objectiu-1 Obj_Produccio_Cultiu) (objectiu-2 Obj_Estalvi_Aigua))              ; v1_9
-  (reg-config)                                                                               ; v1_9
+  ; (reg-config) tambe ve de l'ontologia de reg (Config_Reg_Defecte).
 
   ; quin risc activa quin objectiu (Risc_Dades no n'activa cap: obre un impasse)
   (activa (tipus-risc estres-hidric) (objectiu Obj_Produccio_Cultiu))
