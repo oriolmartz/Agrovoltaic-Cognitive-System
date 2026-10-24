@@ -12,9 +12,25 @@ Calen **Python 3.11, 3.12 o 3.13**. Des de la carpeta `simulador`:
 python -m venv venv
 venv\Scripts\activate            (Windows)   ·   source venv/bin/activate   (Linux/Mac)
 python -m pip install -r requirements.txt
-python verificacio/e1_regressio.py      # comprovació: totes les versions han de sortir amb fail 0
+python verificacio/e0_ontologia.py      # RDF carregable i topologia no duplicada
+python verificacio/e1_regressio.py      # snapshots històriques: fail 0
 ```
 
+
+## Ontologies com a entrada executable
+
+`../ontologia_domini.rdf` i `../ontologia_model.rdf` formen ara part del runtime. El primer actua com a **TBox/contracte**: `ontology_loader.py` comprova que les classes i propietats operacionals existeixen i que les relacions del model respecten els `domain/range` del domini. El segon actua com a **ABox/instanciació** i aporta sectors, cultius, panells, sensors i estat inicial. Només després d'aquesta validació RDFLib projecta els fets estàtics `sector`, `cultiu`, `panell` i `estat-sensor` a CLIPS. La capa Python no avalua candidats ni selecciona accions: aquesta responsabilitat continua dins de CLIPS.
+
+`config.json` conserva els paràmetres físics del simulador per sector, però **no enumera els panells**. La llista de panells i la relació sector--cultiu provenen de `ontologia_model.rdf`; el vocabulari que pot utilitzar aquesta projecció queda governat per `ontologia_domini.rdf`.
+
+Per inspeccionar o validar el mapping:
+
+```
+python ontology_loader.py --fets
+python verificacio/e0_ontologia.py
+```
+
+Els llindars agronòmics, objectius, prioritats i conflictes encara són coneixement operacional CLIPS perquè la versió actual del RDF no n'instancia els valors necessaris.
 
 ## Nucli CLIPS modular
 
@@ -23,8 +39,11 @@ responsabilitat cognitiva i `clips_core/soar.clp` es genera automàticament:
 
 ```
 python clips_core/build_clips.py
-python clips_core/build_clips.py --check-baseline   # només per al refactor inicial
+python clips_core/build_clips.py --check-generated
 ```
+
+`--check-baseline` es conserva només com a comparació històrica amb v1.8. Des de la integració RDF s'espera que indiqui `DIFERENT`, perquè el `deffacts` ja no duplica sectors, cultius, panells ni sensors.
+
 
 El `run_soar.clp` nou és només un punt d'entrada manual mínim. Les versions i els `run_soar_v1_x.clp` històrics es conserven fora del nucli actiu, a `../history/clips/simulator/`, per a E1 i la reproducció històrica.
 
@@ -33,7 +52,8 @@ El `run_soar.clp` nou és només un punt d'entrada manual mínim. Les versions i
 Amb 12 nuclis triga uns 10 minuts. Amb 2, uns 40 (E8 i E9 són els més llargs):
 
 ```
-python verificacio/e1_regressio.py          # E1  regressió de totes les versions del CLIPS
+python verificacio/e0_ontologia.py          # E0  domini -> validació model -> topologia CLIPS
+python verificacio/e1_regressio.py          # E1  regressió de totes les versions històriques
 python verificacio/e2_graella.py            # E2  graella exhaustiva (--rapid: versió reduïda)
 python verificacio/e3_llindars.py           # E3  57 casos als llindars
 python verificacio/casos_prova.py           # 11 casos de prova documentats -> CASOS_PROVA.md
@@ -59,8 +79,7 @@ versió del CLIPS es tria a `config.json` (`"clp"`).
 Cada experiment desa els resultats a la seva carpeta: `resultats/E1/`, `resultats/E2/`… i les
 simulacions soltes a `resultats/simulacions/`.
 
-**Traça del CLIPS** (el mateix que es veu amb `run_soar`: percepció, elaboració, proposta,
-avaluació, selecció, impasses, explicació…):
+**Traça del CLIPS** (percepció, elaboració, proposta, avaluació, selecció, impasses i explicació):
 - `simulador.py` la desa sempre a `resultats/simulacions/traca/`, un fitxer per dia (`--sense-traca` per no desar-la);
 - `experiments.py` la desa només si s'hi afegeix `--traca`, a `resultats/<E>/traca/`
   (per exemple `python experiments.py E7 --dies 48 --traca`). Ocupa uns 80 kB per dia;
@@ -73,8 +92,9 @@ avaluació, selecció, impasses, explicació…):
 | `clips_core/soar.clp` | Punt d'entrada canònic del simulador. Es genera a partir dels mòduls de `clips_core/modules.txt`. |
 | `clips_core/core/`, `memory/`, `reasoning/`, `deliberation/`, `action/` | Font CLIPS modular, separada per responsabilitats cognitives. |
 | `../history/clips/simulator/soar_v1_8.clp` | Baseline monolítica congelada per a regressió i comparació. |
-| `clips_core/build_clips.py` | Regenera `soar.clp` i pot comprovar equivalència amb la baseline v1_8. |
-| `clips_bridge.py` | Pont Python ↔ CLIPS. Només coneix el contracte de memòria de treball, no el domini. |
+| `clips_core/build_clips.py` | Regenera `soar.clp`, comprova que correspon als mòduls i permet comparar amb v1.8 com a referència històrica. |
+| `ontology_loader.py` | Llegeix `../ontologia_domini.rdf` (TBox) i `../ontologia_model.rdf` (ABox), valida vocabulari + `domain/range` i projecta la instanciació a fets CLIPS. |
+| `clips_bridge.py` | Pont Python ↔ CLIPS. Injecta la projecció ontològica al `reset` i gestiona el contracte de memòria de treball. |
 | `dades.py` | Llegeix i fusiona Open-Meteo, XMS-Cat i PVGIS (vegeu `dades_reals/FONTS.md`). |
 | `fisica.py` | Model físic simplificat: sol, producció, llum i temperatura del cultiu, aigua al sòl. |
 | `simulador.py` | Bucle horari, sensors, previsió amb soroll, actuadors i fallades, controladors de referència, invariants. |
@@ -87,8 +107,8 @@ avaluació, selecció, impasses, explicació…):
 | `CASOS_PROVA.md` | Els casos de prova documentats (es regenera amb `verificacio/casos_prova.py`). |
 | `EXPERIMENTS.md` | Catàleg: pregunta, perspectiva de V&V, disseny, test i ordre de cada experiment. |
 | `REGISTRE_ITERACIONS.md` | Registre d'iteracions (observació → experiment → canvi → regressió). |
-| `verificacio/` | E1 (regressió), E2 (graella exhaustiva: anomalies de Preece, seguretat, monotonia, cobertura), E3 (casos als llindars) i els casos de prova documentats (`casos_prova.py`). |
-| `config.json` | Paràmetres per defecte. Un escenari JSON pot sobreescriure qualsevol clau. |
+| `verificacio/` | E0 (TBox→ABox→CLIPS), E1 (regressió històrica), E2 (graella exhaustiva), E3 (llindars) i casos de prova documentats. |
+| `config.json` | Paràmetres físics i de simulació. La topologia no s'hi duplica: les llistes de panells es deriven del RDF. |
 
 ## Contracte amb el CLIPS (el que NO es pot canviar sense avisar)
 
@@ -97,12 +117,14 @@ slot, cal tocar `clips_bridge.py`.
 
 | Direcció | Fets |
 |---|---|
-| Python → CLIPS | `observacio`, `prediccio`, `energia` (amb el `cicle`), `estat-sensor` (modifica `operatiu`, `qualitat`, `cicle-ultima-lectura`), `panell` (modifica `angle`, `angle-optim-produccio`, `disponible`, `estat-mecanic`), `fase` (`espera` → `percepcio`) |
+| RDF/Python → CLIPS al `reset` | `ontologia_domini.rdf` valida el contracte; `sector`, `cultiu`, `panell`, `estat-sensor` es generen des de `ontologia_model.rdf` |
+| Python → CLIPS a cada cicle | `observacio`, `prediccio`, `energia`; actualitza `estat-sensor`, `panell` i `fase` |
 | CLIPS → Python | `ordre-actuador`, `operador-seleccionat`, `explicacio`, `risc`, `preferencia` (per saber si ha decidit un chunk o el reforç), `operador`, `subobjectiu` (impasses), `fragment-apres`, `rl-valor`, `epmem-episodi` |
 | Control | `cicle` (el CLIPS l'incrementa a `tanca-cicle`), `fase` final ha de ser `espera` |
 | Interruptors | `REFORC::activa-reforc`, `REFORC::activa-parelles`, `APRENENTATGE::activa-chunking`, `MEMORIA::epmem-aprenentatge` |
 
-El `deffacts escenari-1` porta dades del cicle 1: el pont les esborra i hi posa les del simulador.
+El `deffacts coneixement-inicial` ja no conté la topologia ni entrades sintètiques. Conserva el control inicial, els llindars agronòmics i els objectius/relacions de control que encara no estan instanciats al RDF. Les observacions, prediccions i energia les posa sempre el simulador.
+
 El pont també **esborra els fets de cicles vells** (més de 3 cicles enrere): el CLIPS mai no mira
 més enllà de `c-2`, i així la memòria de treball no creix. La memòria a llarg termini
 (`epmem-episodi`, `rl-valor`, `fragment-apres`) no es toca.

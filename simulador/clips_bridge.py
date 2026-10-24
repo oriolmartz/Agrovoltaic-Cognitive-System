@@ -1,7 +1,7 @@
 """Pont entre Python i el controlador SOAR escrit en CLIPS (clipspy).
 
-Aquest fitxer NO conte coneixement del domini: nomes sap el contracte de memoria
-de treball de soar_v1_x.clp (plantilles observacio, prediccio, energia,
+Aquest fitxer NO conte regles de decisio del domini: coneix el contracte de memoria
+de treball i delega la projeccio RDF a ontology_loader.py (plantilles observacio, prediccio, energia,
 estat-sensor, panell, fase, cicle; sortides operador-seleccionat, ordre-actuador,
 explicacio, risc, impas, fragment-apres, preferencia).
 
@@ -21,8 +21,12 @@ from dataclasses import dataclass, field
 
 import clips
 
-SECTORS = ("Sector_1", "Sector_2", "Sector_3")
-SENSORS = ("humitat-sol", "pluja", "radiacio", "temperatura-aire", "temperatura-cultiu", "vent")
+from ontology_loader import ONTOLOGIA_MODEL_DEFECTE, carrega_model, injecta_model
+
+# La topologia no es duplica en Python: es deriva de l'ontologia de model.
+_MODEL_DEFECTE = carrega_model(ONTOLOGIA_MODEL_DEFECTE)
+SECTORS = _MODEL_DEFECTE.ids_sectors
+SENSORS = _MODEL_DEFECTE.tipus_sensors
 
 # Fets lligats a un cicle que el sistema ja no consulta passats 2 cicles.
 # (episodi i rl-traca es consulten a c-1 i c-2; epmem-episodi, rl-valor i
@@ -89,11 +93,18 @@ class ResultatCicle:
 class ControladorCLIPS:
     """Una instancia = un entorn CLIPS independent (memoria i chunks propis)."""
 
-    def __init__(self, fitxer_clp: str, *, reforc: bool | None = None, parelles: bool | None = None,
+    def __init__(self, fitxer_clp: str, *, fitxer_ontologia: str | None = None,
+                 reforc: bool | None = None, parelles: bool | None = None,
                  chunking: bool | None = None, epmem: bool | None = None,
                  estrategia: str | None = None, vigila_regles: bool = False,
                  conserva_sortida: bool = False, neteja: bool = True):
         self.fitxer = os.path.abspath(fitxer_clp)
+        # Per compatibilitat, el CLP actiu usa automàticament l'ontologia de model.
+        # Les snapshots historiques no la reben: així E1 continua reproduint-les tal com eren.
+        if fitxer_ontologia is None and os.path.basename(self.fitxer) == "soar.clp" and "clips_core" in os.path.normpath(self.fitxer).split(os.sep):
+            fitxer_ontologia = str(ONTOLOGIA_MODEL_DEFECTE)
+        self.fitxer_ontologia = os.path.abspath(fitxer_ontologia) if fitxer_ontologia else None
+        self.model_ontologic = carrega_model(self.fitxer_ontologia) if self.fitxer_ontologia else None
         self.env = clips.Environment()
         self.cap = _Captura()
         self.env.add_router(self.cap)
@@ -124,6 +135,10 @@ class ControladorCLIPS:
         Compte: les regles creades per chunking NO s'esborren amb (reset); per a execucions
         independents amb chunking, millor crear un ControladorCLIPS nou."""
         self.env.reset()
+        # La topologia estàtica del model (sectors, cultius, panells i sensors)
+        # prové del RDF, no d'un deffacts duplicat.
+        if self.model_ontologic is not None:
+            injecta_model(self.env, self.model_ontologic)
         self.mecanismes = {}
         for nom, funcio in (("reforc", "REFORC::activa-reforc"), ("parelles", "REFORC::activa-parelles"),
                             ("chunking", "APRENENTATGE::activa-chunking"),

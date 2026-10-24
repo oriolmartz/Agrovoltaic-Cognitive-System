@@ -408,27 +408,23 @@
   (slot normalitzada (type NUMBER) (default 0))    ; cardinalitat / mida del cue
   (slot perfecte (allowed-symbols si no) (default no))) ; tots els trets satisfets
 
-; ESCENARI INICIAL (inventat)
-; Dades d'estructura: OntologiaModel_v2.
-; Observacions del cicle 1: dades SINTÈTIQUES d'operació normal (sense riscos).
+; CONEIXEMENT OPERACIONAL INICIAL
+; La topologia de la planta (sectors, cultius, panells i sensors) NO es duplica
+; aquí: la capa Python la carrega de ../ontologia_model.rdf i la projecta a
+; fets CLIPS després de cada (reset). Aquest deffacts conserva únicament
+; coneixement operacional que l'ontologia actual encara no codifica (llindars,
+; objectius i relacions de control) i l'estat del cicle cognitiu.
 
-(deffacts escenari-1
-  ; control
+(deffacts coneixement-inicial
+  ; control arquitectònic
   (fase (nom percepcio))
   (cicle (numero 1))
   (traca (pas 0) (fase inici)
-         (missatge "Planta agrovoltaica amb 3 sectors (tomaquet, enciam, vinya). Inici del cicle 1."))
+         (missatge "Inici del cicle 1. La topologia del model es carrega des de RDF."))
 
-  ; sectors i cultius
-  (sector (id Sector_1) (cultiu Tomaquet_1))
-  (sector (id Sector_2) (cultiu Enciam_1))
-  (sector (id Sector_3) (cultiu Vinya_1))
-
-  (cultiu (id Tomaquet_1) (tipus tomaquet) (sensibilitat mitja))
-  (cultiu (id Enciam_1) (tipus enciam) (sensibilitat alt))
-  (cultiu (id Vinya_1) (tipus vinya) (sensibilitat baix))
-
-  ; llindars per tipus de cultiu
+  ; llindars agronòmics per tipus de cultiu
+  ; Encara són coneixement operacional CLIPS perquè ontologia_model.rdf no
+  ; conté aquests valors numèrics. La traçabilitat de les fonts és a dades_reals/FONTS.md.
   (llindars-cultiu (tipus tomaquet)
     (temp-optima-min 20.0) (temp-optima-max 27.0)
     (temp-absoluta-min 7.0) (temp-absoluta-max 35.0)
@@ -445,21 +441,10 @@
     (fraccio-esgotament-p 0.45)
     (radiacio-optima-max 610.0) (radiacio-estres 780.0))
 
-  ; panells (els límits mecànics agafen els valors per defecte de la plantilla)
-  (panell (id Panell_1_1) (sector Sector_1) (angle 25.0) (angle-optim-produccio 30.0)
-          (disponible si) (estat-mecanic normal))
-  (panell (id Panell_1_2) (sector Sector_1) (angle 25.5) (angle-optim-produccio 30.0)
-          (disponible si) (estat-mecanic normal))
-  (panell (id Panell_2_1) (sector Sector_2) (angle 35.0) (angle-optim-produccio 35.0)
-          (disponible si) (estat-mecanic normal))
-  (panell (id Panell_2_2) (sector Sector_2) (angle 34.5) (angle-optim-produccio 35.0)
-          (disponible si) (estat-mecanic normal))
-  (panell (id Panell_3_1) (sector Sector_3) (angle 15.0) (angle-optim-produccio 20.0)
-          (disponible si) (estat-mecanic normal))
-  (panell (id Panell_3_2) (sector Sector_3) (angle 15.5) (angle-optim-produccio 20.0)
-          (disponible si) (estat-mecanic normal))
-
   ; objectius, prioritats i conflictes
+  ; L'ontologia defineix el vocabulari d'Objectiu i les propietats associades,
+  ; però la versió actual no instancia aquests objectius. Per tant, continuen
+  ; com a coneixement de control explícit dins del motor de regles.
   (objectiu (id Obj_Seguretat) (tipus seguretat) (restriccio dura) (estat inactiu))
   (objectiu (id Obj_Produccio_Cultiu) (tipus produccio-cultiu) (restriccio tova) (estat inactiu))
   (objectiu (id Obj_Produccio_Energia) (tipus produccio-energia) (restriccio tova) (estat inactiu))
@@ -481,48 +466,4 @@
   (activa (tipus-risc temperatura) (objectiu Obj_Produccio_Cultiu))
   (activa (tipus-risc meteorologic-advers) (objectiu Obj_Produccio_Cultiu))
   (activa (tipus-risc mecanic) (objectiu Obj_Seguretat))
-  (activa (tipus-risc fallada-actuador) (objectiu Obj_Seguretat))
-
-  ; energia (cicle 1)
-  (energia (sector Sector_1) (cicle 1) (produccio-actual 18.5) (demanda 12.0))
-  (energia (sector Sector_2) (cicle 1) (produccio-actual 16.2) (demanda 11.5))
-  (energia (sector Sector_3) (cicle 1) (produccio-actual 21.8) (demanda 13.0))
-
-  ; observacions (cicle 1, dades sintètiques: tots els valors dins del rang òptim)
-  (observacio (sector Sector_1) (cicle 1)
-    (radiacio 300.0) (temperatura-aire 23.0) (temperatura-cultiu 24.0)
-    (humitat-sol 75.0) (vent 4.0) (pluja 0.0))
-  (prediccio (sector Sector_1) (cicle 1)
-    (radiacio 320.0) (temperatura 24.0) (vent 5.0) (pluja 0.0))
-  (observacio (sector Sector_2) (cicle 1)
-    (radiacio 150.0) (temperatura-aire 17.0) (temperatura-cultiu 18.0)
-    (humitat-sol 80.0) (vent 4.0) (pluja 0.0))
-  (prediccio (sector Sector_2) (cicle 1)
-    (radiacio 160.0) (temperatura 18.0) (vent 5.0) (pluja 0.0))
-  (observacio (sector Sector_3) (cicle 1)
-    (radiacio 500.0) (temperatura-aire 24.0) (temperatura-cultiu 25.0)
-    (humitat-sol 70.0) (vent 4.0) (pluja 0.0))
-  (prediccio (sector Sector_3) (cicle 1)
-    (radiacio 520.0) (temperatura 25.0) (vent 5.0) (pluja 0.0))
-
-  ; estat dels sensors (tots operatius)
-  (estat-sensor (sector Sector_1) (tipus humitat-sol) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_1) (tipus pluja) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_1) (tipus radiacio) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_1) (tipus temperatura-aire) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_1) (tipus temperatura-cultiu) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_1) (tipus vent) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_2) (tipus humitat-sol) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_2) (tipus pluja) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_2) (tipus radiacio) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_2) (tipus temperatura-aire) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_2) (tipus temperatura-cultiu) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_2) (tipus vent) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_3) (tipus humitat-sol) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_3) (tipus pluja) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_3) (tipus radiacio) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_3) (tipus temperatura-aire) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_3) (tipus temperatura-cultiu) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1))
-  (estat-sensor (sector Sector_3) (tipus vent) (operatiu si) (qualitat valida) (cicle-ultima-lectura 1)))
-
-
+  (activa (tipus-risc fallada-actuador) (objectiu Obj_Seguretat)))

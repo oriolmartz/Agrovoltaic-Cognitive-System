@@ -33,6 +33,7 @@ Els resultats de cada experiment queden a `resultats/<E>/`.
 
 | | Pregunta | Perspectiva | Com | Ordre |
 |---|---|---|---|---|
+| **E0** | El model RDF és coherent amb l’ontologia de domini i es pot convertir sense duplicació en la topologia que consumeix CLIPS? | Verificació de representació i consistència d’artefactes | Carrega `ontologia_domini.rdf` com a TBox, valida el vocabulari operacional i els `domain/range` de `ontologia_model.rdf`, genera els fets CLIPS i comprova que ni `domini.clp` ni `config.json` reintrodueixen la topologia manualment | `python verificacio/e0_ontologia.py` |
 | **E1** | Un canvi trenca res que abans funcionava? | Regressió; validació incremental (Batarseh) | Executa el `run_soar_v1_x.clp` de cada versió i compta quantes proves passen | `python verificacio/e1_regressio.py` |
 | **E2** | Hi ha anomalies a la base de regles? | Anomalies de Preece (Menzies §2): deficiència, conflicte, regles mai disparades. A més, una prova metamòrfica de monotonia | 24.500 combinacions d'entrades × 3 cultius, un cicle cadascuna. Es comproven propietats de seguretat, monotonia amb el vent i cobertura de regles | `python verificacio/e2_graella.py` (`--rapid`: 1.890 casos) |
 | **E3** | Les conclusions són correctes als llindars? | Casos positius i negatius amb el resultat esperat escrit abans (VVR de Zlatareva, a Batarseh). Anàlisi de valors límit | 57 casos: just a sota, al llindar i just a sobre de cada llindar de les fonts (vent, temperatura, aigua, radiació) | `python verificacio/e3_llindars.py` |
@@ -91,5 +92,5 @@ i la traça completa de cada cas:
 ## Opcions comunes
 
 - `--processos N`: quants processos fer servir en paral·lel. Per defecte, tots els nuclis.
-- `--traca`: desa la traça del CLIPS (com `run_soar`) a `resultats/<E>/traca/`.
+- `--traca`: desa la traça completa del CLIPS a `resultats/<E>/traca/`.
 - `--dies N`: a E4, E5, E6, E7, E11, E12 i E14, nombre de dies. A E8, E9, E10 i E13, nombre d'execucions.

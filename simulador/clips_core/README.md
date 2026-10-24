@@ -1,33 +1,38 @@
 # Nucli CLIPS modular
 
-La font de treball està separada per responsabilitats cognitives. `soar.clp`
-és un artefacte generat per concatenació, mantingut perquè `clipspy`, els
-experiments i les eines de verificació puguin carregar un únic fitxer sense
-canviar el comportament.
+La font de treball està separada per responsabilitats cognitives. `soar.clp` és un artefacte generat per concatenació perquè `clipspy` i les eines d'experimentació puguin carregar un únic fitxer.
 
 ## Estructura
 
 ```text
 clips_core/
 ├── core/
-│   ├── domini.clp              # DOMINI: templates, fets inicials i contracte WM
+│   ├── domini.clp              # DOMINI: templates + coneixement operacional estàtic
 │   └── main.clp                # MAIN
 ├── memory/
 │   ├── episodic.clp            # MEMORIA: epmem
 │   ├── reinforcement.clp       # REFORC: Q / RL
 │   └── chunking.clp            # APRENENTATGE: chunking procedural
 ├── reasoning/
-│   ├── deliberacio.clp         # percepcio, elaboracio, proposta, avaluacio
-│   └── decisio.clp             # seleccio i deteccio d'impasses
+│   ├── deliberacio.clp         # percepció, elaboració, proposta, avaluació
+│   └── decisio.clp             # selecció i detecció d'impasses
 ├── deliberation/
-│   └── impasses.clp            # resolucio dels subobjectius/impasses
+│   └── impasses.clp            # resolució de subobjectius/impasses
 ├── action/
-│   └── accio.clp               # aplicacio, explicacio i monitoratge
+│   └── accio.clp               # aplicació, explicació i monitoratge
 ├── modules.txt                 # ordre de build
 ├── build_clips.py
 ├── soar.clp                    # GENERAT, punt d'entrada de clipspy
-└── run_soar.clp                # execucio manual minima
+└── run_soar.clp                # smoke test manual; no carrega RDF
 ```
+
+## RDF i `domini.clp`
+
+La topologia concreta **no** s'instancia a `domini.clp`. Abans d'injectar res, `../ontology_loader.py` carrega `../../ontologia_domini.rdf` com a TBox i valida que `../../ontologia_model.rdf` utilitzi el vocabulari operacional canònic i respecti els `domain/range`. Després de `(reset)`, la instanciació del model es projecta a `sector`, `cultiu`, `panell` i `estat-sensor`.
+
+`domini.clp` conserva els `deftemplate` i el coneixement operacional que el RDF actual encara no instancia: llindars agronòmics, objectius, prioritats, conflictes i activacions.
+
+Això evita tenir dues fonts de veritat per a la planta sense traslladar cap decisió a Python.
 
 ## Regla de treball
 
@@ -35,15 +40,13 @@ Editeu els fitxers modulars i després regenereu el monòlit:
 
 ```bash
 python clips_core/build_clips.py
+python clips_core/build_clips.py --check-generated
 ```
 
-Per comprovar que el refactor inicial és exactament equivalent a v1_8:
+La v1.8 original es conserva intacta a `../../history/clips/simulator/`. `--check-baseline` continua disponible com a comparació històrica, però des de la integració RDF és normal que doni `DIFERENT`.
+
+Per comprovar el mapping RDF abans de provar el controlador:
 
 ```bash
-python clips_core/build_clips.py --check-baseline
+python verificacio/e0_ontologia.py
 ```
-
-En el refactor inicial, `soar.clp` és byte a byte idèntic a
-`../../history/clips/simulator/soar_v1_8.clp`. A partir de la següent iteració, és normal que deixi de ser-ho.
-
-`../../history/clips/simulator/run_soar_v1_8.clp` es conserva intacte perquè E1 pugui continuar reproduint la regressió històrica de la v1_8.

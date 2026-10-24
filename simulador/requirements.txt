@@ -4,3 +4,5 @@ numpy==2.4.4
 pandas==3.1.0
 scipy==1.17.1
 tzdata==2026.5   # zona horaria Europe/Madrid a Windows (Python no la porta)
+
+rdflib==7.5.0

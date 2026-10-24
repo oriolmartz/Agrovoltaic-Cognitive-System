@@ -1,0 +1,1163 @@
++%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%$+!!!!!!!!!!!!!!!!!!!!!!!!*******$+!!!!!!!!!!!!!!**********************************+$!!!!!!!!!!**+********+::::::!!!!!!!!!!!!!!!!!!!!!!++****+********
+
+=== INICI ===
+
+=== C1: operacio normal ===
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[PROPOSTA] Sector_3: mantenir-posicio (15.5 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (25.5 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (3 punts).
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (3 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO] Sector_1: ORDRE orientar-produccio -> 30.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 1
+   Accio:      orientar-produccio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(1) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (3 punts)
+
+[EXPLICACIO] Sector_2, cicle 1
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (4 punts)
+
+[EXPLICACIO] Sector_3, cicle 1
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(1) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (3 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #1: Sector_1, cicle 1, orientar-produccio.
+[EPMEM] NOU EPISODI #2: Sector_2, cicle 1, mantenir-posicio.
+[EPMEM] NOU EPISODI #3: Sector_3, cicle 1, orientar-produccio.
+[FI DEL CICLE 1] Ordres enviades. Esperant les dades del cicle 2.
+
+  [PASS] C1 Sector_1 selecciona orientar-produccio
+  [PASS] C1 Sector_2 selecciona mantenir-posicio (ja es a l'angle optim)
+  [PASS] C1 Sector_3 selecciona orientar-produccio
+  [PASS] C1 cap risc elaborat
+  [PASS] C1 tres episodis a la memoria de treball
+  [PASS] C1 tres episodis a la memoria a llarg termini
+  [PASS] C1 fitxer epmem desat
+
+=== C2: operacio normal, panells arriben a l'angle ===
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #3 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #2 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #1 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 20.0 vs 20.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: orientar-produccio 2.0 (memoria: a l'episodi #1, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #2, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: orientar-produccio 2.0 (memoria: a l'episodi #3, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (7.0 punts).
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (7.0 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO] Sector_1: ORDRE orientar-produccio -> 30.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 2
+   Accio:      orientar-produccio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(7.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (7.0 punts)
+
+[EXPLICACIO] Sector_2, cicle 2
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(8.0) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (8.0 punts)
+
+[EXPLICACIO] Sector_3, cicle 2
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(7.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (7.0 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #4: Sector_1, cicle 2, orientar-produccio.
+[EPMEM] NOU EPISODI #5: Sector_2, cicle 2, mantenir-posicio.
+[EPMEM] NOU EPISODI #6: Sector_3, cicle 2, orientar-produccio.
+[FI DEL CICLE 2] Ordres enviades. Esperant les dades del cicle 3.
+
+  [PASS] C2 S1: episodi del cicle 1 = correcte
+  [PASS] C2 S3: episodi del cicle 1 = correcte
+  [PASS] C2 valoracio feta als 3 episodis del cicle 1
+  [PASS] C2 Sector_2 manté selecciona mantenir-posicio
+
+=== C3: vent critic a Sector_1 ===
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_1: vent 18.0 m/s (previsio 5.0) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] El risc mecanic de Sector_1 activa l'objectiu Obj_Seguretat.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #6 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #5 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #4 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 20.0 vs 20.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: orientar-produccio 1.5 (memoria: a l'episodi #4, cicle 2, va funcionar be, similitud 0.75).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #5, cicle 2, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: orientar-produccio 2.0 (memoria: a l'episodi #6, cicle 2, va funcionar be, similitud 1.0).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (7.0 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 3
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic
+   Candidats:  posicio-seguretat(0)
+   Descartats: mantenir-posicio orientar-produccio
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO] Sector_2, cicle 3
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(8.0) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (8.0 punts)
+
+[EXPLICACIO] Sector_3, cicle 3
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(7.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (7.0 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #7: Sector_1, cicle 3, posicio-seguretat.
+[EPMEM] NOU EPISODI #8: Sector_2, cicle 3, mantenir-posicio.
+[EPMEM] NOU EPISODI #9: Sector_3, cicle 3, orientar-produccio.
+[FI DEL CICLE 3] Ordres enviades. Esperant les dades del cicle 4.
+
+  [PASS] C3 risc mecanic critic a Sector_1
+  [PASS] C3 orientar-produccio rebutjat (restriccio dura)
+  [PASS] C3 Sector_1 selecciona posicio-seguretat
+  [PASS] C3 ordre d'actuador posicio-seguretat a Sector_1
+  [PASS] C3 Sector_2 no es veu afectat
+
+=== C4: Sector_2 sense lectura de vent (impasse de dades) ===
+[PERCEPCIO] Sector_2: falten lectures (vent=absent, temp-cultiu=18.0, humitat=80.0, radiacio=150.0). Risc de dades critic.
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #9 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #8 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #7 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA] Sector_2: sollicitar-dades (no es mou el panell).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 20.0 vs 20.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: orientar-produccio 2.0 (memoria: a l'episodi #4, cicle 2, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_2: mantenir-posicio 1.5 (memoria: a l'episodi #8, cicle 3, va funcionar be, similitud 0.75).
+[AVALUACIO] Sector_3: orientar-produccio 2.0 (memoria: a l'episodi #9, cicle 3, va funcionar be, similitud 1.0).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (5.0 punts).
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (7.0 punts).
+
+[SELECCIO] Sector_2: IMPAS DE DADES INSUFICIENTS. Sense lectura fiable de vent no es pot saber si moure el panell es segur.
+[SELECCIO -> IMPAS]
+[IMPAS] Sector_2: subobjectiu resoldre-dades. Falta la lectura de vent i ni la previsio ni l'historial indiquen vent fort. Es demanen dades i es mante la posicio.
+[CHUNKING] Nova regla chunk-1: sense lectura de vent i res no indica vent fort, sollicitar-dades requerida i panell en hold.
+[IMPAS -> SELECCIO]
+[SELECCIO] Sector_2: es selecciona sollicitar-dades. Criteri: preferencia requerida (IMPAS-dades).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE sollicitar-dades -> 34.5 graus.
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_1: ORDRE orientar-produccio -> 30.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 4
+   Accio:      orientar-produccio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(1) orientar-produccio(5.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (5.0 punts)
+
+[EXPLICACIO] Sector_3, cicle 4
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(7.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (7.0 punts)
+
+[EXPLICACIO] Sector_2, cicle 4
+   Accio:      sollicitar-dades a 34.5 graus
+   Riscos:     dades=critic
+   Candidats:  mantenir-posicio(7.5) orientar-produccio(3) sollicitar-dades(1000)
+   Descartats: cap
+   Criteri:    preferencia requerida (IMPAS-dades)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #10: Sector_1, cicle 4, orientar-produccio.
+[EPMEM] NOU EPISODI #11: Sector_3, cicle 4, orientar-produccio.
+[EPMEM] NOU EPISODI #12: Sector_2, cicle 4, sollicitar-dades.
+[MONITORATGE] Sector_1: oscil.lacio orientar-produccio -> posicio-seguretat -> orientar-produccio en tres cicles.
+[MONITORATGE] Sector_2: cal demanar al simulador les lectures que falten (risc de dades critic).
+[FI DEL CICLE 4] Ordres enviades. Esperant les dades del cicle 5.
+
+  [PASS] C4 risc de dades critic a Sector_2
+  [PASS] C4 Sector_2 selecciona sollicitar-dades (resolucio d'impasse)
+  [PASS] C4 chunk creat per l'impasse dades-insuficients
+  [PASS] C4 la regla del chunk de dades existeix
+  [PASS] C4 el vent de C3 no penalitza l'episodi de C2 (credit) -> cap empat a Sector_1
+  [PASS] C4 chunk escrit al fitxer
+
+=== C5: mateixa situacio que C4 (ha d'actuar el chunk) ===
+[PERCEPCIO] Sector_2: falten lectures (vent=absent, temp-cultiu=18.0, humitat=80.0, radiacio=150.0). Risc de dades critic.
+[PERCEPCIO] Sector_1: Panell_1_2 es a 0.0 graus pero se li va ordenar 30.0 (orientar-produccio). Fallada d'actuacio.
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] El risc fallada-actuador de Sector_1 activa l'objectiu Obj_Seguretat.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_2: l'episodi #12 (sollicitar-dades) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_3: l'episodi #11 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #10 (orientar-produccio) es valora 'dolenta' (resultat fallada, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA] Sector_2: sollicitar-dades (no es mou el panell).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: REBUIG de orientar-produccio (l'actuador no respon).
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 20.0 vs 20.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: sollicitar-dades +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: sollicitar-dades 2.0 (memoria: a l'episodi #12, cicle 4, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_1: orientar-produccio -1.5 (memoria: a l'episodi #10, cicle 4, va funcionar malament, similitud 0.75).
+[AVALUACIO] Sector_2: mantenir-posicio 1.5 (memoria: a l'episodi #8, cicle 3, va funcionar be, similitud 0.75).
+[AVALUACIO] Sector_3: orientar-produccio 2.0 (memoria: a l'episodi #11, cicle 4, va funcionar be, similitud 1.0).
+[chunk-1] Sector_2: sense lectura de vent i res no indica vent fort, sollicitar-dades requerida i panell en hold.
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_2: es selecciona sollicitar-dades. Criteri: preferencia requerida (chunk-1).
+[SELECCIO] Sector_1: orientar-produccio queda descartat (AV9-fallada).
+[SELECCIO] Sector_1: es selecciona mantenir-posicio. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (7.0 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_1: ORDRE mantenir-posicio -> 0.0 graus.
+[APLICACIO] Sector_2: ORDRE sollicitar-dades -> 34.5 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_2, cicle 5
+   Accio:      sollicitar-dades a 34.5 graus
+   Riscos:     dades=critic
+   Candidats:  mantenir-posicio(5.5) orientar-produccio(3) sollicitar-dades(1004.0)
+   Descartats: cap
+   Criteri:    preferencia requerida (chunk-1)
+
+[EXPLICACIO] Sector_1, cicle 5
+   Accio:      mantenir-posicio a 0.0 graus
+   Riscos:     fallada-actuador=alt
+   Candidats:  mantenir-posicio(1)
+   Descartats: orientar-produccio
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO] Sector_3, cicle 5
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(7.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (7.0 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #13: Sector_2, cicle 5, sollicitar-dades.
+[EPMEM] NOU EPISODI #14: Sector_1, cicle 5, mantenir-posicio.
+[EPMEM] NOU EPISODI #15: Sector_3, cicle 5, orientar-produccio.
+[MONITORATGE] Sector_2: cal demanar al simulador les lectures que falten (risc de dades critic).
+[MONITORATGE] Sector_1: l'actuador no ha respost. Cal revisio de manteniment.
+[FI DEL CICLE 5] Ordres enviades. Esperant les dades del cicle 6.
+
+  [PASS] C5 Sector_2 sense impasse (no es crea subobjectiu)
+  [PASS] C5 Sector_2 selecciona sollicitar-dades
+  [PASS] C5 preferencia requerida generada pel chunk de dades
+
+=== C6: empat forcat a Sector_3 ===
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #15 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #14 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #13 (sollicitar-dades) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 20.0 vs 20.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: orientar-produccio -2.0 (memoria: a l'episodi #10, cicle 4, va funcionar malament, similitud 1.0).
+[AVALUACIO] Sector_1: mantenir-posicio 2.0 (memoria: a l'episodi #14, cicle 5, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #8, cicle 3, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: orientar-produccio 2.0 (memoria: a l'episodi #15, cicle 5, va funcionar be, similitud 1.0).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona mantenir-posicio. Criteri: maxima valoracio (5.0 punts).
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (6.0 punts).
+
+[SELECCIO] Sector_3: IMPAS D'EMPAT entre mantenir-posicio i orientar-produccio (tots dos 7.0 punts).
+[SELECCIO -> IMPAS]
+[IMPAS] Sector_3: subobjectiu resoldre-empat. Obj_Produccio_Energia te prioritat sobre Obj_Minimitzar_Moviment -> orientar-produccio millor que mantenir-posicio.
+[CHUNKING] Nova regla chunk-2: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[IMPAS -> SELECCIO]
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: empat amb mantenir-posicio desfet per IMPAS-prioritat.
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO] Sector_1: ORDRE mantenir-posicio -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 6
+   Accio:      mantenir-posicio a 0.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(5.0) orientar-produccio(1.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (5.0 punts)
+
+[EXPLICACIO] Sector_2, cicle 6
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(6.0) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (6.0 punts)
+
+[EXPLICACIO] Sector_3, cicle 6
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(7.0) orientar-produccio(7.0)
+   Descartats: cap
+   Criteri:    empat amb mantenir-posicio desfet per IMPAS-prioritat
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #16: Sector_1, cicle 6, mantenir-posicio.
+[EPMEM] NOU EPISODI #17: Sector_2, cicle 6, mantenir-posicio.
+[EPMEM] NOU EPISODI #18: Sector_3, cicle 6, orientar-produccio.
+[FI DEL CICLE 6] Ordres enviades. Esperant les dades del cicle 7.
+
+  [PASS] C6 impasse d'empat a Sector_3 i chunk apres
+  [PASS] C6 el chunk d'empat inclou els objectius consultats
+  [PASS] C6 Sector_3 selecciona orientar-produccio (energia preval)
+  [PASS] C6 el motiu explica l'empat
+
+=== C7: sense empat a Sector_3 (el chunk dispara igualment) ===
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #18 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #17 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #16 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 20.0 vs 20.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: orientar-produccio -2.0 (memoria: a l'episodi #10, cicle 4, va funcionar malament, similitud 1.0).
+[AVALUACIO] Sector_1: mantenir-posicio 2.0 (memoria: a l'episodi #16, cicle 6, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #17, cicle 6, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: orientar-produccio 2.0 (memoria: a l'episodi #18, cicle 6, va funcionar be, similitud 1.0).
+[chunk-2] Sector_1: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[chunk-2] Sector_2: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[chunk-2] Sector_3: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona mantenir-posicio. Criteri: maxima valoracio (5.0 punts).
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (7.0 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO] Sector_1: ORDRE mantenir-posicio -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 7
+   Accio:      mantenir-posicio a 0.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(5.0) orientar-produccio(1.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (5.0 punts)
+
+[EXPLICACIO] Sector_2, cicle 7
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(8.0) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (8.0 punts)
+
+[EXPLICACIO] Sector_3, cicle 7
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(7.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (7.0 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #19: Sector_1, cicle 7, mantenir-posicio.
+[EPMEM] NOU EPISODI #20: Sector_2, cicle 7, mantenir-posicio.
+[EPMEM] NOU EPISODI #21: Sector_3, cicle 7, orientar-produccio.
+[FI DEL CICLE 7] Ordres enviades. Esperant les dades del cicle 8.
+
+  [PASS] C7 el chunk d'empat ha generat la preferencia millor-que
+  [PASS] C7 Sector_3 selecciona orientar-produccio
+  [PASS] C7 sense empat real, el motiu no parla d'empat
+
+=== C8: vent critic a Sector_1 ===
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_1: vent 18.0 m/s (previsio 5.0) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] El risc mecanic de Sector_1 activa l'objectiu Obj_Seguretat.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #21 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #20 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #19 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 20.0 vs 20.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: posicio-seguretat 2.0 (memoria: a l'episodi #7, cicle 3, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_1: orientar-produccio -1.5 (memoria: a l'episodi #10, cicle 4, va funcionar malament, similitud 0.75).
+[AVALUACIO] Sector_1: mantenir-posicio 1.5 (memoria: a l'episodi #19, cicle 7, va funcionar be, similitud 0.75).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #20, cicle 7, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: orientar-produccio 2.0 (memoria: a l'episodi #21, cicle 7, va funcionar be, similitud 1.0).
+[chunk-2] Sector_1: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[chunk-2] Sector_2: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[chunk-2] Sector_3: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (7.0 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 8
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic
+   Candidats:  posicio-seguretat(2.0)
+   Descartats: mantenir-posicio orientar-produccio
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO] Sector_2, cicle 8
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(8.0) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (8.0 punts)
+
+[EXPLICACIO] Sector_3, cicle 8
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(7.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (7.0 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #22: Sector_1, cicle 8, posicio-seguretat.
+[EPMEM] NOU EPISODI #23: Sector_2, cicle 8, mantenir-posicio.
+[EPMEM] NOU EPISODI #24: Sector_3, cicle 8, orientar-produccio.
+[FI DEL CICLE 8] Ordres enviades. Esperant les dades del cicle 9.
+
+  [PASS] C8 Sector_1 selecciona posicio-seguretat
+
+=== C9: Sector_1 sense lectura de vent (historial) ===
+[PERCEPCIO] Sector_1: falten lectures (vent=absent, temp-cultiu=24.0, humitat=75.0, radiacio=300.0). Risc de dades critic.
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #24 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #23 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #22 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA] Sector_1: sollicitar-dades (no es mou el panell).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 20.0 vs 20.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: sollicitar-dades 1.0 (memoria: a l'episodi #13, cicle 5, va funcionar be, similitud 0.5).
+[AVALUACIO] Sector_1: orientar-produccio -1.5 (memoria: a l'episodi #10, cicle 4, va funcionar malament, similitud 0.75).
+[AVALUACIO] Sector_1: mantenir-posicio 1.5 (memoria: a l'episodi #19, cicle 7, va funcionar be, similitud 0.75).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #23, cicle 8, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: orientar-produccio 2.0 (memoria: a l'episodi #24, cicle 8, va funcionar be, similitud 1.0).
+[chunk-2] Sector_1: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[chunk-2] Sector_2: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[chunk-2] Sector_3: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (7.0 punts).
+
+[SELECCIO] Sector_1: IMPAS DE DADES INSUFICIENTS. Sense lectura fiable de vent no es pot saber si moure el panell es segur.
+[SELECCIO -> IMPAS]
+[IMPAS] Sector_1: subobjectiu resoldre-dades. Falta la lectura de vent, pero el cicle anterior ja hi havia risc mecanic. Opcio segura: posicio de seguretat.
+[IMPAS] Sector_1: la deliberacio proposa posicio-seguretat (0.0 graus).
+[CHUNKING] Nova regla chunk-3: sense lectura de vent i vent fort el cicle anterior, posicio-seguretat requerida.
+[IMPAS -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: preferencia requerida (IMPAS-dades).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_2, cicle 9
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(8.0) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (8.0 punts)
+
+[EXPLICACIO] Sector_3, cicle 9
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(7.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (7.0 punts)
+
+[EXPLICACIO] Sector_1, cicle 9
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     dades=critic
+   Candidats:  mantenir-posicio(2.5) orientar-produccio(1.5) sollicitar-dades(1.0) posicio-seguretat(1000)
+   Descartats: cap
+   Criteri:    preferencia requerida (IMPAS-dades)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #25: Sector_2, cicle 9, mantenir-posicio.
+[EPMEM] NOU EPISODI #26: Sector_3, cicle 9, orientar-produccio.
+[EPMEM] NOU EPISODI #27: Sector_1, cicle 9, posicio-seguretat.
+[MONITORATGE] Sector_1: cal demanar al simulador les lectures que falten (risc de dades critic).
+[FI DEL CICLE 9] Ordres enviades. Esperant les dades del cicle 10.
+
+  [PASS] C9 el chunk de dades (hold) no dispara: el cicle anterior hi havia vent
+  [PASS] C9 impasse resolt per historial: nou chunk
+  [PASS] C9 Sector_1 selecciona posicio-seguretat
+
+=== C10: vent critic a Sector_1 ===
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_1: vent 18.0 m/s (previsio 5.0) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] El risc mecanic de Sector_1 activa l'objectiu Obj_Seguretat.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_1: l'episodi #27 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_3: l'episodi #26 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #25 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 20.0 vs 20.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: posicio-seguretat 2.0 (memoria: a l'episodi #22, cicle 8, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_1: orientar-produccio -1.5 (memoria: a l'episodi #10, cicle 4, va funcionar malament, similitud 0.75).
+[AVALUACIO] Sector_1: mantenir-posicio 1.5 (memoria: a l'episodi #19, cicle 7, va funcionar be, similitud 0.75).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #25, cicle 9, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: orientar-produccio 2.0 (memoria: a l'episodi #26, cicle 9, va funcionar be, similitud 1.0).
+[chunk-2] Sector_1: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[chunk-2] Sector_2: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[chunk-2] Sector_3: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (7.0 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 10
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic
+   Candidats:  posicio-seguretat(4.0)
+   Descartats: mantenir-posicio orientar-produccio
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO] Sector_2, cicle 10
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(8.0) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (8.0 punts)
+
+[EXPLICACIO] Sector_3, cicle 10
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(7.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (7.0 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #28: Sector_1, cicle 10, posicio-seguretat.
+[EPMEM] NOU EPISODI #29: Sector_2, cicle 10, mantenir-posicio.
+[EPMEM] NOU EPISODI #30: Sector_3, cicle 10, orientar-produccio.
+[FI DEL CICLE 10] Ordres enviades. Esperant les dades del cicle 11.
+
+
+=== C11: Sector_1 sense lectura de vent (ha d'actuar el chunk) ===
+[PERCEPCIO] Sector_1: falten lectures (vent=absent, temp-cultiu=24.0, humitat=75.0, radiacio=300.0). Risc de dades critic.
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #30 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #29 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #28 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA] Sector_1: sollicitar-dades (no es mou el panell).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 20.0 vs 20.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: sollicitar-dades 1.0 (memoria: a l'episodi #13, cicle 5, va funcionar be, similitud 0.5).
+[AVALUACIO] Sector_1: orientar-produccio -1.5 (memoria: a l'episodi #10, cicle 4, va funcionar malament, similitud 0.75).
+[AVALUACIO] Sector_1: mantenir-posicio 1.5 (memoria: a l'episodi #19, cicle 7, va funcionar be, similitud 0.75).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #29, cicle 10, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: orientar-produccio 2.0 (memoria: a l'episodi #30, cicle 10, va funcionar be, similitud 1.0).
+[chunk-3] Sector_1: sense lectura de vent i vent fort el cicle anterior, posicio-seguretat requerida.
+[AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: posicio-seguretat 2.0 (memoria: a l'episodi #27, cicle 9, va funcionar be, similitud 1.0).
+[chunk-2] Sector_1: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[chunk-2] Sector_2: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[chunk-2] Sector_3: situacio coneguda, orientar-produccio millor que mantenir-posicio.
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: preferencia requerida (chunk-3).
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (7.0 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 11
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     dades=critic
+   Candidats:  mantenir-posicio(2.5) orientar-produccio(1.5) sollicitar-dades(1.0) posicio-seguretat(1004.0)
+   Descartats: cap
+   Criteri:    preferencia requerida (chunk-3)
+
+[EXPLICACIO] Sector_2, cicle 11
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(8.0) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (8.0 punts)
+
+[EXPLICACIO] Sector_3, cicle 11
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(7.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (7.0 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #31: Sector_1, cicle 11, posicio-seguretat.
+[EPMEM] NOU EPISODI #32: Sector_2, cicle 11, mantenir-posicio.
+[EPMEM] NOU EPISODI #33: Sector_3, cicle 11, orientar-produccio.
+[MONITORATGE] Sector_1: cal demanar al simulador les lectures que falten (risc de dades critic).
+[FI DEL CICLE 11] Ordres enviades. Esperant les dades del cicle 12.
+
+  [PASS] C11 Sector_1 sense impasse
+  [PASS] C11 el chunk proposa posicio-seguretat amb el mateix id que la proposta normal
+  [PASS] C11 Sector_1 selecciona posicio-seguretat
+
+=== Persistencia dels chunks ===
+  [PASS] chunks eliminats de memoria
+[CHUNKING] Carregats 3 chunks de chunks_prova.dat.
+  [PASS] tots els chunks reconstruits des del fitxer
+  [PASS] el chunk de dades torna a ser present amb el mateix nom
+
+=== Persistencia de la memoria episodica ===
+[EPMEM] Carregats 33 episodis de epmem_prova.dat.
+  [PASS] epmem: episodis recarregats = els que hi havia
+  [PASS] epmem: el fitxer conte episodis
+
+=== Consultes a la memoria episodica ===
+  [PASS] query: recupera un episodi de Sector_1 amb orientar-produccio
+  [PASS] previous: troba l'episodi anterior de Sector_1
+[EPMEM] Episodi #31 (cicle 11, Sector_1, tomaquet)
+   operador:  posicio-seguretat -> 0.0 graus
+   resultat:  pendent, valoracio: pendent
+   risc total: 0, cobertura: 1.54166666666667, impasse: cap
+   criteri:   preferencia requerida (chunk-3)
+   trets:     (sector=Sector_1 cultiu=tomaquet risc=dades-critic cobertura=suficient operador=posicio-seguretat resultat=pendent valoracio=pendent)
+
+=== REFORC: sessio nova amb el reforç activat ===
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[PROPOSTA] Sector_3: mantenir-posicio (15.5 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (25.5 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (3 punts).
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (3 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO] Sector_1: ORDRE orientar-produccio -> 30.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 1
+   Accio:      orientar-produccio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(1) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (3 punts)
+
+[EXPLICACIO] Sector_2, cicle 1
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (4 punts)
+
+[EXPLICACIO] Sector_3, cicle 1
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(1) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (3 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[FI DEL CICLE 1] Ordres enviades. Esperant les dades del cicle 2.
+
+  [PASS] R1 traca del reforç per als 3 sectors
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[PROPOSTA] Sector_3: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 20.0 vs 20.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (5 punts).
+[REFORC] Sector_3: orientar-produccio del cicle 1 -> recompensa 1.0 (bona), error 1.0, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 1.0, 4 rajoles actualitzades.
+[REFORC] Sector_1: orientar-produccio del cicle 1 -> recompensa 1.0 (bona), error 0.85, 4 rajoles actualitzades.
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (6 punts).
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (5 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO] Sector_1: ORDRE orientar-produccio -> 30.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 2
+   Accio:      orientar-produccio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(5)
+   Descartats: cap
+   Criteri:    maxima valoracio (5 punts)
+
+[EXPLICACIO] Sector_2, cicle 2
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(6) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (6 punts)
+
+[EXPLICACIO] Sector_3, cicle 2
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(5)
+   Descartats: cap
+   Criteri:    maxima valoracio (5 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[FI DEL CICLE 2] Ordres enviades. Esperant les dades del cicle 3.
+
+  [PASS] R2 recompenses del cicle 1 aplicades
+  [PASS] R2 la rajola 'tot' d'orientar-produccio ha pujat (recompensa +1)
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[PROPOSTA] Sector_3: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 20.0 vs 20.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_3: empat entre mantenir-posicio i orientar-produccio desfet pel reforç: Q(orientar-produccio) = 0.43 > Q(mantenir-posicio) = 0.15.
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: empat amb mantenir-posicio desfet per RL.
+[REFORC] Sector_3: orientar-produccio del cicle 2 -> recompensa 1.0 (bona), error 0.57, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.7, 4 rajoles actualitzades.
+[REFORC] Sector_1: orientar-produccio del cicle 2 -> recompensa 1.0 (bona), error 0.51, 4 rajoles actualitzades.
+[SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (5 punts).
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (6 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO] Sector_1: ORDRE orientar-produccio -> 30.0 graus.
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_3, cicle 3
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(5) orientar-produccio(5)
+   Descartats: cap
+   Criteri:    empat amb mantenir-posicio desfet per RL
+
+[EXPLICACIO] Sector_1, cicle 3
+   Accio:      orientar-produccio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(5)
+   Descartats: cap
+   Criteri:    maxima valoracio (5 punts)
+
+[EXPLICACIO] Sector_2, cicle 3
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(6) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (6 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[FI DEL CICLE 3] Ordres enviades. Esperant les dades del cicle 4.
+
+  [PASS] R3 l'empat de Sector_3 el desfa el reforç, sense impasse
+  [PASS] R3 el motiu ho explica
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[PROPOSTA] Sector_3: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 20.0 vs 20.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (5 punts).
+[REFORC] Sector_2: mantenir-posicio del cicle 3 -> recompensa 1.0 (bona), error 0.49, 4 rajoles actualitzades.
+[REFORC] Sector_1: orientar-produccio del cicle 3 -> recompensa 1.0 (bona), error 0.36, 4 rajoles actualitzades.
+[REFORC] Sector_3: orientar-produccio del cicle 3 -> recompensa 1.0 (bona), error 0.27, 4 rajoles actualitzades.
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (6 punts).
+
+[SELECCIO] Sector_3: IMPAS D'EMPAT entre mantenir-posicio i orientar-produccio (tots dos 5 punts).
+[SELECCIO -> IMPAS]
+[IMPAS] Sector_3: subobjectiu resoldre-empat. Obj_Produccio_Energia te prioritat sobre Obj_Minimitzar_Moviment -> orientar-produccio millor que mantenir-posicio.
+[CHUNKING] Nova regla chunk-1: situacio coneguda, orientar-produccio millor que mantenir-posicio (valor ajustable pel reforç).
+[IMPAS -> SELECCIO]
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: empat amb mantenir-posicio desfet per IMPAS-prioritat.
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> 20.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO] Sector_1: ORDRE orientar-produccio -> 30.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 4
+   Accio:      orientar-produccio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(5)
+   Descartats: cap
+   Criteri:    maxima valoracio (5 punts)
+
+[EXPLICACIO] Sector_2, cicle 4
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(6) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (6 punts)
+
+[EXPLICACIO] Sector_3, cicle 4
+   Accio:      orientar-produccio a 20.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(5) orientar-produccio(5)
+   Descartats: cap
+   Criteri:    empat amb mantenir-posicio desfet per IMPAS-prioritat
+
+[EXPLICACIO -> MONITORATGE]
+[FI DEL CICLE 4] Ordres enviades. Esperant les dades del cicle 5.
+
+  [PASS] R4 sense prou diferencia de Q hi ha impasse i s'apren un chunk
+  [PASS] R4 el chunk apren una preferencia rl, no un millor-que fix
+  [PASS] R4 la rajola del chunk comença amb el valor prior
+[PERCEPCIO] Sector_3: Panell_3_2 es a 5.0 graus pero se li va ordenar 20.0 (orientar-produccio). Fallada d'actuacio.
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] El risc fallada-actuador de Sector_3 activa l'objectiu Obj_Seguretat.
+[ELABORACIO -> PROPOSTA]
+[PROPOSTA] Sector_3: mantenir-posicio (5.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (20.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (34.5 graus).
+[PROPOSTA] Sector_2: orientar-produccio (35.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_3: REBUIG de orientar-produccio (l'actuador no respon).
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 18.5 / demanda 12.0).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.2 / demanda 11.5).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 21.8 / demanda 13.0).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 34.5 vs 35.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: orientar-produccio +2 (es el que es va fer el cicle anterior).
+[chunk-1] Sector_1: situacio coneguda, orientar-produccio millor que mantenir-posicio (valor ajustable pel reforç).
+[chunk-1] Sector_2: situacio coneguda, orientar-produccio millor que mantenir-posicio (valor ajustable pel reforç).
+[chunk-1] Sector_3: situacio coneguda, orientar-produccio millor que mantenir-posicio (valor ajustable pel reforç).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (5 punts).
+[REFORC] Sector_3: orientar-produccio del cicle 4 -> recompensa -1.0 (dolenta), error -2.31, 5 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 4 -> recompensa 1.0 (bona), error 0.34, 4 rajoles actualitzades.
+[REFORC] Sector_1: orientar-produccio del cicle 4 -> recompensa 1.0 (bona), error 0.49, 4 rajoles actualitzades.
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (6 punts).
+[SELECCIO] Sector_3: orientar-produccio queda descartat (AV9-fallada).
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE mantenir-posicio -> 5.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 34.5 graus.
+[APLICACIO] Sector_1: ORDRE orientar-produccio -> 30.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 5
+   Accio:      orientar-produccio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4) orientar-produccio(5)
+   Descartats: cap
+   Criteri:    maxima valoracio (5 punts)
+
+[EXPLICACIO] Sector_2, cicle 5
+   Accio:      mantenir-posicio a 34.5 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(6) orientar-produccio(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (6 punts)
+
+[EXPLICACIO] Sector_3, cicle 5
+   Accio:      mantenir-posicio a 5.0 graus
+   Riscos:     fallada-actuador=alt
+   Candidats:  mantenir-posicio(1)
+   Descartats: orientar-produccio
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO -> MONITORATGE]
+[MONITORATGE] Sector_3: l'actuador no ha respost. Cal revisio de manteniment.
+[FI DEL CICLE 5] Ordres enviades. Esperant les dades del cicle 6.
+
+  [PASS] R5 recompensa -1: el valor del chunk baixa per sota del prior
+
+=== RESUM: 55 correctes, 0 incorrectes ===

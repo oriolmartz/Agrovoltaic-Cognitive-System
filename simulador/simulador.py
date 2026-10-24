@@ -29,6 +29,7 @@ import pandas as pd
 import dades
 import fisica
 from clips_bridge import SECTORS, SENSORS, ControladorCLIPS
+from ontology_loader import carrega_model
 
 ARREL = os.path.dirname(os.path.abspath(__file__))
 
@@ -45,16 +46,49 @@ def _fusiona(base: dict, extra: dict) -> dict:
     return out
 
 
+def ruta_ontologia(cfg: dict) -> str:
+    p = cfg["ontologia_model"]
+    return p if os.path.isabs(p) else os.path.abspath(os.path.join(ARREL, p))
+
+
+def ontologia_per_clp(cfg: dict) -> str | None:
+    """Les snapshots històriques conserven el seu deffacts original.
+
+    El nucli actiu i les variants experimentals derivades del nucli actiu carreguen RDF.
+    """
+    clp = os.path.abspath(os.path.join(ARREL, cfg["clp"]))
+    if "history" in os.path.normpath(clp).split(os.sep):
+        return None
+    return ruta_ontologia(cfg)
+
+
 def carrega_config(escenari: dict | str | None = None) -> dict:
-    base = json.load(open(os.path.join(ARREL, "config.json")))
+    base = json.load(open(os.path.join(ARREL, "config.json"), encoding="utf-8"))
     if isinstance(escenari, str):
-        escenari = json.load(open(escenari))
-    return _fusiona(base, escenari or {})
+        escenari = json.load(open(escenari, encoding="utf-8"))
+    cfg = _fusiona(base, escenari or {})
+
+    # La topologia (sectors i panells) ve de l'ontologia, no del JSON. El JSON
+    # nomes aporta parametres fisics de simulacio per a cada sector.
+    model = carrega_model(ruta_ontologia(cfg))
+    sectors_rdf = set(model.ids_sectors)
+    sectors_cfg = set(cfg["sectors"])
+    if sectors_cfg != sectors_rdf:
+        falten = sorted(sectors_rdf - sectors_cfg)
+        sobren = sorted(sectors_cfg - sectors_rdf)
+        raise ValueError(f"config.json i ontologia_model.rdf no concorden en sectors: falten={falten}, sobren={sobren}")
+    for sid in model.ids_sectors:
+        cfg["sectors"][sid]["panells"] = list(model.sectors[sid].panells)
+    return cfg
 
 
-def coneixement_domini(clp: str) -> dict:
-    """Llindars dels cultius i limits dels panells, llegits del mateix .clp (font unica)."""
-    c = ControladorCLIPS(clp)
+def coneixement_domini(clp: str, ontologia: str | None) -> dict:
+    """Coneixement operacional del controlador seleccionat.
+
+    El nucli actiu combina topologia RDF amb llindars CLIPS; una snapshot històrica
+    es llegeix exactament com va ser congelada, sense injectar-hi el model nou.
+    """
+    c = ControladorCLIPS(clp, fitxer_ontologia=ontologia)
     return {"llindars": c.llindars(), "panells": c.panells()}
 
 
@@ -78,7 +112,8 @@ class ControladorSOAR:
     def __init__(self, cfg: dict, domini: dict):
         cc = cfg["controlador"]
         self.clp = os.path.join(ARREL, cfg["clp"])
-        self.c = ControladorCLIPS(self.clp, reforc=cc.get("reforc"), parelles=cc.get("parelles"),
+        self.c = ControladorCLIPS(self.clp, fitxer_ontologia=ontologia_per_clp(cfg),
+                                  reforc=cc.get("reforc"), parelles=cc.get("parelles"),
                                   chunking=cc.get("chunking"), epmem=cc.get("epmem"),
                                   estrategia=cc.get("estrategia"),
                                   vigila_regles=cc.get("vigila_regles", False),
@@ -222,7 +257,7 @@ class Simulacio:
         self.lloc = dades.LLOCS[cfg["lloc"]]
         self.meteo = dades.carrega(cfg["lloc"])
         self.ratio = dades.ratio_pvgis(cfg["lloc"])
-        self.domini = domini or coneixement_domini(os.path.join(ARREL, cfg["clp"]))
+        self.domini = domini or coneixement_domini(os.path.join(ARREL, cfg["clp"]), ontologia_per_clp(cfg))
         self.ll = self.domini["llindars"]
         self.pan0 = self.domini["panells"]
         sc = cfg["sectors"]

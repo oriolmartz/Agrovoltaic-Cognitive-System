@@ -1,14 +1,15 @@
 {
   "_comentari": "Parametres per defecte del simulador. Un escenari pot sobreescriure qualsevol clau.",
   "clp": "clips_core/soar.clp",
+  "ontologia_model": "../ontologia_model.rdf",
   "lloc": "ribera",
   "hores": [7, 20],
   "sectors": {
-    "Sector_1": {"panells": ["Panell_1_1", "Panell_1_2"], "kwp": 20.0, "gcr": 0.4, "kc": 1.15, "zr_m": 0.7,
+    "Sector_1": {"kwp": 20.0, "gcr": 0.4, "kc": 1.15, "zr_m": 0.7,
                  "demanda_base_kw": 6.0, "demanda_pic_kw": 8.0},
-    "Sector_2": {"panells": ["Panell_2_1", "Panell_2_2"], "kwp": 20.0, "gcr": 0.4, "kc": 1.00, "zr_m": 0.3,
+    "Sector_2": {"kwp": 20.0, "gcr": 0.4, "kc": 1.00, "zr_m": 0.3,
                  "demanda_base_kw": 6.0, "demanda_pic_kw": 8.0},
-    "Sector_3": {"panells": ["Panell_3_1", "Panell_3_2"], "kwp": 20.0, "gcr": 0.4, "kc": 0.70, "zr_m": 1.0,
+    "Sector_3": {"kwp": 20.0, "gcr": 0.4, "kc": 0.70, "zr_m": 1.0,
                  "demanda_base_kw": 6.0, "demanda_pic_kw": 8.0}
   },
   "humitat": {"mode": "balanc", "inicial_pct": 85.0,

@@ -28,6 +28,8 @@ Les iteracions de la 0 a la 2 són d'abans del simulador. Es van detectar amb el
 | 14 | 23/10 | Si les transicions de fase no tenen salience −10, el cicle es trenca (21,9 % de decisions diferents amb `depth`, cap cicle tancat amb `breadth`) | **E11** (variants de salience) | — | Confirma que la salience −10 és necessària i que no s'ha d'usar per a res més | tancat (justifica el disseny) |
 | 15 | 23/10 | (mètrica) El cas CP01 va mostrar que `orientar-produccio` i `mantenir-posicio` donen el mateix angle quan el panell ja és a l'òptim. Per tant, "canvis d'operador" i "oscil·lacions" comptaven canvis de nom sense moviment: el 25 % dels canvis (E7) i el 28 % (E4) no mouen el panell | **CP01**, E4, E7 | nova mètrica `oscillacions_angle` (A → B → A d'angle real) | Oscil·lacions per nom → per angle: E7 0,48 → **0,19**/dia, E4 1,06 → **0,49**/dia. Seguidor comercial: 0 i 0,12 | tancat. **Proposta a l'equip:** no proposar `orientar-produccio` si el panell ja és a l'angle òptim (dins de la tolerància), o marcar-los com a indiferents |
 | 16 | 24/10 | El nucli `soar_v1_8.clp` era monolític i dificultava iterar sense barrejar responsabilitats | refactor estructural + comparació byte a byte | separació en 9 mòduls sota `clips_core/`; `soar.clp` es genera amb `build_clips.py` | SHA-256 idèntic a v1_8 (`8ee49d...27da1`); `CP02`–`CP11` continuen passant i `CP01` conserva la discrepància coneguda | tancat, sense canvi funcional |
+| 17 | 24/10 | La topologia estava duplicada entre `ontologia_model.rdf`, `domini.clp` i la llista de panells de `config.json` | revisió arquitectònica + **E0** | `ontology_loader.py` carrega RDF amb RDFLib i projecta `sector`, `cultiu`, `panell` i `estat-sensor`; s’eliminen les instàncies duplicades del `deffacts` i `config.json` deixa d’enumerar panells | E0: 3 sectors, 3 cultius, 6 panells i 18 estats de sensor; CP 10/11 amb només CP01 (discrepància ja present a v1.8); E2 ràpid 5.670 decisions, 0 violacions i 0 violacions de monotonia; E3 57/57; E1 històric sense errors | tancat |
+| 18 | 24/10 | `ontologia_domini.rdf` encara no participava en temps d’execució i el model conservava noms antics (`Estat_Panel`, `Angle_Objectiu`, accents en termes canònics) | ampliació d’**E0** + validació TBox→ABox | `ontology_loader.py` carrega també `ontologia_domini.rdf`, valida 15 classes, 5 propietats d’objecte, 5 propietats de dades i els `domain/range`; `ontologia_model.rdf` s’alinea amb el vocabulari canònic (`Estat_Panell`, `Angle_Optim_Produccio`, etc.) | E0 valida 36 relacions i 27 literals abans de projectar 3 sectors, 3 cultius, 6 panells i 18 estats de sensor | tancat a nivell estructural; repetir CP/E2/E3 al Windows després del merge |
 
 ## Com afegir una iteració
 
@@ -35,7 +37,9 @@ Les iteracions de la 0 a la 2 són d'abans del simulador. Es van detectar amb el
 2. Feu el canvi als **mòduls canònics** de `clips_core/`. Quan congeleu una fita per comparar-la, deseu-ne el snapshot monolític i el `run` a `../history/clips/simulator/`.
 3. Regenereu `clips_core/soar.clp` i executeu la regressió:
    ```bash
+   python verificacio/e0_ontologia.py
    python clips_core/build_clips.py
+   python clips_core/build_clips.py --check-generated
    python verificacio/e1_regressio.py
    python verificacio/e2_graella.py --rapid --clp clips_core/soar.clp
    python verificacio/e3_llindars.py --clp clips_core/soar.clp

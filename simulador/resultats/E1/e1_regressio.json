@@ -1,0 +1,34 @@
+[
+  {
+    "versio": "v1_5",
+    "pass": 46,
+    "fail": 0,
+    "fallades": [],
+    "errors_clips": [],
+    "segons": 0.24
+  },
+  {
+    "versio": "v1_6",
+    "pass": 55,
+    "fail": 0,
+    "fallades": [],
+    "errors_clips": [],
+    "segons": 0.26
+  },
+  {
+    "versio": "v1_7",
+    "pass": 59,
+    "fail": 0,
+    "fallades": [],
+    "errors_clips": [],
+    "segons": 0.26
+  },
+  {
+    "versio": "v1_8",
+    "pass": 59,
+    "fail": 0,
+    "fallades": [],
+    "errors_clips": [],
+    "segons": 0.28
+  }
+]

@@ -1,0 +1,49 @@
+{
+  "versio": "soar",
+  "casos": 1890,
+  "decisions": 5670,
+  "segons": 79.4,
+  "violacions_per_propietat": {},
+  "violacions_monotonia_vent": 0,
+  "regles_total": 63,
+  "regles_disparades": 37,
+  "cobertura_regles_pct": 58.7,
+  "regles_no_disparades": [
+    "ACCIO::avisa-fallada-actuador",
+    "ACCIO::detecta-oscillacio",
+    "DECISIO::desfa-empat-per-reforc",
+    "DECISIO::detecta-impas-empat",
+    "DECISIO::detecta-impas-sense-candidat",
+    "DELIBERACIO::avalua-estabilitat",
+    "DELIBERACIO::avalua-memoria",
+    "DELIBERACIO::avalua-memoria-consulta",
+    "DELIBERACIO::avalua-rebuig-fora-de-limits",
+    "DELIBERACIO::avalua-rebuig-per-fallada",
+    "DELIBERACIO::percep-accio-correcta",
+    "DELIBERACIO::percep-dades-vent-critic",
+    "DELIBERACIO::percep-fallada-actuador",
+    "DELIBERACIO::percep-sense-observacio",
+    "DELIBERACIO::percep-sensor-no-valid",
+    "IMPAS::resol-empat",
+    "IMPAS::resol-sense-candidat",
+    "MEMORIA::epmem-emmagatzema",
+    "MEMORIA::epmem-neteja-consultes",
+    "MEMORIA::epmem-neteja-resultats",
+    "MEMORIA::epmem-persisteix",
+    "MEMORIA::epmem-processa-query",
+    "MEMORIA::epmem-processa-temporal",
+    "MEMORIA::epmem-valora-resultat",
+    "REFORC::rl-recompensa-cicle-anterior",
+    "REFORC::rl-registra"
+  ],
+  "decisions_per_accio": {
+    "posicio-seguretat": 4514,
+    "mantenir-posicio": 508,
+    "sollicitar-dades": 324,
+    "orientar-ombra": 324
+  },
+  "impasses": {
+    "cap": 4860,
+    "dades-insuficients": 810
+  }
+}

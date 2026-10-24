@@ -42,7 +42,7 @@
 
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#afecta_C">
         <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#afecta"/>
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Agronòmic"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Agronomic"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Cultiu"/>
     </owl:ObjectProperty>
     
@@ -135,7 +135,7 @@
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
         <owl:inverseOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#rebre"/>
         <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor"/>
-        <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
     </owl:ObjectProperty>
     
 
@@ -153,7 +153,7 @@
 
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#observa_a">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sector"/>
     </owl:ObjectProperty>
     
@@ -165,8 +165,8 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -247,7 +247,7 @@
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#te_estat_panell">
         <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#te_estat"/>
         <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell"/>
-        <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell"/>
     </owl:ObjectProperty>
     
 
@@ -276,7 +276,7 @@
 
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#te_prediccio">
         <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sector"/>
-        <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio"/>
     </owl:ObjectProperty>
     
 
@@ -345,17 +345,17 @@
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Angle_Actual">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Angle_Objectiu -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Angle_Optim_Produccio -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Angle_Objectiu">
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Angle_Optim_Produccio">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
     
@@ -374,7 +374,7 @@
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Disponible">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
     </owl:DatatypeProperty>
     
@@ -384,7 +384,7 @@
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Mecanic">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
     
@@ -393,7 +393,7 @@
     <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Horitzo_Temporal -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Horitzo_Temporal">
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
     </owl:DatatypeProperty>
     
@@ -402,7 +402,7 @@
     <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Instant -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Instant">
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
     </owl:DatatypeProperty>
     
@@ -427,9 +427,9 @@
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Producció_Actual -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Produccio_Actual -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Producció_Actual">
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Produccio_Actual">
         <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Energia"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
@@ -449,7 +449,7 @@
     <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Valor -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Valor">
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
     
@@ -458,7 +458,7 @@
     <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Valor_Previst -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Valor_Previst">
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
     
@@ -518,9 +518,9 @@
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel">
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat"/>
     </owl:Class>
     
@@ -556,17 +556,17 @@
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Producció_Cultiu -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Produccio_Cultiu -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Producció_Cultiu">
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Produccio_Cultiu">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Producció_Energia -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Produccio_Energia -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Producció_Energia">
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Produccio_Energia">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu"/>
     </owl:Class>
     
@@ -580,64 +580,64 @@
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Humitat_Sòl -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Humitat_Sol -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Humitat_Sòl">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Humitat_Sol">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Pluja -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Pluja -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Pluja">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Pluja">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Radiació -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Radiacio -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Radiació">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Radiacio">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura_Aire -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura_Aire -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura_Aire">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura_Aire">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura_Cultiu -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura_Cultiu -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura_Cultiu">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura_Cultiu">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Vent -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Vent -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Vent">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Vent">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
     </owl:Class>
     
 
@@ -648,7 +648,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#te_estat_panell"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -669,80 +669,80 @@
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio"/>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Cultiu -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Cultiu -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Cultiu">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Cultiu">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Energia -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Energia -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Energia">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Energia">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Estrès_Cultiu -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Estres_Cultiu -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Estrès_Cultiu">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Cultiu"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Estres_Cultiu">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Cultiu"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Pluja -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Pluja -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Pluja">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Temps"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Pluja">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Temps"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Producció_Energia -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Produccio_Energia -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Producció_Energia">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Energia"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Produccio_Energia">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Energia"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Radiació -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Radiacio -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Radiació">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Temps"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Radiacio">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Temps"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Temperatura -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Temperatura -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Temperatura">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Temps"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Temperatura">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Temps"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Temps -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Temps -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Temps">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Temps">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Vent -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Vent -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Vent">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Temps"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Vent">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Temps"/>
     </owl:Class>
     
 
@@ -753,33 +753,33 @@
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Agronòmic -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Agronomic -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Agronòmic">
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Agronomic">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Estrès_Hídric -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Estres_Hidric -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Estrès_Hídric">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Agronòmic"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Estres_Hidric">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Agronomic"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Excès_Radiació -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Exces_Radiacio -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Excès_Radiació">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Agronòmic"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Exces_Radiacio">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Agronomic"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Mecànic -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Mecanic -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Mecànic">
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Mecanic">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Operacional"/>
     </owl:Class>
     
@@ -796,7 +796,7 @@
     <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Temperatura -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Temperatura">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Agronòmic"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Agronomic"/>
     </owl:Class>
     
 
@@ -832,7 +832,7 @@
                 <owl:intersectionOf rdf:parseType="Collection">
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#te_sensor"/>
-                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sòl"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sol"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#te_sensor"/>
@@ -840,7 +840,7 @@
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#te_sensor"/>
-                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiació"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiacio"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#te_sensor"/>
@@ -883,14 +883,14 @@
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sòl -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sol -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sòl">
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sol">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#mesura"/>
-                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Humitat_Sòl"/>
+                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Humitat_Sol"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -904,21 +904,21 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#mesura"/>
-                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Pluja"/>
+                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Pluja"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiació -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiacio -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiació">
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiacio">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#mesura"/>
-                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Radiació"/>
+                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Radiacio"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -940,7 +940,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#mesura"/>
-                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura_Aire"/>
+                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura_Aire"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -954,7 +954,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#mesura"/>
-                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura_Cultiu"/>
+                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura_Cultiu"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -968,16 +968,16 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#mesura"/>
-                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Vent"/>
+                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Vent"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Tomàquet -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Tomaquet -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Tomàquet">
+    <owl:Class rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Tomaquet">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Cultiu"/>
     </owl:Class>
     
@@ -1046,7 +1046,7 @@
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Energia_1">
         <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Energia"/>
         <OntologiaModel:Demanda rdf:datatype="http://www.w3.org/2001/XMLSchema#double">12.0</OntologiaModel:Demanda>
-        <OntologiaModel:Producció_Actual rdf:datatype="http://www.w3.org/2001/XMLSchema#double">18.5</OntologiaModel:Producció_Actual>
+        <OntologiaModel:Produccio_Actual rdf:datatype="http://www.w3.org/2001/XMLSchema#double">18.5</OntologiaModel:Produccio_Actual>
     </owl:NamedIndividual>
     
 
@@ -1056,7 +1056,7 @@
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Energia_2">
         <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Energia"/>
         <OntologiaModel:Demanda rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11.5</OntologiaModel:Demanda>
-        <OntologiaModel:Producció_Actual rdf:datatype="http://www.w3.org/2001/XMLSchema#double">16.2</OntologiaModel:Producció_Actual>
+        <OntologiaModel:Produccio_Actual rdf:datatype="http://www.w3.org/2001/XMLSchema#double">16.2</OntologiaModel:Produccio_Actual>
     </owl:NamedIndividual>
     
 
@@ -1066,77 +1066,77 @@
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Energia_3">
         <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Energia"/>
         <OntologiaModel:Demanda rdf:datatype="http://www.w3.org/2001/XMLSchema#double">13.0</OntologiaModel:Demanda>
-        <OntologiaModel:Producció_Actual rdf:datatype="http://www.w3.org/2001/XMLSchema#double">21.8</OntologiaModel:Producció_Actual>
+        <OntologiaModel:Produccio_Actual rdf:datatype="http://www.w3.org/2001/XMLSchema#double">21.8</OntologiaModel:Produccio_Actual>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_1_1 -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_1_1 -->
 
-    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_1_1">
-        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel"/>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_1_1">
+        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell"/>
         <OntologiaModel:Angle_Actual rdf:datatype="http://www.w3.org/2001/XMLSchema#double">25.0</OntologiaModel:Angle_Actual>
-        <OntologiaModel:Angle_Objectiu rdf:datatype="http://www.w3.org/2001/XMLSchema#double">30.0</OntologiaModel:Angle_Objectiu>
+        <OntologiaModel:Angle_Optim_Produccio rdf:datatype="http://www.w3.org/2001/XMLSchema#double">30.0</OntologiaModel:Angle_Optim_Produccio>
         <OntologiaModel:Disponible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</OntologiaModel:Disponible>
         <OntologiaModel:Estat_Mecanic>normal</OntologiaModel:Estat_Mecanic>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_1_2 -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_1_2 -->
 
-    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_1_2">
-        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel"/>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_1_2">
+        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell"/>
         <OntologiaModel:Angle_Actual rdf:datatype="http://www.w3.org/2001/XMLSchema#double">25.5</OntologiaModel:Angle_Actual>
-        <OntologiaModel:Angle_Objectiu rdf:datatype="http://www.w3.org/2001/XMLSchema#double">30.0</OntologiaModel:Angle_Objectiu>
+        <OntologiaModel:Angle_Optim_Produccio rdf:datatype="http://www.w3.org/2001/XMLSchema#double">30.0</OntologiaModel:Angle_Optim_Produccio>
         <OntologiaModel:Disponible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</OntologiaModel:Disponible>
         <OntologiaModel:Estat_Mecanic>normal</OntologiaModel:Estat_Mecanic>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_2_1 -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_2_1 -->
 
-    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_2_1">
-        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel"/>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_2_1">
+        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell"/>
         <OntologiaModel:Angle_Actual rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35.0</OntologiaModel:Angle_Actual>
-        <OntologiaModel:Angle_Objectiu rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35.0</OntologiaModel:Angle_Objectiu>
+        <OntologiaModel:Angle_Optim_Produccio rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35.0</OntologiaModel:Angle_Optim_Produccio>
         <OntologiaModel:Disponible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</OntologiaModel:Disponible>
         <OntologiaModel:Estat_Mecanic>normal</OntologiaModel:Estat_Mecanic>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_2_2 -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_2_2 -->
 
-    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_2_2">
-        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel"/>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_2_2">
+        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell"/>
         <OntologiaModel:Angle_Actual rdf:datatype="http://www.w3.org/2001/XMLSchema#double">34.5</OntologiaModel:Angle_Actual>
-        <OntologiaModel:Angle_Objectiu rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35.0</OntologiaModel:Angle_Objectiu>
+        <OntologiaModel:Angle_Optim_Produccio rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35.0</OntologiaModel:Angle_Optim_Produccio>
         <OntologiaModel:Disponible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</OntologiaModel:Disponible>
         <OntologiaModel:Estat_Mecanic>normal</OntologiaModel:Estat_Mecanic>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_3_1 -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_3_1 -->
 
-    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_3_1">
-        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel"/>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_3_1">
+        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell"/>
         <OntologiaModel:Angle_Actual rdf:datatype="http://www.w3.org/2001/XMLSchema#double">15.0</OntologiaModel:Angle_Actual>
-        <OntologiaModel:Angle_Objectiu rdf:datatype="http://www.w3.org/2001/XMLSchema#double">20.0</OntologiaModel:Angle_Objectiu>
+        <OntologiaModel:Angle_Optim_Produccio rdf:datatype="http://www.w3.org/2001/XMLSchema#double">20.0</OntologiaModel:Angle_Optim_Produccio>
         <OntologiaModel:Disponible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</OntologiaModel:Disponible>
         <OntologiaModel:Estat_Mecanic>normal</OntologiaModel:Estat_Mecanic>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_3_2 -->
+    <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_3_2 -->
 
-    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_3_2">
-        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel"/>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_3_2">
+        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell"/>
         <OntologiaModel:Angle_Actual rdf:datatype="http://www.w3.org/2001/XMLSchema#double">15.5</OntologiaModel:Angle_Actual>
-        <OntologiaModel:Angle_Objectiu rdf:datatype="http://www.w3.org/2001/XMLSchema#double">20.0</OntologiaModel:Angle_Objectiu>
+        <OntologiaModel:Angle_Optim_Produccio rdf:datatype="http://www.w3.org/2001/XMLSchema#double">20.0</OntologiaModel:Angle_Optim_Produccio>
         <OntologiaModel:Disponible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</OntologiaModel:Disponible>
         <OntologiaModel:Estat_Mecanic>normal</OntologiaModel:Estat_Mecanic>
     </owl:NamedIndividual>
@@ -1147,7 +1147,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell_1_1">
         <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell"/>
-        <OntologiaModel:te_estat_panell rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_1_1"/>
+        <OntologiaModel:te_estat_panell rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_1_1"/>
     </owl:NamedIndividual>
     
 
@@ -1156,7 +1156,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell_1_2">
         <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell"/>
-        <OntologiaModel:te_estat_panell rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_1_2"/>
+        <OntologiaModel:te_estat_panell rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_1_2"/>
     </owl:NamedIndividual>
     
 
@@ -1165,7 +1165,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell_2_1">
         <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell"/>
-        <OntologiaModel:te_estat_panell rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_2_1"/>
+        <OntologiaModel:te_estat_panell rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_2_1"/>
     </owl:NamedIndividual>
     
 
@@ -1174,7 +1174,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell_2_2">
         <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell"/>
-        <OntologiaModel:te_estat_panell rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_2_2"/>
+        <OntologiaModel:te_estat_panell rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_2_2"/>
     </owl:NamedIndividual>
     
 
@@ -1183,7 +1183,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell_3_1">
         <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell"/>
-        <OntologiaModel:te_estat_panell rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_3_1"/>
+        <OntologiaModel:te_estat_panell rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_3_1"/>
     </owl:NamedIndividual>
     
 
@@ -1192,7 +1192,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell_3_2">
         <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell"/>
-        <OntologiaModel:te_estat_panell rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell_3_2"/>
+        <OntologiaModel:te_estat_panell rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panelll_3_2"/>
     </owl:NamedIndividual>
     
 
@@ -1268,7 +1268,7 @@
     <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_1_Humitat -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_1_Humitat">
-        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sòl"/>
+        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sol"/>
     </owl:NamedIndividual>
     
 
@@ -1284,7 +1284,7 @@
     <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_1_Radiació -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_1_Radiació">
-        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiació"/>
+        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiacio"/>
     </owl:NamedIndividual>
     
 
@@ -1316,7 +1316,7 @@
     <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_2_Humitat -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_2_Humitat">
-        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sòl"/>
+        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sol"/>
     </owl:NamedIndividual>
     
 
@@ -1332,7 +1332,7 @@
     <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_2_Radiació -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_2_Radiació">
-        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiació"/>
+        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiacio"/>
     </owl:NamedIndividual>
     
 
@@ -1364,7 +1364,7 @@
     <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_3_Humitat -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_3_Humitat">
-        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sòl"/>
+        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sol"/>
     </owl:NamedIndividual>
     
 
@@ -1380,7 +1380,7 @@
     <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_3_Radiació -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_3_Radiació">
-        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiació"/>
+        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiacio"/>
     </owl:NamedIndividual>
     
 
@@ -1412,7 +1412,7 @@
     <!-- http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Tomaquet_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Tomaquet_1">
-        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Tomàquet"/>
+        <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Tomaquet"/>
         <OntologiaModel:te_estat_cultiu rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Cultiu_1"/>
     </owl:NamedIndividual>
     
@@ -1441,10 +1441,10 @@
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Cultiu"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Panell"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Planta_Agrovoltaica"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sector"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor"/>
@@ -1456,9 +1456,9 @@
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Cultiu"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Planta_Agrovoltaica"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sector"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor"/>
@@ -1469,9 +1469,9 @@
         <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Cultiu"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Planta_Agrovoltaica"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sector"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor"/>
@@ -1481,9 +1481,9 @@
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Cultiu"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Planta_Agrovoltaica"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sector"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor"/>
@@ -1493,7 +1493,7 @@
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Enciam"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Tomàquet"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Tomaquet"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Vinya"/>
         </owl:members>
     </rdf:Description>
@@ -1502,7 +1502,7 @@
         <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Cultiu"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Energia"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panel"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Panell"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Estat_Sensor"/>
         </owl:members>
     </rdf:Description>
@@ -1511,62 +1511,62 @@
         <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Estabilitat"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Minimitzar_Moviment"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Producció_Cultiu"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Producció_Energia"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Produccio_Cultiu"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Produccio_Energia"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Objectiu_Seguretat"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Humitat_Sòl"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Pluja"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Radiació"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura_Aire"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura_Cultiu"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Vent"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Humitat_Sol"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Pluja"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Radiacio"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura_Aire"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura_Cultiu"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Vent"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura_Aire"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Temperatura_Cultiu"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observació_Vent"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura_Aire"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Temperatura_Cultiu"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Observacio_Vent"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Cultiu"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Energia"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Temps"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Cultiu"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Energia"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Temps"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Pluja"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Radiació"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Temperatura"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Predicció_Vent"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Pluja"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Radiacio"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Temperatura"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Prediccio_Vent"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Estrès_Hídric"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Excès_Radiació"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Mecànic"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Estres_Hidric"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Exces_Radiacio"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Mecanic"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Risc_Temperatura"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sòl"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Humitat_Sol"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Pluja"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiació"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Radiacio"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Temperatura_Aire"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Temperatura_Cultiu"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel#Sensor_Vent"/>
