@@ -6,14 +6,11 @@ Sistema basat en regles per a una instal·lació agrovoltaica, amb un nucli cogn
 
 ```text
 ontologia_domini.rdf
-        │  TBox: vocabulari, jerarquia i domain/range
-        ▼
-validació del model
-        ▲
+        │  esquema autoritatiu: classes, propietats, domain/range
         │
-ontologia_model.rdf
-        │  ABox: instàncies i estat estàtic inicial
-        ▼
+        └──── owl:imports ◄──── ontologia_model.rdf
+                              │  ABox: només instàncies de planta
+                              ▼
 simulador/ontology_loader.py
         │  RDFLib: validació TBox→ABox + projecció
         ▼
@@ -28,7 +25,7 @@ clips_core/soar.clp
 ordre-actuador + explicació
 ```
 
-`ontologia_domini.rdf` és el **contracte conceptual executable** (TBox): defineix les classes i propietats que consumeix el runtime i les seves relacions `domain/range`. `ontologia_model.rdf` és la **instanciació concreta** (ABox) i la font canònica de la topologia estàtica: sectors, cultius, panells, sensors i estat inicial dels panells. `ontology_loader.py` valida primer el model contra el domini i només després el projecta a fets CLIPS. Python no avalua candidats ni selecciona accions: **la decisió continua íntegrament dins de CLIPS**.
+`ontologia_domini.rdf` és el **contracte conceptual autoritatiu**: té un IRI propi (`OntologiaDomini`), defineix classes, propietats, jerarquies i `domain/range`, i conserva només cinc individus canònics d'objectiu que formen part del vocabulari del domini. `ontologia_model.rdf` té un IRI diferent (`OntologiaModel`), l'importa explícitament amb `owl:imports` i conté només les instàncies concretes de la planta. `ontology_loader.py` valida aquesta separació i només després projecta l'ABox a fets CLIPS. Python no avalua candidats ni selecciona accions: **la decisió continua íntegrament dins de CLIPS**.
 
 Els llindars agronòmics i els objectius de control continuen explícits a CLIPS perquè l'ontologia actual encara no n'instancia els valors operacionals.
 
@@ -36,8 +33,8 @@ Els llindars agronòmics i els objectius de control continuen explícits a CLIPS
 
 ```text
 .
-├── ontologia_domini.rdf       # TBox: esquema/contracte del domini, carregat per validar
-├── ontologia_model.rdf        # ABox: instanciació concreta carregada en temps d'execució
+├── ontologia_domini.rdf       # esquema del domini + objectius canònics
+├── ontologia_model.rdf        # ABox: instàncies de planta; importa el domini
 ├── history/                   # snapshots CLIPS monolítics congelats
 └── simulador/
     ├── ontology_loader.py     # RDF -> model Python -> fets CLIPS
@@ -88,7 +85,8 @@ python verificacio/e0_ontologia.py
 
 `E0` comprova que:
 
-- `ontologia_domini.rdf` i `ontologia_model.rdf` es poden interpretar;
+- `ontologia_domini.rdf` i `ontologia_model.rdf` tenen IRI propis i es poden interpretar;
+- `ontologia_model.rdf` importa explícitament `ontologia_domini.rdf` i no redeclara classes ni propietats;
 - el model utilitza el vocabulari operacional canònic del domini;
 - les relacions del model respecten els `domain/range` definits al domini;
 - hi ha almenys tres sectors;

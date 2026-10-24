@@ -28,7 +28,7 @@ clips_core/
 
 ## RDF i `domini.clp`
 
-La topologia concreta **no** s'instancia a `domini.clp`. Abans d'injectar res, `../ontology_loader.py` carrega `../../ontologia_domini.rdf` com a TBox i valida que `../../ontologia_model.rdf` utilitzi el vocabulari operacional canònic i respecti els `domain/range`. Després de `(reset)`, la instanciació del model es projecta a `sector`, `cultiu`, `panell` i `estat-sensor`.
+La topologia concreta **no** s'instancia a `domini.clp`. `../../ontologia_model.rdf` importa `../../ontologia_domini.rdf` i només conté l'ABox de la planta; no redeclara classes ni propietats. Abans d'injectar res, `../ontology_loader.py` carrega les dues ontologies, valida l'import, el vocabulari i els `domain/range`. Després de `(reset)`, la instanciació del model es projecta a `sector`, `cultiu`, `panell` i `estat-sensor`.
 
 `domini.clp` conserva els `deftemplate` i el coneixement operacional que el RDF actual encara no instancia: llindars agronòmics, objectius, prioritats, conflictes i activacions.
 

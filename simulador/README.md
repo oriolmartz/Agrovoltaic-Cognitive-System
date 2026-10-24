@@ -19,11 +19,11 @@ python verificacio/e1_regressio.py      # snapshots històriques: fail 0
 
 ## Ontologies com a entrada executable
 
-`../ontologia_domini.rdf` i `../ontologia_model.rdf` formen ara part del runtime. El primer actua com a **TBox/contracte**: `ontology_loader.py` comprova que les classes i propietats operacionals existeixen i que les relacions del model respecten els `domain/range` del domini. El segon actua com a **ABox/instanciació** i aporta sectors, cultius, panells, sensors i estat inicial. Només després d'aquesta validació RDFLib projecta els fets estàtics `sector`, `cultiu`, `panell` i `estat-sensor` a CLIPS. La capa Python no avalua candidats ni selecciona accions: aquesta responsabilitat continua dins de CLIPS.
+`../ontologia_domini.rdf` i `../ontologia_model.rdf` formen part del runtime i són ontologies diferents. `ontologia_domini.rdf` és l'esquema autoritatiu (`OntologiaDomini`): defineix el vocabulari, les jerarquies i els `domain/range` i només conserva els cinc individus canònics d'objectiu necessaris per a algunes restriccions OWL. `ontologia_model.rdf` és l'ABox (`OntologiaModel`), importa explícitament el domini amb `owl:imports`, no redeclara l'esquema i aporta exclusivament les instàncies concretes de la planta. Només després d'aquesta validació RDFLib projecta els fets estàtics `sector`, `cultiu`, `panell` i `estat-sensor` a CLIPS. La capa Python no avalua candidats ni selecciona accions: aquesta responsabilitat continua dins de CLIPS.
 
 `config.json` conserva els paràmetres físics del simulador per sector, però **no enumera els panells**. La llista de panells i la relació sector--cultiu provenen de `ontologia_model.rdf`; el vocabulari que pot utilitzar aquesta projecció queda governat per `ontologia_domini.rdf`.
 
-Per inspeccionar o validar el mapping:
+Per inspeccionar o validar la projecció RDF → CLIPS:
 
 ```
 python ontology_loader.py --fets

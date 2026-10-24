@@ -16,6 +16,8 @@ import os
 import re
 import sys
 
+from rdflib import Graph, RDF, OWL, URIRef
+
 ARREL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ARREL not in sys.path:
     sys.path.insert(0, ARREL)
@@ -23,6 +25,8 @@ if ARREL not in sys.path:
 from ontology_loader import (  # noqa: E402
     ONTOLOGIA_DOMINI_DEFECTE,
     ONTOLOGIA_MODEL_DEFECTE,
+    ONTOLOGIA_DOMINI_IRI,
+    ONTOLOGIA_MODEL_IRI,
     carrega_model,
     fets_clips,
 )
@@ -51,6 +55,36 @@ def main() -> int:
     if vd.get("relacions_validades", 0) <= 0 or vd.get("literals_validats", 0) <= 0:
         errors.append("l'ontologia de domini no ha validat relacions/literals del model")
 
+    # Separacio real entre ontologies: IRI propi, import explicit i ABox sense esquema duplicat.
+    g_domini = Graph(); g_domini.parse(model.fitxer_domini)
+    g_model = Graph(); g_model.parse(model.fitxer)
+    ont_domini = set(g_domini.subjects(RDF.type, OWL.Ontology))
+    ont_model = set(g_model.subjects(RDF.type, OWL.Ontology))
+    if ont_domini != {ONTOLOGIA_DOMINI_IRI}:
+        errors.append(f"IRI de domini inesperat: {ont_domini}")
+    if ont_model != {ONTOLOGIA_MODEL_IRI}:
+        errors.append(f"IRI de model inesperat: {ont_model}")
+    if ONTOLOGIA_DOMINI_IRI not in set(g_model.objects(ONTOLOGIA_MODEL_IRI, OWL.imports)):
+        errors.append("ontologia_model.rdf no importa ontologia_domini.rdf")
+    esquema_model = []
+    for tipus in (OWL.Class, OWL.ObjectProperty, OWL.DatatypeProperty):
+        esquema_model.extend(s for s in g_model.subjects(RDF.type, tipus) if isinstance(s, URIRef))
+    if esquema_model:
+        errors.append("ontologia_model.rdf torna a duplicar classes o propietats de l'esquema")
+
+    # El domini pot contenir cinc individus canonics d'objectiu usats en restriccions OWL,
+    # pero no ha de contenir instancies concretes de la planta.
+    individus_domini = {
+        str(s).rsplit('#', 1)[-1]
+        for s in g_domini.subjects(RDF.type, OWL.NamedIndividual) if isinstance(s, URIRef)
+    }
+    objectius_canonics = {
+        "Obj_Estabilitat", "Obj_Minimitzar_Moviment", "Obj_Produccio_Cultiu",
+        "Obj_Produccio_Energia", "Obj_Seguretat",
+    }
+    if individus_domini != objectius_canonics:
+        errors.append(f"individus inesperats a l'ontologia de domini: {sorted(individus_domini)}")
+
     config = json.load(open(os.path.join(ARREL, "config.json"), encoding="utf-8"))
     if set(config["sectors"]) != set(model.ids_sectors):
         errors.append("els sectors de config.json no coincideixen amb l'ontologia")
@@ -66,7 +100,7 @@ def main() -> int:
     # Evita regressions al vocabulari antic del model: la ABox ha de parlar el
     # mateix llenguatge canonic que la TBox per als termes que usa el runtime.
     model_text = open(model.fitxer, encoding="utf-8").read()
-    antics = ["Estat_Panel", "Angle_Objectiu", "Tomàquet", "Sensor_Humitat_Sòl", "Sensor_Radiació"]
+    antics = ["Estat_Panel", "Estat_Panelll", "Angle_Objectiu", "Tomàquet", "Sensor_Humitat_Sòl", "Sensor_Radiació"]
     trobats = [x for x in antics if re.search(rf"(?<![A-Za-zÀ-ÿ_]){re.escape(x)}(?![A-Za-zÀ-ÿ_])", model_text)]
     if trobats:
         errors.append(f"vocabulari antic/no canonic a ontologia_model.rdf: {trobats}")

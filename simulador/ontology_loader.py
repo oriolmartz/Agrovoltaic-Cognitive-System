@@ -21,6 +21,8 @@ from rdflib import Graph, Literal, RDF, RDFS, OWL, URIRef
 ARREL = Path(__file__).resolve().parent
 ONTOLOGIA_MODEL_DEFECTE = (ARREL.parent / "ontologia_model.rdf").resolve()
 ONTOLOGIA_DOMINI_DEFECTE = (ARREL.parent / "ontologia_domini.rdf").resolve()
+ONTOLOGIA_MODEL_IRI = URIRef("http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaModel")
+ONTOLOGIA_DOMINI_IRI = URIRef("http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini")
 
 
 CLASSES_OPERACIONALS = {
@@ -89,14 +91,39 @@ def _individu_compatible(g_model: Graph, g_domini: Graph, individu: URIRef, clas
     return any(_es_subclasse(g_domini, t, classe_esperada) for t in tipus)
 
 
-def valida_contra_domini(g_model: Graph, g_domini: Graph) -> dict[str, int]:
-    """Valida el contracte operacional del model contra l'ontologia de domini.
+def _iri_ontologia(g: Graph) -> URIRef:
+    candidats = [s for s in g.subjects(RDF.type, OWL.Ontology) if isinstance(s, URIRef)]
+    if len(candidats) != 1:
+        raise ValueError(f"S'esperava exactament una declaracio owl:Ontology i se n'han trobat {len(candidats)}")
+    return candidats[0]
 
-    No intenta executar un reasoner OWL complet. Comprova els termes que el runtime
-    consumeix i les declaracions domain/range de les propietats estructurals. Així
-    `ontologia_domini.rdf` actua com a esquema/TBox executable i
-    `ontologia_model.rdf` com a instanciació/ABox per al controlador.
+
+def valida_contra_domini(g_model: Graph, g_domini: Graph) -> dict[str, int]:
+    """Valida el contracte ontologic abans de projectar l'ABox a CLIPS.
+
+    `ontologia_domini.rdf` es l'esquema autoritatiu. `ontologia_model.rdf`
+    importa aquest esquema i conte les instancies concretes de la planta.
+    No s'executa un reasoner OWL complet: es validen imports, separacio
+    esquema/instancies, vocabulari consumit pel runtime i domain/range
+    de les propietats operacionals.
     """
+    domini_iri = _iri_ontologia(g_domini)
+    model_iri = _iri_ontologia(g_model)
+    if domini_iri != ONTOLOGIA_DOMINI_IRI:
+        raise ValueError(f"IRI inesperat per a l'ontologia de domini: {domini_iri}")
+    if model_iri != ONTOLOGIA_MODEL_IRI:
+        raise ValueError(f"IRI inesperat per a l'ontologia de model: {model_iri}")
+    if domini_iri not in set(g_model.objects(model_iri, OWL.imports)):
+        raise ValueError("ontologia_model.rdf ha d'importar explicitament ontologia_domini.rdf amb owl:imports")
+
+    # L'ABox no ha de redeclarar l'esquema.
+    declaracions_model = []
+    for tipus in (OWL.Class, OWL.ObjectProperty, OWL.DatatypeProperty):
+        declaracions_model.extend(s for s in g_model.subjects(RDF.type, tipus) if isinstance(s, URIRef))
+    if declaracions_model:
+        noms = ", ".join(sorted({_local(x) for x in declaracions_model}))
+        raise ValueError(f"L'ontologia de model redeclara termes d'esquema: {noms}")
+
     classes = {n: _terme_esquema(g_domini, n, OWL.Class) for n in sorted(CLASSES_OPERACIONALS)}
     obj_props = {
         n: _terme_esquema(g_domini, n, OWL.ObjectProperty)
@@ -107,39 +134,48 @@ def valida_contra_domini(g_model: Graph, g_domini: Graph) -> dict[str, int]:
         for n in sorted(PROPIETATS_DADES_OPERACIONALS)
     }
 
-    # El model ha d'usar exactament el vocabulari canònic del domini per al contracte runtime.
-    for nom, uri in classes.items():
-        if not any(True for _ in g_model.triples((None, RDF.type, uri))) and not any(
-            True for _ in g_model.triples((uri, None, None))
-        ):
-            raise ValueError(f"El model no utilitza/declara la classe operacional del domini '{nom}'")
-    for nom, uri in {**obj_props, **data_props}.items():
-        if not any(True for _ in g_model.triples((None, uri, None))) and not any(
-            True for _ in g_model.triples((uri, None, None))
-        ):
-            raise ValueError(f"El model no utilitza/declara la propietat operacional del domini '{nom}'")
+    # Qualsevol classe usada pels individus del model ha d'estar declarada al domini.
+    classes_domini = {s for s in g_domini.subjects(RDF.type, OWL.Class) if isinstance(s, URIRef)}
+    for individu in g_model.subjects(RDF.type, OWL.NamedIndividual):
+        for tipus in g_model.objects(individu, RDF.type):
+            if isinstance(tipus, URIRef) and tipus != OWL.NamedIndividual and tipus not in classes_domini:
+                raise ValueError(f"{_local(individu)} utilitza una classe no declarada al domini: {tipus}")
 
-    # Comprovació de domain/range per a les relacions que es projecten a CLIPS.
+    # Qualsevol propietat de negoci usada per l'ABox ha d'estar declarada al domini.
+    propietats_domini = {
+        s for tipus in (OWL.ObjectProperty, OWL.DatatypeProperty)
+        for s in g_domini.subjects(RDF.type, tipus) if isinstance(s, URIRef)
+    }
+    for s, p, o in g_model:
+        if p in (RDF.type, OWL.imports):
+            continue
+        if s == model_iri:
+            continue
+        if isinstance(p, URIRef) and str(p).startswith((str(RDF), str(RDFS), str(OWL))):
+            continue
+        if isinstance(p, URIRef) and p not in propietats_domini:
+            raise ValueError(f"L'ABox utilitza una propietat no declarada al domini: {p}")
+
+    # Comprovacio de domain/range per a les relacions projectades a CLIPS.
     relacions = 0
     for nom, p in obj_props.items():
         dominis = [x for x in g_domini.objects(p, RDFS.domain) if isinstance(x, URIRef)]
         rangs = [x for x in g_domini.objects(p, RDFS.range) if isinstance(x, URIRef)]
         for s, o in g_model.subject_objects(p):
             if not isinstance(s, URIRef) or not isinstance(o, URIRef):
-                raise ValueError(f"{nom}: s'esperava una relació entre individus URI")
+                raise ValueError(f"{nom}: s'esperava una relacio entre individus URI")
             if dominis and not any(_individu_compatible(g_model, g_domini, s, d) for d in dominis):
                 raise ValueError(
-                    f"{nom}: {_local(s)} no és compatible amb el domini "
+                    f"{nom}: {_local(s)} no es compatible amb el domini "
                     f"{', '.join(_local(d) for d in dominis)}"
                 )
             if rangs and not any(_individu_compatible(g_model, g_domini, o, r) for r in rangs):
                 raise ValueError(
-                    f"{nom}: {_local(o)} no és compatible amb el rang "
+                    f"{nom}: {_local(o)} no es compatible amb el rang "
                     f"{', '.join(_local(r) for r in rangs)}"
                 )
             relacions += 1
 
-    # Les propietats de dades han d'aplicar-se a individus del tipus declarat al domini.
     literals = 0
     for nom, p in data_props.items():
         dominis = [x for x in g_domini.objects(p, RDFS.domain) if isinstance(x, URIRef)]
@@ -148,7 +184,7 @@ def valida_contra_domini(g_model: Graph, g_domini: Graph) -> dict[str, int]:
                 raise ValueError(f"{nom}: el valor de {_local(s)} hauria de ser un literal")
             if dominis and not any(_individu_compatible(g_model, g_domini, s, d) for d in dominis):
                 raise ValueError(
-                    f"{nom}: {_local(s)} no és compatible amb el domini "
+                    f"{nom}: {_local(s)} no es compatible amb el domini "
                     f"{', '.join(_local(d) for d in dominis)}"
                 )
             literals += 1
@@ -282,20 +318,18 @@ def carrega_model(
     g.parse(fitxer)
     validacio_domini = valida_contra_domini(g, g_domini)
 
-    te_cultiu = _predicat(g, "te_cultiu")
-    te_panell = _predicat(g, "te_panell")
-    te_sensor = _predicat(g, "te_sensor")
-    te_estat_cultiu = _predicat(g, "te_estat_cultiu")
-    te_estat_panell = _predicat(g, "te_estat_panell")
-    p_sens = _predicat(g, "Sensibilitat")
-    p_angle = _predicat(g, "Angle_Actual")
-    p_angle_obj = _predicat(g, "Angle_Optim_Produccio")
-    p_disp = _predicat(g, "Disponible")
-    p_mec = _predicat(g, "Estat_Mecanic")
+    te_cultiu = _terme_esquema(g_domini, "te_cultiu", OWL.ObjectProperty)
+    te_panell = _terme_esquema(g_domini, "te_panell", OWL.ObjectProperty)
+    te_sensor = _terme_esquema(g_domini, "te_sensor", OWL.ObjectProperty)
+    te_estat_cultiu = _terme_esquema(g_domini, "te_estat_cultiu", OWL.ObjectProperty)
+    te_estat_panell = _terme_esquema(g_domini, "te_estat_panell", OWL.ObjectProperty)
+    p_sens = _terme_esquema(g_domini, "Sensibilitat", OWL.DatatypeProperty)
+    p_angle = _terme_esquema(g_domini, "Angle_Actual", OWL.DatatypeProperty)
+    p_angle_obj = _terme_esquema(g_domini, "Angle_Optim_Produccio", OWL.DatatypeProperty)
+    p_disp = _terme_esquema(g_domini, "Disponible", OWL.DatatypeProperty)
+    p_mec = _terme_esquema(g_domini, "Estat_Mecanic", OWL.DatatypeProperty)
 
-    sector_class = next((o for o in set(g.objects(None, RDF.type)) if _local(o) == "Sector"), None)
-    if sector_class is None:
-        raise ValueError("L'ontologia no defineix individus de tipus Sector")
+    sector_class = _terme_esquema(g_domini, "Sector", OWL.Class)
     sector_uris = sorted(set(g.subjects(RDF.type, sector_class)), key=lambda x: _natural(_local(x)))
 
     cultius: dict[str, CultiuOntologic] = {}
