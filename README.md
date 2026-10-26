@@ -130,3 +130,28 @@ Amb la v1_9, E1 ha de donar fail 0: també la versió canònica (`actual`, 79 pr
 5. Executar E0 + regressió + casos de prova.
 6. Documentar qualsevol canvi funcional a `simulador/REGISTRE_ITERACIONS.md`.
 7. No modificar els snapshots de `history/`.
+
+## Interfície web (bessó digital 3D)
+
+```bash
+cd simulador
+python -m pip install -r requirements.txt
+python webapp.py        # http://127.0.0.1:8000
+```
+
+La web és només una capa de presentació: l'angle dels panells i, des de la v1_9, també el reg es decideixen dins de CLIPS; `webapp.py` només executa el simulador i serveix les dades.
+
+```text
+simulador/
+├── webapp.py            # API FastAPI (/api/bootstrap, /api/days, /api/simulate)
+└── frontend/
+    ├── index.html · styles.css · app.js   # sala de control, cinta de decisions, anàlisi
+    ├── twin3d.js                          # escena Three.js (panells, sectors, reg, clima)
+    ├── scene/                             # textures procedurals, paisatge, cultius, cel
+    ├── timeline.js · charts.js · ui.js    # cinta, gràfics SVG i vocabulari de presentació
+    └── vendor/                            # Three.js r186 i tipografies en local (sense CDN)
+```
+
+- Mostra les tres ontologies (`OntologiaDomini`, `OntologiaModel`, `OntologiaReg`), la decisió de reg de CLIPS (acció, dosi i motiu) i el balanç d'aigua (m³ bombejats, percolació, estrès hídric).
+- Escenaris de demostració: `demo_sequera_reg` (el CLIPS decideix regar) i `demo_pluja_real` (pluja i percolació).
+- Comprovació estàtica: `python verificacio/e15_frontend.py`.

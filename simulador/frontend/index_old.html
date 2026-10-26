@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agrovoltaic Cognitive System</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="eyebrow">SISTEMA BASAT EN CONEIXEMENT</div>
+          <h1>Agrovoltaic Cognitive System</h1>
+        </div>
+      </div>
+      <div class="status-pill" id="systemStatus"><span class="dot"></span> Validant sistema…</div>
+    </header>
+
+    <main>
+      <section class="hero-grid">
+        <div class="panel control-panel">
+          <div class="panel-heading">
+            <div>
+              <div class="eyebrow">SIMULACIÓ</div>
+              <h2>Executar un escenari</h2>
+            </div>
+            <span class="tag">CLIPS decideix</span>
+          </div>
+
+          <div class="controls">
+            <label>
+              <span>Escenari</span>
+              <select id="scenario"></select>
+            </label>
+            <label>
+              <span>Controlador</span>
+              <select id="controller"></select>
+            </label>
+            <label>
+              <span>Dia</span>
+              <select id="day"></select>
+            </label>
+            <label>
+              <span>Llavor</span>
+              <input id="seed" type="number" min="0" value="0" />
+            </label>
+          </div>
+
+          <div class="actions-row">
+            <label class="toggle-row"><input id="compare" type="checkbox" /><span>Comparar amb baselines</span></label>
+            <button id="runButton" class="primary">Executar simulació</button>
+          </div>
+          <div class="error" id="errorBox"></div>
+        </div>
+
+        <div class="panel ontology-panel">
+          <div class="panel-heading compact">
+            <div>
+              <div class="eyebrow">ONTOLOGIES</div>
+              <h2>Flux de coneixement</h2>
+            </div>
+            <span class="verified" id="ontologyBadge">—</span>
+          </div>
+          <div class="pipeline">
+            <div class="pipe-node"><b>TBox</b><span>OntologiaDomini</span><small>classes + propietats</small></div>
+            <div class="arrow">→</div>
+            <div class="pipe-node"><b>ABox</b><span>OntologiaModel</span><small>instàncies de planta</small></div>
+            <div class="arrow">→</div>
+            <div class="pipe-node"><b>RDFLib</b><span>ontology_loader</span><small>valida + projecta</small></div>
+            <div class="arrow">→</div>
+            <div class="pipe-node accent"><b>CLIPS</b><span>Working Memory</span><small id="factsCount">— fets</small></div>
+          </div>
+          <div class="ontology-stats" id="ontologyStats"></div>
+        </div>
+      </section>
+
+      <section class="kpi-grid" id="kpiGrid">
+        <div class="kpi skeleton"></div><div class="kpi skeleton"></div><div class="kpi skeleton"></div>
+        <div class="kpi skeleton"></div><div class="kpi skeleton"></div>
+      </section>
+
+      <section class="section-head">
+        <div><div class="eyebrow">ESTAT ACTUAL</div><h2>Sectors</h2></div>
+        <div class="context" id="runContext">Executa una simulació per veure l'estat.</div>
+      </section>
+      <section class="sector-grid" id="sectorGrid">
+        <div class="empty-state">Encara no hi ha cap simulació executada.</div>
+      </section>
+
+      <section class="charts-grid" id="chartsSection" hidden>
+        <div class="panel chart-panel">
+          <div class="panel-heading compact"><div><div class="eyebrow">ENERGIA</div><h2>Producció per hora</h2></div></div>
+          <div id="energyChart" class="chart"></div>
+        </div>
+        <div class="panel chart-panel">
+          <div class="panel-heading compact"><div><div class="eyebrow">CONTROL</div><h2>Angle real vs. òptim</h2></div></div>
+          <div id="angleChart" class="chart"></div>
+        </div>
+      </section>
+
+      <section class="panel decision-panel" id="decisionSection" hidden>
+        <div class="panel-heading">
+          <div><div class="eyebrow">TRAÇABILITAT</div><h2>Decisions del controlador</h2></div>
+          <select id="sectorFilter" class="small-select"><option value="all">Tots els sectors</option></select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Hora</th><th>Sector</th><th>Acció</th><th>Angle</th><th>Riscos</th><th>Impasse</th><th>Explicació</th></tr></thead>
+            <tbody id="decisionRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel comparison-panel" id="comparisonSection" hidden>
+        <div class="panel-heading compact"><div><div class="eyebrow">BASELINES</div><h2>Comparació de controladors</h2></div></div>
+        <div id="comparisonGrid" class="comparison-grid"></div>
+      </section>
+    </main>
+
+    <footer>UPC · Sistemes Basats en Coneixement · SOAR-inspired architecture · CLIPS</footer>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

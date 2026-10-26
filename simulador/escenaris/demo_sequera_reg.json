@@ -1,0 +1,6 @@
+{
+  "nom": "demo_sequera_reg_CLIPS",
+  "lloc": "ribera",
+  "dies": ["2023-08-10"],
+  "humitat": {"mode": "balanc", "inicial_pct": 40.0}
+}

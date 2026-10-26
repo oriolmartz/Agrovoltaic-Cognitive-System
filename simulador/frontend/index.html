@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ca" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Agrovoltaic Cognitive System · Bessó digital</title>
+  <script>
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('acs-theme'); } catch (e) {}
+      if (!t) t = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="stylesheet" href="/static/vendor/fonts/fonts.css" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="progress" id="progress" hidden></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="26" cy="13" r="6" class="mark-sun"/>
+        <path d="M5 27 L33 21" class="mark-panel"/>
+        <path d="M19 24.4 V35 M9 37 H29" class="mark-post"/>
+      </svg>
+      <div>
+        <h1>Agrovoltaic Cognitive System</h1>
+        <div class="status" id="systemStatus" title="Bessó digital · decisions SOAR sobre CLIPS"><span class="dot"></span><span id="statusText">Validant ontologies…</span></div>
+      </div>
+    </div>
+
+    <form class="controls" id="controls" onsubmit="return false">
+      <label class="field grow">
+        <span>Escenari</span>
+        <select id="scenario"></select>
+      </label>
+      <div class="field">
+        <span id="ctlLabel">Controlador</span>
+        <div class="segmented" id="controller" role="radiogroup" aria-labelledby="ctlLabel"></div>
+      </div>
+      <label class="field">
+        <span>Dia</span>
+        <select id="day"></select>
+      </label>
+      <label class="field narrow">
+        <span>Llavor</span>
+        <input id="seed" type="number" min="0" step="1" value="0" />
+      </label>
+      <label class="switch" title="Executa també el seguidor comercial i el panell fix">
+        <input id="compare" type="checkbox" />
+        <i></i>
+        <span>Comparar</span>
+      </label>
+      <button id="runButton" class="btn-run" type="button">Executar simulació</button>
+    </form>
+
+    <div class="top-right">
+      <button class="icon-btn" id="themeToggle" type="button" aria-label="Canvia el tema"></button>
+    </div>
+  </header>
+
+  <div id="errorBox" class="banner" role="alert" hidden>
+    <span id="errorText"></span>
+    <button type="button" id="errorClose" class="icon-btn small" aria-label="Tanca"></button>
+  </div>
+
+  <main>
+    <section class="stage" id="stage" aria-label="Bessó digital">
+      <div class="scene-wrap">
+        <div id="scene3d" class="scene3d">
+          <div class="scene-loading" id="sceneLoading">Inicialitzant escena 3D…</div>
+        </div>
+
+        <div class="hud hud-tl">
+          <div class="clock-card">
+            <div class="clock-col">
+              <div class="clock" id="hudClock">--:--</div>
+              <div class="clock-sub" id="hudSun">Sense execució</div>
+            </div>
+            <svg class="sunarc" id="sunArc" viewBox="0 0 168 78" aria-hidden="true">
+              <path class="arc" d="M18 70 A66 66 0 0 1 150 70"/>
+              <line class="horizon" x1="6" y1="70" x2="162" y2="70"/>
+              <circle id="sunDot" class="sun-dot" cx="18" cy="70" r="7.5"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="hud hud-tr">
+          <button class="glass-btn" id="railOpen" type="button" hidden>Sectors</button>
+          <details class="legend-pop">
+            <summary>Llegenda</summary>
+            <div class="legend-body">
+              <div class="lg-title">Cultius</div>
+              <ul>
+                <li><i class="sw" style="--c:var(--crop-enciam)"></i>Enciam</li>
+                <li><i class="sw" style="--c:var(--crop-tomaquet)"></i>Tomaquet</li>
+                <li><i class="sw" style="--c:var(--crop-vinya)"></i>Vinya</li>
+              </ul>
+              <div class="lg-title">Panells</div>
+              <ul>
+                <li><i class="sw panel"></i>Angle actual</li>
+                <li><i class="sw ghost"></i>Angle òptim (s’escalfa si el panell se n’allunya)</li>
+              </ul>
+              <div class="lg-title">Escena</div>
+              <ul>
+                <li><i class="sw rainy"></i>Pluja i reg</li>
+                <li><i class="sw windy"></i>Ratxes de vent</li>
+                <li><i class="sw risk"></i>Vora vermella: risc actiu</li>
+              </ul>
+              <p class="lg-note">Clic a un sector per seguir-lo. Arrossega per orbitar.</p>
+            </div>
+          </details>
+        </div>
+
+        <div class="hud hud-bl" id="climateStrip" aria-live="off"></div>
+
+        <div class="hud hud-br">
+          <div class="segmented glass" id="cameraGroup" role="group" aria-label="Càmera">
+            <button class="camera-btn active" data-camera="overview" type="button">General</button>
+            <button class="camera-btn" data-camera="solar" type="button">Panells</button>
+            <button class="camera-btn" data-camera="crop" type="button">Cultiu</button>
+            <button class="camera-btn" data-camera="top" type="button">Zenital</button>
+          </div>
+        </div>
+
+        <div id="sceneTooltip" class="scene-tooltip" hidden></div>
+
+        <div class="scene-empty" id="sceneEmpty">
+          <div>
+            <h2>Cap simulació carregada</h2>
+            <p>Tria escenari, dia i controlador i executa el dia. El bessó digital reproduirà el que va decidir el sistema, hora a hora.</p>
+            <button class="btn-run" type="button" id="emptyRun">Executar simulació</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="rail" aria-label="Estat per sector">
+        <div class="rail-head">
+          <h2>Sectors</h2>
+          <span class="rail-hint" id="railHint">Clic per seguir</span>
+          <button class="icon-btn small" id="railToggle" type="button" aria-label="Amaga el panell de sectors" title="Amaga el panell"></button>
+        </div>
+        <div id="sectorCards" class="sector-cards">
+          <p class="rail-empty">Quan executis una simulació, aquí veuràs l’angle dels panells, l’aigua del sòl i la raó de cada decisió.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="dock" aria-label="Línia de temps de decisions">
+      <div class="dock-bar">
+        <div class="transport">
+          <button id="play3d" class="btn-play" type="button" aria-label="Reproduir" disabled></button>
+          <button id="reset3d" class="icon-btn" type="button" aria-label="Reiniciar" disabled></button>
+          <div class="segmented small" id="speedGroup" role="group" aria-label="Velocitat">
+            <button class="speed-btn" data-speed="0.35" type="button">×0,5</button>
+            <button class="speed-btn active" data-speed="0.7" type="button">×1</button>
+            <button class="speed-btn" data-speed="1.4" type="button">×2</button>
+          </div>
+          <label class="switch compact" title="Alenteix la reproducció mentre hi ha reg perquè es vegi bé">
+            <input id="slowIrr" type="checkbox" checked /><i></i><span>Alenteix en reg</span>
+          </label>
+        </div>
+        <div class="dock-readout">
+          <strong id="cycleClock">—</strong>
+          <span id="cycleInfo">Sense execució</span>
+          <span class="irr-badge" id="irrBadge" hidden></span>
+        </div>
+        <p class="narrative" id="hudNarrative">Tria un escenari i executa el dia per veure el bessó digital en moviment.</p>
+        <ul class="ribbon-legend" id="ribbonLegend" aria-label="Llegenda de la cinta"></ul>
+      </div>
+      <div id="ribbon" class="ribbon"></div>
+    </section>
+
+    <section class="analysis" aria-label="Anàlisi">
+      <div class="tabs" role="tablist" aria-label="Anàlisi del dia">
+        <button role="tab" id="tab-balance" aria-controls="panel-balance" aria-selected="true" data-tab="balance" type="button">Balanç del dia</button>
+        <button role="tab" id="tab-charts" aria-controls="panel-charts" aria-selected="false" data-tab="charts" type="button" tabindex="-1">Gràfics</button>
+        <button role="tab" id="tab-trace" aria-controls="panel-trace" aria-selected="false" data-tab="trace" type="button" tabindex="-1">Traçabilitat</button>
+        <button role="tab" id="tab-arch" aria-controls="panel-arch" aria-selected="false" data-tab="arch" type="button" tabindex="-1">Arquitectura</button>
+      </div>
+
+      <div class="tabpanel" id="panel-balance" role="tabpanel" aria-labelledby="tab-balance">
+        <div id="balance"><p class="panel-empty">El balanç apareixerà en acabar la simulació: energia, aigua, seguretat i cost computacional.</p></div>
+        <div id="sectorSummary"></div>
+        <div id="comparison"></div>
+      </div>
+
+      <div class="tabpanel" id="panel-charts" role="tabpanel" aria-labelledby="tab-charts" hidden>
+        <p class="panel-hint" id="chartsHint">Passa el cursor per llegir valors. Clic en un gràfic per anar a aquella hora.</p>
+        <div class="chart-grid" id="chartGrid">
+          <article class="chart-card"><h3>Producció fotovoltaica</h3><div id="chEnergy"></div></article>
+          <article class="chart-card"><h3>Potència per sector</h3><div id="chPower"></div></article>
+          <article class="chart-card"><h3>Angle dels panells</h3><div id="chAngle"></div></article>
+          <article class="chart-card"><h3>Humitat del sòl i reg</h3><div id="chWater"></div></article>
+          <article class="chart-card"><h3>Radiació i temperatura</h3><div id="chClimate"></div></article>
+          <article class="chart-card"><h3>Vent i pluja</h3><div id="chWind"></div></article>
+        </div>
+      </div>
+
+      <div class="tabpanel" id="panel-trace" role="tabpanel" aria-labelledby="tab-trace" hidden>
+        <div class="trace-tools">
+          <label class="field inline"><span>Sector</span>
+            <select id="sectorFilter"><option value="all">Tots els sectors</option></select>
+          </label>
+          <label class="switch"><input id="onlyIncidents" type="checkbox" /><i></i><span>Només incidències</span></label>
+          <span class="trace-count" id="traceCount"></span>
+        </div>
+        <div class="table-wrap" id="traceWrap">
+          <table>
+            <thead>
+              <tr><th>Hora</th><th>Sector</th><th>Acció</th><th class="r">Angle</th><th class="r">Reg</th><th>Riscos</th><th>Impasse</th><th>Per què</th></tr>
+            </thead>
+            <tbody id="decisionRows"><tr><td colspan="8" class="empty-cell">Sense decisions encara.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tabpanel" id="panel-arch" role="tabpanel" aria-labelledby="tab-arch" hidden>
+        <div class="arch">
+          <div class="arch-flow">
+            <div class="arch-node">
+              <h3>OntologiaDomini</h3>
+              <p>TBox: classes, propietats, jerarquies i restriccions domain/range.</p>
+              <span class="chip" id="archDomain">ontologia_domini.rdf</span>
+            </div>
+            <div class="arch-link"><span>owl:imports</span></div>
+            <div class="arch-stack">
+              <div class="arch-node">
+                <h3>OntologiaModel</h3>
+                <p>ABox: les instàncies de la planta (sectors, cultius, panells, sensors).</p>
+                <span class="chip" id="archModel">ontologia_model.rdf</span>
+              </div>
+              <div class="arch-node reg">
+                <h3>OntologiaReg</h3>
+                <p>El segon actuador: objectiu d’estalvi d’aigua, vàlvules i fonts de preferència del reg.</p>
+                <span class="chip" id="archReg">ontologia_reg.rdf</span>
+              </div>
+            </div>
+            <div class="arch-link"><span>RDFLib valida</span></div>
+            <div class="arch-node accent">
+              <h3>Memòria de treball CLIPS</h3>
+              <p>Fets projectats automàticament abans del primer cicle.</p>
+              <span class="chip" id="factsCount">—</span>
+            </div>
+          </div>
+          <div id="ontologyStats" class="chips"></div>
+          <div id="regStats" class="chips"></div>
+          <h3 class="arch-sub">Paràmetres del reg (llegits de l’ontologia, no del codi)</h3>
+          <dl class="reg-config" id="regConfig"></dl>
+
+          <h3 class="arch-sub">Cicle de decisió SOAR dins de CLIPS (angle i reg)</h3>
+          <ol class="cycle">
+            <li>Percepció</li><li>Elaboració</li><li>Proposta</li><li>Avaluació</li><li>Selecció</li><li>Aplicació</li><li>Explicació</li><li>Monitoratge</li>
+          </ol>
+          <p class="arch-note">Python i aquesta interfície només connecten i presenten: no avaluen candidats ni trien accions. Cada decisió, tant l’angle dels panells com el reg, amb el seu motiu, surt de CLIPS.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">Agrovoltaic Cognitive System · Sistemes basats en coneixement · UPC</footer>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "/static/vendor/three/build/three.module.js",
+      "three/addons/": "/static/vendor/three/addons/"
+    }
+  }
+  </script>
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>

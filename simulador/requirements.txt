@@ -6,3 +6,5 @@ scipy==1.17.1
 tzdata==2026.5   # zona horaria Europe/Madrid a Windows (Python no la porta)
 
 rdflib==7.5.0
+fastapi>=0.115,<1
+uvicorn>=0.30,<1
