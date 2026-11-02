@@ -1,0 +1,8 @@
+{
+  "nom": "Ribera de Sió · abril–setembre 2023 (6 mesos)",
+  "descripcio": "Sis mesos de dades reals consecutives (XMS-Cat + Open-Meteo + PVGIS). Un bloc continu per mes natural, amb la humitat inicial mesurada.",
+  "lloc": "ribera",
+  "dies": {"des_de": "2023-04-01", "fins_a": "2023-09-30"},
+  "mode_dies": "sequencial",
+  "blocs": "mes"
+}

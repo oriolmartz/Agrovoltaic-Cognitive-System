@@ -141,17 +141,38 @@ python webapp.py        # http://127.0.0.1:8000
 
 La web és només una capa de presentació: l'angle dels panells i, des de la v1_9, també el reg es decideixen dins de CLIPS; `webapp.py` només executa el simulador i serveix les dades.
 
+### Simular dies o mesos
+
+Cada escenari mostra la **durada en dies** (calculada de les dades reals) i una estimació del temps. Un dia es simula a l'instant; un **període** (fins a mesos) es llança com a treball en segon pla amb progrés i cancel·lació:
+
+| Mode | Què fa | Quan usar-lo |
+|---|---|---|
+| **Blocs mensuals** (per defecte en períodes) | un bloc continu per mes natural, repartit entre processos (com E14/E15) | sis mesos en ~1 minut amb diversos nuclis |
+| **Dies independents** | cada dia comença de nou (com E1–E7), repartit entre processos | comparar dies, el més ràpid |
+| **Continu** | una sola execució: l'aigua del sòl i l'aprenentatge passen de dia en dia | el més realista, però el cost per dia creix (~0,3 s + 0,043 s·dia) |
+
+Amb **Comparar** s'executen també el seguidor comercial i el panell fix sobre els mateixos dies reals; la pestanya **Període** mostra l'experiment (diferència mitjana per dia, IC 95 %, p de Holm i magnitud, amb `estadistica.py`). A **Opcions** hi ha la humitat inicial del sòl (mesura real XMS-Cat o configuració) i *què passaria si…* (temperatura, vent, radiació i pluja modificats sobre les dades reals).
+
+El navegador només rep una **taula diària**; els registres horaris d'un dia es demanen quan es clica (calendari, tira de dies, `[` `]`, «Dies seguits»). Així escala amb el nombre de dies. L'URL `?job=<id>` reobre un període ja simulat mentre el servidor segueixi en marxa.
+
+### Afegir dades (escalable)
+
+- **Més mesos d'un lloc**: substitueix els fitxers de `dades_reals/` per versions més llargues. Els escenaris que no fixen `"dies"` i l'escenari automàtic **«Totes les dades»** creixen sols.
+- **Un lloc nou**: deixa-hi els seus tres fitxers i crea `dades_reals/llocs/<id>.json` (plantilla: `dades_reals/llocs/exemple.json.plantilla`). Apareix a la web sense tocar codi.
+- **Un experiment**: un JSON a `escenaris/` amb `lloc`, `dies` (`des_de`/`fins_a`), `blocs: "mes"` i, si cal, `modificadors` (p. ex. `escenaris/ribera_estiu_menys_pluja.json`).
+
 ```text
 simulador/
-├── webapp.py            # API FastAPI (/api/bootstrap, /api/days, /api/simulate)
+├── webapp.py            # API FastAPI (/api/bootstrap, /api/days, /api/simulate, /api/jobs…)
+├── webcore.py           # escenaris, configuració, agregats diaris i estadística (sense FastAPI)
+├── webjobs.py           # treballs llargs en processos (progrés, cancel·lació, estimació)
 └── frontend/
-    ├── index.html · styles.css · app.js   # sala de control, cinta de decisions, anàlisi
-    ├── twin3d.js                          # escena Three.js (panells, sectors, reg, clima)
-    ├── scene/                             # textures procedurals, paisatge, cultius, cel
-    ├── timeline.js · charts.js · ui.js    # cinta, gràfics SVG i vocabulari de presentació
-    └── vendor/                            # Three.js r186 i tipografies en local (sense CDN)
+    ├── index.html · styles.css · app.js     # sala de control, cinta de decisions, anàlisi
+    ├── period.js · scenarios.js · jobs.js   # vista de període, durada d'escenaris, client de treballs
+    ├── twin3d.js · scene/                   # escena Three.js (panells, sectors, reg, clima)
+    ├── timeline.js · charts.js · ui.js      # cinta, gràfics SVG i vocabulari de presentació
+    └── vendor/                              # Three.js r186 i tipografies en local (sense CDN)
 ```
 
-- Mostra les tres ontologies (`OntologiaDomini`, `OntologiaModel`, `OntologiaReg`), la decisió de reg de CLIPS (acció, dosi i motiu) i el balanç d'aigua (m³ bombejats, percolació, estrès hídric).
-- Escenaris de demostració: `demo_sequera_reg` (el CLIPS decideix regar) i `demo_pluja_real` (pluja i percolació).
-- Comprovació estàtica: `python verificacio/e15_frontend.py`.
+- Escenaris de demostració d'un dia: `demo_sequera_reg` (el CLIPS decideix regar) i `demo_pluja_real`. De període: `ribera_6_mesos` (183 dies), `cantallops_hivern_primavera` (95) i `ribera_estiu_menys_pluja` (62, *what-if*).
+- Comprovacions: `python verificacio/e15_frontend.py` (estàtica) i `python verificacio/e17_periode.py` (catàleg, lloc nou per JSON i treball en processos).

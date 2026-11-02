@@ -120,25 +120,37 @@ export class LineChart {
       g += `<text class="ax" x="${w - m.r + 8}" y="${Yr(v) + 3.5}" text-anchor="start">${yFmt(v, this.o.y2)}</text>`;
     });
     const span = xmax - xmin;
-    const target = Math.max(2, Math.floor(iw / 58));
-    const stepX = [1, 2, 3, 4, 6, 12].find((s) => span / s <= target) || 12;
-    xsAll.filter((x) => (x - xsAll[0]) % stepX === 0).forEach((x) => {
-      g += `<text class="ax" x="${X(x)}" y="${h - 6}" text-anchor="middle">${esc(this.o.xFormat(x))}</text>`;
-    });
+    if (this.o.xTicks) {
+      this.o.xTicks().forEach(({ x, label }) => {
+        if (x < xmin || x > xmax) return;
+        g += `<line class="gl tick" x1="${X(x)}" x2="${X(x)}" y1="${m.t + ih}" y2="${m.t + ih + 4}"/>`;
+        g += `<text class="ax" x="${X(x)}" y="${h - 6}" text-anchor="start" dx="3">${esc(label)}</text>`;
+      });
+    } else {
+      const target = Math.max(2, Math.floor(iw / 58));
+      const stepX = [1, 2, 3, 4, 6, 12].find((s) => span / s <= target) || 12;
+      xsAll.filter((x) => (x - xsAll[0]) % stepX === 0).forEach((x) => {
+        g += `<text class="ax" x="${X(x)}" y="${h - 6}" text-anchor="middle">${esc(this.o.xFormat(x))}</text>`;
+      });
+    }
 
     let defs = '';
     let body = '';
+    const barSeries = this.series.filter((q) => q.type === 'bar');
     this.series.forEach((s, i) => {
       const Y = s.axis === 'y2' ? Yr : Yl;
       const scale = s.axis === 'y2' ? sy2 : sy;
       const style = `style="--c:${s.color}"`;
       if (s.type === 'bar') {
-        const bw = Math.max(3, (iw / (xmax - xmin || 1)) * 0.56);
+        const nb = barSeries.length;
+        const slot = barSeries.indexOf(s);
+        const full = Math.max(1.4, (iw / (xmax - xmin || 1)) * (nb > 1 ? 0.84 : 0.7));
+        const bw = full / nb;
         s.data.forEach(([x, v]) => {
           if (!Number.isFinite(v) || v <= 0) return;
           const y = Y(v);
           const base = Y(Math.max(scale.min, 0));
-          body += `<rect class="bar" ${style} x="${X(x) - bw / 2}" y="${y}" width="${bw}" height="${Math.max(1, base - y)}" rx="1.5"/>`;
+          body += `<rect class="bar" ${style} x="${X(x) - full / 2 + slot * bw}" y="${y}" width="${Math.max(1, bw - (bw > 3 ? 0.6 : 0))}" height="${Math.max(1, base - y)}" rx="${bw > 3 ? 1.5 : 0}"/>`;
         });
         return;
       }

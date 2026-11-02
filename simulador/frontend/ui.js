@@ -55,6 +55,9 @@ const PATHS = {
   bolt: '<path d="M13 2.5L4.5 14H11l-1 7.5L19.5 10H13l0-7.5z"/>',
   close: '<path d="M6 6l12 12M18 6L6 18"/>',
   chevron: '<path d="M9 5l7 7-7 7"/>',
+  pin: '<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/>',
+  calendar: '<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  left: '<path d="M15 5l-7 7 7 7"/>',
   sidebar: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/>',
 };
 
@@ -102,7 +105,7 @@ export const CATEGORIES = [
   { id: 'production', label: 'Producció' },
   { id: 'shade', label: 'Ombra' },
   { id: 'safety', label: 'Seguretat' },
-  { id: 'hold', label: 'Manté posició' },
+  { id: 'hold', label: 'Manté' },
 ];
 
 const LEVELS = { baix: 1, mitja: 2, alt: 3, critic: 4 };
@@ -147,3 +150,38 @@ export const sectorLabel = (s) => String(s ?? '').replace(/_/g, ' ');
 
 export const CONTROLLER_SHORT = { soar: 'SOAR', seguidor: 'Seguidor', fix: 'Fix' };
 export const CONTROLLER_LONG = { soar: 'SOAR / CLIPS', seguidor: 'Seguidor comercial', fix: 'Panell fix' };
+
+/* ---------- Dates i durades ---------- */
+const MESOS = ['gen', 'feb', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'oct', 'nov', 'des'];
+const MESOS_LLARGS = ['gener', 'febrer', 'març', 'abril', 'maig', 'juny', 'juliol', 'agost', 'setembre', 'octubre', 'novembre', 'desembre'];
+
+const parts = (iso) => String(iso).split('-').map(Number);
+export function fmtDate(iso) { if (!iso) return '—'; const [y, m, d] = parts(iso); return `${d} ${MESOS[m - 1]} ${y}`; }
+export function fmtDateShort(iso) { if (!iso) return '—'; const [, m, d] = parts(iso); return `${d} ${MESOS[m - 1]}`; }
+export function monthLabel(key) { const [y, m] = parts(`${key}-01`); const n = MESOS_LLARGS[m - 1]; return `${n.charAt(0).toUpperCase()}${n.slice(1)} ${y}`; }
+export function monthShort(key) { const [, m] = parts(`${key}-01`); return MESOS[m - 1]; }
+export const monthKey = (iso) => String(iso).slice(0, 7);
+
+/** 183 -> "183 dies · ≈ 6 mesos". */
+export function fmtDuration(days) {
+  const n = Number(days) || 0;
+  const base = `${fmtInt(n)} ${n === 1 ? 'dia' : 'dies'}`;
+  if (n < 28) return base;
+  const mesos = Math.round(n / 30.44);
+  return `${base} · ≈ ${mesos} ${mesos === 1 ? 'mes' : 'mesos'}`;
+}
+
+export function fmtSeconds(s) {
+  if (s === null || s === undefined || !Number.isFinite(s)) return '—';
+  const t = Math.max(0, Math.round(s));
+  if (t < 60) return `${t} s`;
+  if (t < 3600) return `${Math.floor(t / 60)} min ${String(t % 60).padStart(2, '0')} s`;
+  return `${Math.floor(t / 3600)} h ${String(Math.floor((t % 3600) / 60)).padStart(2, '0')} min`;
+}
+
+export const MODE_LABEL = { independents: 'Dies independents', mensual: 'Blocs mensuals', sequencial: 'Continu' };
+export const MODE_HINT = {
+  independents: 'Cada dia comença de nou. El més ràpid, i els dies es poden comparar entre ells.',
+  mensual: 'Un bloc continu per mes (l’aigua del sòl i l’aprenentatge passen d’un dia a l’altre). Es reparteix entre processos.',
+  sequencial: 'Una sola execució continua. El més realista però el més lent: el cost per dia creix.',
+};

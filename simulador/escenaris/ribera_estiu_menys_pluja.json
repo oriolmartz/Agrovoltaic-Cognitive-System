@@ -1,0 +1,9 @@
+{
+  "nom": "Ribera de Sió · juliol–agost 2023 amb 40 % menys de pluja (what-if)",
+  "descripcio": "Experiment sobre dades reals: el mateix estiu amb la pluja multiplicada per 0,6, per veure com reacciona el reg decidit per CLIPS.",
+  "lloc": "ribera",
+  "dies": {"des_de": "2023-07-01", "fins_a": "2023-08-31"},
+  "mode_dies": "sequencial",
+  "blocs": "mes",
+  "modificadors": {"pluja_factor": 0.6}
+}

@@ -1,16 +1,23 @@
 import { DigitalTwin3D } from './twin3d.js';
 import { LineChart } from './charts.js';
 import { Ribbon } from './timeline.js';
+import { startJob, waitForJob, cancelJob, jobResult, jobDay } from './jobs.js';
+import { fillScenarioSelect, estimateSeconds } from './scenarios.js';
+import { PeriodView, DayStrip } from './period.js';
 import {
   $, clamp, lerp, mean, esc, fmt, fmtInt, clock, icon,
   actionCategory, actionLabel, CATEGORIES, parseRisks, prettyReason,
   cropColor, cropLabel, sectorLabel, CONTROLLER_SHORT, CONTROLLER_LONG,
+  fmtDate, fmtDuration, fmtSeconds, MODE_LABEL, MODE_HINT,
 } from './ui.js';
 
 /* La UI no implementa cap política de decisió: només presenta el que CLIPS
    ha decidit i que el backend retorna a /api/simulate. */
 
-const state = { boot: null, controller: 'soar', runs: [], run: null, frames: [], sectors: [], selected: null, tab: 'balance', irrCycles: [] };
+const state = { boot: null, controller: 'soar', runs: [], run: null, frames: [], sectors: [], selected: null, tab: 'balance', irrCycles: [],
+  sc: null, days: [], scope: 'period', period: null, metric: 'efficiency_pct', loadToken: 0, job: null, abort: false };
+let periodView = null;
+let dayStrip = null;
 const playback = { position: 0, speed: 0.7, playing: false, rafId: null, lastTs: null };
 let twin = null;
 let ribbon = null;
@@ -133,6 +140,16 @@ function setHTML(el, html) { if (el && el._h !== html) { el.innerHTML = html; el
 function showError(msg) { $('errorText').textContent = msg; $('errorBox').hidden = false; }
 function hideError() { $('errorBox').hidden = true; }
 
+/* Versió compacta (tarjetes de sector): el risc més greu + «+N»; el detall surt al passar el cursor. */
+function riskChipsCompact(str, impas, max = 1) {
+  const list = parseRisks(str).map((r) => ({ cls: `lvl-${r.rank}`, text: r.label, full: `${r.label}${r.level ? ` · ${r.level}` : ''}` }));
+  if (impas) list.push({ cls: 'impasse', text: 'Impasse', full: `Impasse · ${impas}` });
+  const shown = list.slice(0, max); const rest = list.slice(max);
+  let h = shown.map((c) => `<span class="risk ${c.cls}" title="${esc(c.full)}">${esc(c.text)}</span>`).join('');
+  if (rest.length) h += `<span class="risk more" title="${esc(rest.map((c) => c.full).join(' · '))}">+${rest.length}</span>`;
+  return h;
+}
+
 function riskChips(str, impas) {
   const chips = parseRisks(str).map((r) => `<span class="risk lvl-${r.rank}">${esc(r.label)}${r.level ? ` · ${esc(r.level)}` : ''}</span>`);
   if (impas) chips.push(`<span class="risk impasse">Impasse · ${esc(impas)}</span>`);
@@ -193,16 +210,16 @@ function buildCards() {
           <rect class="pan" x="18" y="31.5" width="84" height="5" rx="1.5" data-r="pan"/>
         </svg>
         <dl class="sc-stats">
-          <div><dt>Angle</dt><dd><b data-r="angle">—</b><small>òptim <span data-r="optimal">—</span></small></dd></div>
+          <div><dt>Angle</dt><dd><b data-r="angle">—</b><small title="Angle òptim">/ <span data-r="optimal">—</span></small></dd></div>
           <div><dt>Sòl</dt><dd><b data-r="water">—</b><span class="meter"><i data-r="waterBar"></i></span></dd></div>
           <div><dt>Potència</dt><dd><b data-r="power">—</b></dd></div>
           <div><dt>T cultiu</dt><dd><b data-r="tcrop">—</b></dd></div>
         </dl>
       </div>
-      <div class="sc-why">
-        <p class="why" data-r="why"></p>
+      <p class="why" data-r="why"></p>
+      <div class="sc-foot">
         <div class="irr" data-r="irr">${icon('drop')}<span data-r="irrText"></span></div>
-        <div class="risks" data-r="risks"></div>
+        <div class="risks compact" data-r="risks"></div>
       </div>
     </article>`).join('');
   host.querySelectorAll('.sector-card').forEach((el) => {
@@ -220,18 +237,20 @@ function updateCards(frame) {
     if (!c) return;
     const cat = actionCategory(s.accio);
     const irr = Number(s.reg_mm) > 0.05;
-    setText(c.action, actionLabel(s.accio) + (irr ? ` · reg ${fmt(s.reg_mm, 1)} mm` : ''));
+    setText(c.action, actionLabel(s.accio));
     if (c.action._cat !== cat) { c.action.className = `chip act cat-${cat}`; c.action._cat = cat; }
     c.pan.setAttribute('transform', `rotate(${(s.angle_real || 0).toFixed(1)} 60 34)`);
     c.opt.setAttribute('transform', `rotate(${(s.angle_optim || 0).toFixed(1)} 60 34)`);
     setText(c.angle, `${fmt(s.angle_real, 0)}°`);
     setText(c.optimal, `${fmt(s.angle_optim, 0)}°`);
+    c.angle.title = `Angle òptim ${fmt(s.angle_optim, 0)}°`;
     setText(c.water, `${fmt(s.aigua_pct, 0)} %`);
     c.waterBar.style.width = `${clamp(s.aigua_pct || 0, 0, 100)}%`;
     setText(c.power, `${fmt(s.P_kw, 1)} kW`);
     setText(c.tcrop, `${fmt(s.t_cultiu, 1)} °C`);
     setText(c.why, prettyReason(s.motiu) || 'Sense decisió registrada.');
-    setHTML(c.risks, riskChips(s.riscos, s.impas));
+    c.why.title = c.why.textContent;
+    setHTML(c.risks, riskChipsCompact(s.riscos, s.impas));
     const mode = s.reg_mode || 'cap';
     const watering = Number(s.reg_mm) > 0.05;
     let irrTxt = '';
@@ -243,6 +262,7 @@ function updateCards(frame) {
       irrTxt = 'Sense reg';
     }
     setText(c.irrText, irrTxt);
+    c.irr.title = irrTxt;
     c.irr.classList.toggle('on', watering);
     c.irr.classList.toggle('idle', !watering);
   });
@@ -316,7 +336,12 @@ function tick(ts) {
   const max = Math.max(0, state.frames.length - 1);
   const slow = $('slowIrr').checked && state.irrCycles[Math.min(max, Math.floor(playback.position))] ? 0.3 : 1;
   const next = playback.position + dt * playback.speed * slow;
-  if (next >= max) { renderPosition(max); stopPlayback(); return; }
+  if (next >= max) {
+    renderPosition(max); stopPlayback();
+    const p = state.period;
+    if (p && $('autoNext').checked && p.index < p.result.days.length - 1) showDay(p.index + 1, { play: true });
+    return;
+  }
   renderPosition(next);
   playback.rafId = requestAnimationFrame(tick);
 }
@@ -340,11 +365,9 @@ const REG_MODE = {
   soar: 'Decidit per CLIPS', finca: 'Regla fixa de la finca', fao: 'Calendari FAO-56', cap: 'Sense reg',
 };
 
-function renderBalance(run) {
-  const k = run.kpis;
-  const sc = run.records.length;
+function ledgerHTML(k, sc) {
   const eff = clamp(k.efficiency_pct ?? 0, 0, 100);
-  $('balance').innerHTML = `
+  return `
     <div class="ledger">
       <section class="lg-group tone-sun">
         <h3>${icon('bolt')}Energia</h3>
@@ -356,10 +379,10 @@ function renderBalance(run) {
       </section>
       <section class="lg-group tone-water">
         <h3>${icon('drop')}Aigua <small class="mode">${REG_MODE[k.irrigation_mode] || ''}</small></h3>
-        <dl>${row('Reg net aplicat', fmt(k.irrigation_mm, 1), 'mm', true)}
+        <dl>${row('Reg net aplicat', fmt(k.irrigation_mm_avg ?? k.irrigation_mm, 1), 'mm/sector', true)}
           ${row('Reg executats', fmtInt(k.irrigation_events), 'sector·h')}
           ${row('Aigua bombejada', fmt(k.irrigation_m3, 1), 'm³')}
-          ${row('Pluja del dia', fmt(k.rain_mm, 1), 'mm')}
+          ${row('Pluja', fmt(k.rain_mm, 1), 'mm')}
           ${row('Percolació', fmt(k.percolation_mm, 1), 'mm')}
           ${row('Estrès hídric', `${fmtInt(k.water_stress_cycles)} de ${fmtInt(sc)}`, 'sector·h')}</dl>
       </section>
@@ -380,7 +403,11 @@ function renderBalance(run) {
           ${row('Regles per cicle', fmt(k.rules_per_cycle, 0))}</dl>
       </section>
     </div>`;
+}
 
+function renderBalance(run) {
+  const k = run.kpis;
+  $('balance').innerHTML = ledgerHTML(k, k.sector_hours ?? run.records.length);
   $('sectorSummary').innerHTML = `
     <h3 class="sub">Estat al final del dia</h3>
     <div class="table-wrap short"><table class="plain">
@@ -404,12 +431,14 @@ const COMPARE_METRICS = [
 ];
 
 function renderComparison(runs) {
-  const host = $('comparison');
-  if (runs.length < 2) { host.innerHTML = ''; return; }
+  $('comparison').innerHTML = runs.length < 2 ? '' : comparisonHTML(runs);
+}
+
+function comparisonHTML(runs) {
   const order = ['soar', 'seguidor', 'fix'];
   const sorted = [...runs].sort((a, b) => order.indexOf(a.controller) - order.indexOf(b.controller));
   const soar = sorted.find((r) => r.controller === 'soar');
-  host.innerHTML = `<h3 class="sub">SOAR davant de les referències</h3><div class="cmp">${COMPARE_METRICS.map((m) => {
+  return `<h3 class="sub">SOAR davant de les referències</h3><div class="cmp">${COMPARE_METRICS.map((m) => {
     const vals = sorted.map((r) => Number(r.kpis[m.key]) || 0);
     const max = Math.max(...vals, 1e-9);
     const best = m.better === 'high' ? Math.max(...vals) : Math.min(...vals);
@@ -558,19 +587,101 @@ function renderOntology(o) {
 }
 
 /* ================= Simulació ================= */
-async function loadDays() {
-  const d = await api(`/api/days?scenario=${encodeURIComponent($('scenario').value)}`);
-  const el = $('day');
-  el.innerHTML = '';
-  d.days.forEach((day) => el.add(new Option(day, day)));
-  if (d.days.length) el.value = d.days[Math.floor(d.days.length / 2)];
+/* ================= Escenari, abast i durada ================= */
+const MOD_IDS = { temp_delta: 'modTemp', vent_factor: 'modWind', rad_factor: 'modRad', pluja_factor: 'modRain' };
+const MOD_DEFAULT = { temp_delta: 0, vent_factor: 1, rad_factor: 1, pluja_factor: 1 };
+
+function setModifiers(m = {}) { Object.entries(MOD_IDS).forEach(([k, id]) => { $(id).value = m[k] ?? MOD_DEFAULT[k]; }); }
+function readModifiers() {
+  const out = {};
+  Object.entries(MOD_IDS).forEach(([k, id]) => { const v = Number($(id).value); out[k] = Number.isFinite(v) ? v : MOD_DEFAULT[k]; });
+  return out;
 }
 
-function setBusy(on) {
+function currentDays() {
+  if (state.scope === 'day' || state.days.length < 2) return $('day').value ? [$('day').value] : [];
+  let a = $('rangeFrom').value; let b = $('rangeTo').value;
+  if (a > b) [a, b] = [b, a];
+  return state.days.filter((d) => d >= a && d <= b);
+}
+
+function effectiveMode(days) {
+  if (days.length < 2) return 'independents';
+  return $('mode').value || state.sc?.mode || 'independents';
+}
+
+function updateMeta() {
+  const sc = state.sc;
+  if (!sc) return;
+  const days = currentDays();
+  const mode = effectiveMode(days);
+  const nCtl = $('compare').checked ? 3 : 1;
+  const mods = readModifiers();
+  const names = { temp_delta: 'T', vent_factor: 'vent ×', rad_factor: 'radiació ×', pluja_factor: 'pluja ×' };
+  const changed = Object.entries(mods).filter(([k, v]) => v !== MOD_DEFAULT[k]);
+  const dur = fmtDuration(days.length) + (days.length !== sc.days ? ` de ${fmtInt(sc.days)}` : '');
+  const chips = [`<li>${icon('pin')}${esc(sc.location_name)}</li>`, `<li class="strong">${icon('calendar')}${esc(dur)}</li>`];
+  if (days.length) chips.push(`<li>${days.length > 1 ? `${esc(fmtDate(days[0]))} – ${esc(fmtDate(days[days.length - 1]))}` : esc(fmtDate(days[0]))}</li>`);
+  if (days.length > 1) chips.push(`<li title="${esc(MODE_HINT[mode])}">${esc(MODE_LABEL[mode])}</li>`);
+  if (changed.length) chips.push(`<li class="warn">what-if: ${esc(changed.map(([k, v]) => `${names[k]}${v}`).join(', '))}</li>`);
+  $('scenarioMeta').innerHTML = chips.join('');
+  const perf = state.boot?.perf;
+  const est = estimateSeconds(perf, days, nCtl, mode);
+  $('scenarioEstimate').innerHTML = days.length > 1 && est !== null
+    ? `Temps estimat <b>≈ ${esc(fmtSeconds(est))}</b> <small>${nCtl > 1 ? '3 controladors · ' : ''}${perf.workers} ${perf.workers === 1 ? 'procés' : 'processos'}</small>`
+    : 'Resultat immediat';
+  $('modeHint').textContent = MODE_HINT[$('mode').value || sc.mode] || '';
+  if (sc.description) $('scenario').title = sc.description;
+}
+
+function setScope(scope) {
+  state.scope = scope;
+  const multi = state.days.length > 1;
+  $('scope').hidden = !multi;
+  $('scope').querySelectorAll('button').forEach((b) => b.classList.toggle('active', b.dataset.scope === scope));
+  $('rangeField').hidden = !(multi && scope === 'period');
+  $('dayField').hidden = multi && scope === 'period';
+  updateMeta();
+}
+
+async function loadScenario() {
+  const id = $('scenario').value;
+  const sc = state.boot.scenarios.find((x) => x.id === id);
+  state.sc = sc || null;
+  const d = await api(`/api/days?scenario=${encodeURIComponent(id)}`);
+  state.days = d.days;
+  const opts = (sel, withDow) => { sel.innerHTML = ''; d.days.forEach((x) => sel.add(new Option(withDow ? x : fmtDate(x), x))); };
+  opts($('day'), true); opts($('rangeFrom'), false); opts($('rangeTo'), false);
+  if (d.days.length) {
+    $('day').value = d.days[Math.floor(d.days.length / 2)];
+    $('rangeFrom').value = d.days[0];
+    $('rangeTo').value = d.days[d.days.length - 1];
+  }
+  $('mode').value = '';
+  $('soilInit').value = '';
+  setModifiers(sc?.modifiers);
+  setScope(d.days.length > 1 ? 'period' : 'day');
+}
+
+function buildPayload() {
+  return {
+    scenario: $('scenario').value, controller: state.controller, compare: $('compare').checked,
+    seed: Number($('seed').value || 0), mode: $('mode').value || null, soil_init: $('soilInit').value || null,
+    modifiers: readModifiers(),
+  };
+}
+
+/* ================= Execució ================= */
+function setBusy(on, period = false) {
+  state.busy = on;
   $('progress').hidden = !on;
-  ['runButton', 'emptyRun'].forEach((id) => { $(id).disabled = on; });
-  $('runButton').textContent = on ? 'Executant…' : 'Executar simulació';
-  $('runButton').classList.toggle('busy', on);
+  $('progress').classList.toggle('det', on && period);
+  $('emptyRun').disabled = on;
+  const b = $('runButton');
+  b.disabled = on && !period;
+  b.textContent = on ? (period ? 'Atura' : 'Executant…') : 'Executar simulació';
+  b.classList.toggle('busy', on);
+  b.classList.toggle('cancel', on && period);
 }
 
 function sectorsFrom(records) {
@@ -579,35 +690,193 @@ function sectorsFrom(records) {
   return [...seen.values()].sort((a, b) => a.id.localeCompare(b.id));
 }
 
-async function runSimulation() {
-  hideError(); setBusy(true); stopPlayback();
-  try {
-    const payload = { scenario: $('scenario').value, controller: state.controller, day: $('day').value, seed: Number($('seed').value || 0), compare: $('compare').checked };
-    const data = await api('/api/simulate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-    renderOntology(data.ontology);
-    const primary = data.runs.find((r) => r.controller === payload.controller) || data.runs[0];
-    state.runs = data.runs; state.run = primary;
-    state.frames = groupFrames(primary.records);
-    state.sectors = sectorsFrom(primary.records);
-    state.irrCycles = state.frames.map((f) => [...f.records.values()].some((r) => Number(r.reg_mm) > 0.05));
-    state.selected = null;
-    twin?.setSelected(null);
+function applyRun(run, runs, { play = true, keepSelection = false } = {}) {
+  const prevSel = keepSelection ? state.selected : null;
+  state.runs = runs; state.run = run;
+  state.frames = groupFrames(run.records);
+  state.sectors = sectorsFrom(run.records);
+  state.irrCycles = state.frames.map((f) => [...f.records.values()].some((r) => Number(r.reg_mm) > 0.05));
+  state.selected = null;
+  twin?.setSelected(null);
 
-    $('sceneEmpty').hidden = true;
-    $('play3d').disabled = false; $('reset3d').disabled = false;
-    buildCards();
-    ribbon.setData({ frames: state.frames, sectors: state.sectors });
-    renderBalance(primary);
-    renderComparison(data.runs);
-    buildCharts(primary);
-    buildTrace(primary);
-    renderPosition(0);
-    startPlayback();
+  $('sceneEmpty').hidden = true;
+  $('play3d').disabled = false; $('reset3d').disabled = false;
+  buildCards();
+  ribbon.setData({ frames: state.frames, sectors: state.sectors });
+  renderBalance(run);
+  renderComparison(runs);
+  buildCharts(run);
+  buildTrace(run);
+  renderPosition(0);
+  if (prevSel && cards.has(prevSel)) {          // en canviar de dia es manté el sector seguit
+    state.selected = prevSel;
+    cards.get(prevSel).el.classList.add('selected');
+    cards.get(prevSel).el.setAttribute('aria-pressed', 'true');
+    twin?.setSelected(prevSel);
+  }
+  if (play) startPlayback();
+}
+
+async function runDay() {
+  const payload = { ...buildPayload(), day: currentDays()[0] };
+  if (!payload.soil_init) delete payload.soil_init;      // un dia: valor de configuració, com sempre
+  const data = await api('/api/simulate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  renderOntology(data.ontology);
+  teardownPeriod();
+  history.replaceState(null, '', location.pathname);
+  const primary = data.runs.find((r) => r.controller === payload.controller) || data.runs[0];
+  applyRun(primary, data.runs);
+}
+
+async function run() {
+  hideError(); stopPlayback();
+  const days = currentDays();
+  if (!days.length) { showError('Tria un dia o un rang de dates amb dades.'); return; }
+  if (days.length > 1) { await runPeriod(days); return; }
+  setBusy(true);
+  try { await runDay(); } catch (err) { showError(err.message || String(err)); } finally { setBusy(false); }
+}
+
+/* ================= Períodes llargs ================= */
+function updateJobCard(st) {
+  $('jobCard').hidden = false;
+  const pct = Math.round((st.fraction || 0) * 100);
+  $('jobTitle').textContent = `Simulant ${fmtDuration(st.total_days)}`;
+  $('jobSub').textContent = `Dia ${st.done_days} de ${st.total_days} · ${pct} % · ${fmtSeconds(st.elapsed_s)} · queden ≈ ${fmtSeconds(st.eta_s)}`;
+  $('jobBar').style.width = `${pct}%`;
+  $('progress').style.setProperty('--p', `${pct}%`);
+  $('jobCtl').innerHTML = st.controllers.length > 1
+    ? st.controllers.map((c) => `<li><span>${esc(CONTROLLER_SHORT[c] || c)}</span><span class="job-bar mini"><i style="width:${Math.round(((st.done_by_controller[c] || 0) / st.total_days) * 100)}%"></i></span></li>`).join('')
+    : '';
+  $('jobNote').textContent = `${MODE_LABEL[st.mode] || st.mode} · ${st.tasks} ${st.tasks === 1 ? 'tasca' : 'tasques'} en ${st.workers} ${st.workers === 1 ? 'procés' : 'processos'}`;
+}
+
+async function cancelPeriod() {
+  state.abort = true;
+  if (state.job) await cancelJob(state.job);
+}
+
+async function runPeriod(days) {
+  setBusy(true, true);
+  state.abort = false;
+  $('sceneEmpty').hidden = true;
+  try {
+    const payload = { ...buildPayload(), start: days[0], end: days[days.length - 1] };
+    const st0 = await startJob(payload);
+    state.job = st0.id;
+    updateJobCard(st0);
+    const st = await waitForJob(st0.id, updateJobCard, () => state.abort);
+    if (st.state === 'cancelled' || state.abort) return;
+    if (st.state === 'error') throw new Error(st.error || 'La simulació ha fallat');
+    const result = await jobResult(st0.id);
+    setupPeriod(result, payload.controller);
+    history.replaceState(null, '', `?job=${result.id}`);
+    await showDay(0, { play: true });
+    setTab('period');
   } catch (err) {
     showError(err.message || String(err));
   } finally {
+    state.job = null;
+    $('jobCard').hidden = true;
     setBusy(false);
+    if (!state.frames.length) $('sceneEmpty').hidden = false;
   }
+}
+
+/* Reobre un període ja simulat (?job=<id>): permet recarregar la pàgina o compartir l'enllaç mentre el servidor està en marxa. */
+async function openJobFromUrl() {
+  const id = new URLSearchParams(location.search).get('job');
+  if (!id) return;
+  try {
+    const result = await jobResult(id);
+    const sid = result.scenario?.id;
+    if (sid && [...$('scenario').options].some((o) => o.value === sid)) { $('scenario').value = sid; await loadScenario(); }
+    setupPeriod(result, result.controllers[0]);
+    await showDay(0, { play: false });
+    setTab('period');
+  } catch (err) {
+    history.replaceState(null, '', location.pathname);      // el treball ja no existeix al servidor
+  }
+}
+
+function setupPeriod(result, preferred) {
+  const ctrl = result.controllers.includes(preferred) ? preferred : result.controllers[0];
+  state.period = { id: result.id, result, controller: ctrl, index: 0, cache: new Map() };
+  state.runs = [];
+  periodView ??= new PeriodView($('periodView'), {
+    onPickDay: (i, ctl) => pickDay(i, ctl), onMetric: (m) => setMetric(m), ledgerHTML, comparisonHTML,
+  });
+  dayStrip ??= new DayStrip($('periodStrip'), { onPick: (i, final) => showDay(i, { play: final }) });
+  periodView.setData(result, ctrl, state.metric);
+  dayStrip.setData(result.daily[ctrl], state.metric);
+  ['periodStrip', 'dayNav', 'autoNextWrap', 'tab-period'].forEach((id) => { $(id).hidden = false; });
+}
+
+function teardownPeriod() {
+  if (!state.period) return;
+  state.period = null;
+  periodView?.destroy();
+  $('periodView').innerHTML = '';
+  ['periodStrip', 'dayNav', 'autoNextWrap', 'tab-period'].forEach((id) => { $(id).hidden = true; });
+  if (state.tab === 'period') setTab('balance');
+}
+
+function setMetric(m) {
+  state.metric = m;
+  periodView?.setMetric(m);
+  if (state.period) dayStrip.setData(state.period.result.daily[state.period.controller], m);
+  if (state.period) dayStrip.setSelected(state.period.index);
+}
+
+function pickDay(i, ctl) {
+  const p = state.period;
+  if (!p) return;
+  if (ctl && ctl !== p.controller) {
+    p.controller = ctl;
+    periodView.setData(p.result, ctl, state.metric);
+    dayStrip.setData(p.result.daily[ctl], state.metric);
+  }
+  showDay(i, { play: true });
+}
+
+function updateDayNav() {
+  const p = state.period;
+  const n = p.result.days.length;
+  $('dayDate').textContent = `${fmtDate(p.result.days[p.index])} · ${p.index + 1}/${n}`;
+  $('dayPrev').disabled = p.index <= 0;
+  $('dayNext').disabled = p.index >= n - 1;
+}
+
+async function prefetchDay(j) {
+  const p = state.period;
+  if (!p || j < 0 || j >= p.result.days.length) return;
+  const key = `${p.controller}|${p.result.days[j]}`;
+  if (p.cache.has(key)) return;
+  try { p.cache.set(key, await jobDay(p.id, p.result.days[j], p.controller)); } catch (e) { /* es tornarà a demanar */ }
+}
+
+async function showDay(i, { play = true } = {}) {
+  const p = state.period;
+  if (!p) return;
+  const n = p.result.days.length;
+  i = clamp(i, 0, n - 1);
+  const day = p.result.days[i];
+  const key = `${p.controller}|${day}`;
+  const token = ++state.loadToken;
+  let r = p.cache.get(key);
+  if (!r) {
+    try { r = await jobDay(p.id, day, p.controller); } catch (err) { showError(err.message); return; }
+    p.cache.set(key, r);
+    if (p.cache.size > 60) p.cache.delete(p.cache.keys().next().value);
+  }
+  if (token !== state.loadToken) return;     // s'ha demanat un altre dia mentre es carregava
+  stopPlayback();
+  p.index = i;
+  applyRun(r, [r], { play, keepSelection: true });
+  updateDayNav();
+  periodView.setSelected(i);
+  dayStrip.setSelected(i);
+  prefetchDay(i + 1); prefetchDay(i - 1);
 }
 
 /* ================= Interfície ================= */
@@ -634,6 +903,7 @@ function setTab(name) {
     $(`panel-${t.dataset.tab}`).hidden = !on;
   });
   if (name === 'charts') requestAnimationFrame(() => charts.forEach((c) => c.draw()));
+  if (name === 'period') requestAnimationFrame(() => periodView?.charts.forEach((c) => c.draw()));
 }
 
 function setTheme(t) {
@@ -657,9 +927,21 @@ function bindUi() {
   let railOpen = true;
   try { railOpen = localStorage.getItem('acs-rail') !== '0'; } catch (e) { /* mode privat */ }
   setRail(railOpen);
-  $('scenario').addEventListener('change', () => loadDays().catch((e) => showError(e.message)));
-  $('runButton').addEventListener('click', runSimulation);
-  $('emptyRun').addEventListener('click', runSimulation);
+  $('scenario').addEventListener('change', () => loadScenario().catch((e) => showError(e.message)));
+  $('runButton').addEventListener('click', () => (state.busy && state.job ? cancelPeriod() : run()));
+  $('emptyRun').addEventListener('click', run);
+  $('jobCancel').addEventListener('click', cancelPeriod);
+
+  /* abast, rang, mode i what-if: tot actualitza la durada i el temps estimat */
+  $('scope').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => setScope(b.dataset.scope)));
+  ['rangeFrom', 'rangeTo', 'day', 'mode', 'compare', 'modTemp', 'modWind', 'modRad', 'modRain'].forEach((id) => $(id).addEventListener('input', updateMeta));
+  $('modReset').addEventListener('click', () => { setModifiers(state.sc?.modifiers); updateMeta(); });
+  $('dayPrev').innerHTML = icon('left');
+  $('dayNext').innerHTML = icon('chevron');
+  $('dayPrev').addEventListener('click', () => state.period && showDay(state.period.index - 1));
+  $('dayNext').addEventListener('click', () => state.period && showDay(state.period.index + 1));
+  $('dayDate').addEventListener('click', () => { stopPlayback(); renderPosition(0); });
+  document.addEventListener('click', (e) => { const adv = $('advanced'); if (adv.open && !adv.contains(e.target)) adv.open = false; });
   $('play3d').addEventListener('click', togglePlayback);
   $('reset3d').addEventListener('click', () => { stopPlayback(); renderPosition(0); });
   $('errorClose').addEventListener('click', hideError);
@@ -685,7 +967,8 @@ function bindUi() {
     t.addEventListener('keydown', (e) => {
       const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
       if (!d) return;
-      const n = tabs[(i + d + tabs.length) % tabs.length];
+      const vis = tabs.filter((x) => !x.hidden);
+      const n = vis[(vis.indexOf(t) + d + vis.length) % vis.length];
       n.focus(); setTab(n.dataset.tab);
     });
   });
@@ -694,6 +977,10 @@ function bindUi() {
   $('onlyIncidents').addEventListener('change', applyTraceFilter);
 
   window.addEventListener('keydown', (e) => {
+    if (state.period && (e.key === '[' || e.key === ']') && !/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) {
+      showDay(state.period.index + (e.key === ']' ? 1 : -1));
+      return;
+    }
     if (/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(e.target.tagName) || e.target.closest?.('.ribbon') || e.metaKey || e.ctrlKey) return;
     if (!state.frames.length) return;
     if (e.code === 'Space') { e.preventDefault(); togglePlayback(); }
@@ -718,10 +1005,12 @@ async function init() {
   }
   try {
     state.boot = await api('/api/bootstrap');
-    state.boot.scenarios.forEach((s) => $('scenario').add(new Option(s.label, s.id)));
+    fillScenarioSelect($('scenario'), state.boot.scenarios);
+    if (state.boot.scenarios.some((s) => s.id === 'dia_normal.json')) $('scenario').value = 'dia_normal.json';
     buildControllers(state.boot.controllers);
     renderOntology(state.boot.ontology);
-    await loadDays();
+    await loadScenario();
+    await openJobFromUrl();
   } catch (err) {
     $('statusText').textContent = 'Sense connexió amb el backend';
     $('systemStatus').classList.add('bad');

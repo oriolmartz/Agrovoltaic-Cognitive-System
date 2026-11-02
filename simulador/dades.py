@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import json
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from functools import lru_cache
 
 import numpy as np
@@ -67,6 +67,37 @@ LLOCS = {
                        "xmscat_cantallops_gen-abr2023.csv", "openmeteo_cantallops_gen-abr2023.json",
                        "pvgis_cantallops_2023.json"),
 }
+
+
+def _registra_llocs_externs() -> None:
+    """Afegeix els llocs descrits a dades_reals/llocs/*.json.
+
+    Aixi es poden incorporar dades noves (un altre lloc o mes mesos) sense tocar el codi: es
+    deixen els fitxers a dades_reals/ i es crea un JSON amb els camps de `Lloc` (vegeu
+    dades_reals/llocs/README.md). L'escenari "Totes les dades" de la web els detecta sols.
+    """
+    carpeta = os.path.join(DIR, "llocs")
+    if not os.path.isdir(carpeta):
+        return
+    camps = {f.name for f in fields(Lloc)}
+    for nom_fitxer in sorted(os.listdir(carpeta)):
+        if not nom_fitxer.endswith(".json"):
+            continue
+        ruta = os.path.join(carpeta, nom_fitxer)
+        with open(ruta, encoding="utf-8") as f:
+            d = json.load(f)
+        ident = d.pop("id", nom_fitxer[:-5])
+        falten = camps - set(d)
+        sobren = set(d) - camps
+        if falten or sobren:
+            raise ValueError(f"{ruta}: falten {sorted(falten)} i sobren {sorted(sobren)}")
+        for k in ("fitxer_xms", "fitxer_om", "fitxer_pvgis"):
+            if not os.path.isfile(os.path.join(DIR, d[k])):
+                raise FileNotFoundError(f"{ruta}: no existeix dades_reals/{d[k]}")
+        LLOCS[ident] = Lloc(**d)
+
+
+_registra_llocs_externs()
 
 
 def _utc_a_local(idx: pd.DatetimeIndex) -> pd.DatetimeIndex:

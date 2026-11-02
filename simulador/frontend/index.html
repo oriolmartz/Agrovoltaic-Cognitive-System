@@ -41,19 +41,46 @@
         <span id="ctlLabel">Controlador</span>
         <div class="segmented" id="controller" role="radiogroup" aria-labelledby="ctlLabel"></div>
       </div>
-      <label class="field">
-        <span>Dia</span>
-        <select id="day"></select>
-      </label>
-      <label class="field narrow">
-        <span>Llavor</span>
-        <input id="seed" type="number" min="0" step="1" value="0" />
-      </label>
       <label class="switch" title="Executa també el seguidor comercial i el panell fix">
         <input id="compare" type="checkbox" />
         <i></i>
         <span>Comparar</span>
       </label>
+      <details class="adv" id="advanced">
+        <summary>Opcions</summary>
+        <div class="adv-body">
+          <label class="field">
+            <span>Mode dels dies <small>(períodes)</small></span>
+            <select id="mode">
+              <option value="">Per defecte de l’escenari</option>
+              <option value="independents">Dies independents</option>
+              <option value="mensual">Blocs mensuals</option>
+              <option value="sequencial">Continu</option>
+            </select>
+          </label>
+          <p class="adv-hint" id="modeHint"></p>
+          <label class="field">
+            <span>Humitat inicial del sòl</span>
+            <select id="soilInit">
+              <option value="">Automàtic (mesura real en períodes)</option>
+              <option value="dades">Mesura real (XMS-Cat)</option>
+              <option value="config">Valor de configuració</option>
+            </select>
+          </label>
+          <label class="field narrow-field">
+            <span>Llavor</span>
+            <input id="seed" type="number" min="0" step="1" value="0" />
+          </label>
+          <fieldset class="mods">
+            <legend>Què passaria si… <small>(modifica les dades reals)</small></legend>
+            <label><span>Temperatura (°C)</span><input id="modTemp" type="number" step="0.5" value="0" min="-10" max="10" /></label>
+            <label><span>Vent ×</span><input id="modWind" type="number" step="0.1" value="1" min="0.2" max="3" /></label>
+            <label><span>Radiació ×</span><input id="modRad" type="number" step="0.05" value="1" min="0.3" max="1.5" /></label>
+            <label><span>Pluja ×</span><input id="modRain" type="number" step="0.1" value="1" min="0" max="3" /></label>
+            <button type="button" class="link-btn" id="modReset">Restableix</button>
+          </fieldset>
+        </div>
+      </details>
       <button id="runButton" class="btn-run" type="button">Executar simulació</button>
     </form>
 
@@ -61,6 +88,19 @@
       <button class="icon-btn" id="themeToggle" type="button" aria-label="Canvia el tema"></button>
     </div>
   </header>
+
+  <div class="scenario-bar" id="scenarioBar">
+    <ul class="sc-chips" id="scenarioMeta" aria-label="Resum de l’escenari"></ul>
+    <div class="sc-scope">
+      <div class="segmented small" id="scope" role="group" aria-label="Abast" hidden>
+        <button type="button" data-scope="period" class="active">Període</button>
+        <button type="button" data-scope="day">Un dia</button>
+      </div>
+      <label class="field inline" id="rangeField"><span>Des de</span><select id="rangeFrom"></select><span>fins a</span><select id="rangeTo"></select></label>
+      <label class="field inline" id="dayField"><span>Dia</span><select id="day"></select></label>
+    </div>
+    <div class="sc-estimate" id="scenarioEstimate"></div>
+  </div>
 
   <div id="errorBox" class="banner" role="alert" hidden>
     <span id="errorText"></span>
@@ -128,6 +168,17 @@
 
         <div id="sceneTooltip" class="scene-tooltip" hidden></div>
 
+        <div class="job-card" id="jobCard" hidden>
+          <div class="job-main">
+            <h2 id="jobTitle">Simulant…</h2>
+            <p id="jobSub"></p>
+            <div class="job-bar"><i id="jobBar"></i></div>
+            <ul class="job-ctl" id="jobCtl"></ul>
+            <p class="job-note" id="jobNote"></p>
+            <button type="button" class="btn-ghost" id="jobCancel">Atura</button>
+          </div>
+        </div>
+
         <div class="scene-empty" id="sceneEmpty">
           <div>
             <h2>Cap simulació carregada</h2>
@@ -162,8 +213,16 @@
           <label class="switch compact" title="Alenteix la reproducció mentre hi ha reg perquè es vegi bé">
             <input id="slowIrr" type="checkbox" checked /><i></i><span>Alenteix en reg</span>
           </label>
+          <label class="switch compact" id="autoNextWrap" title="En acabar el dia, passa al següent i continua reproduint" hidden>
+            <input id="autoNext" type="checkbox" /><i></i><span>Dies seguits</span>
+          </label>
         </div>
         <div class="dock-readout">
+          <div class="daynav" id="dayNav" hidden>
+            <button type="button" class="icon-btn small" id="dayPrev" aria-label="Dia anterior" title="Dia anterior ([)"></button>
+            <button type="button" class="daynav-date" id="dayDate" title="Torna al principi del dia">—</button>
+            <button type="button" class="icon-btn small" id="dayNext" aria-label="Dia següent" title="Dia següent (])"></button>
+          </div>
           <strong id="cycleClock">—</strong>
           <span id="cycleInfo">Sense execució</span>
           <span class="irr-badge" id="irrBadge" hidden></span>
@@ -171,15 +230,21 @@
         <p class="narrative" id="hudNarrative">Tria un escenari i executa el dia per veure el bessó digital en moviment.</p>
         <ul class="ribbon-legend" id="ribbonLegend" aria-label="Llegenda de la cinta"></ul>
       </div>
+      <div id="periodStrip" class="strip" hidden aria-label="Dies del període"></div>
       <div id="ribbon" class="ribbon"></div>
     </section>
 
     <section class="analysis" aria-label="Anàlisi">
       <div class="tabs" role="tablist" aria-label="Anàlisi del dia">
+        <button role="tab" id="tab-period" aria-controls="panel-period" aria-selected="false" data-tab="period" type="button" tabindex="-1" hidden>Període</button>
         <button role="tab" id="tab-balance" aria-controls="panel-balance" aria-selected="true" data-tab="balance" type="button">Balanç del dia</button>
         <button role="tab" id="tab-charts" aria-controls="panel-charts" aria-selected="false" data-tab="charts" type="button" tabindex="-1">Gràfics</button>
         <button role="tab" id="tab-trace" aria-controls="panel-trace" aria-selected="false" data-tab="trace" type="button" tabindex="-1">Traçabilitat</button>
         <button role="tab" id="tab-arch" aria-controls="panel-arch" aria-selected="false" data-tab="arch" type="button" tabindex="-1">Arquitectura</button>
+      </div>
+
+      <div class="tabpanel" id="panel-period" role="tabpanel" aria-labelledby="tab-period" hidden>
+        <div id="periodView"></div>
       </div>
 
       <div class="tabpanel" id="panel-balance" role="tabpanel" aria-labelledby="tab-balance">
