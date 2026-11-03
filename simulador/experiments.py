@@ -649,15 +649,11 @@ def _treball_e16(arg):
     return df, fotos
 
 
-def E16(n_execucions=4):
-    """Memoria a llarg termini amb dos anys de dades reals (Ribera de Sio, 2022-2023).
-    El sistema apren d'abril a setembre de 2022 (dies seguits) i es mesura d'abril a setembre
-    de 2023, amb memoria episodica i sense; i, com a referencia, amb memoria pero sense haver
-    viscut el 2022 (comença de zero l'abril de 2023). Unitat = (mes de 2023, execucio)."""
+def _feines_e16(n_execucions):
     lloc = "ribera_2022_2023"
     base = {"lloc": lloc, "mode_dies": "sequencial"}
     tria = lambda d0, d1: S.selecciona_dies({**S.carrega_config({"lloc": lloc}), "dies": {"des_de": d0, "fins_a": d1}})
-    any1, any2 = tria("2022-04-01", "2022-09-30"), tria("2023-04-01", "2023-09-30")
+    any1, any2 = tria("2022-01-01", "2022-12-31"), tria("2023-01-01", "2023-12-31")
     configs = {
         "memoria_2_anys": ({"controlador": {"epmem": True}}, any1 + any2),
         "sense_memoria_2_anys": ({"controlador": {"epmem": False}}, any1 + any2),
@@ -666,29 +662,56 @@ def E16(n_execucions=4):
     feines = []
     for e in range(n_execucions):
         for nom, (esc, dies) in configs.items():
-            cfg = _amb_traca(S.carrega_config(S._fusiona(base, esc)), "E16")
-            feines.append((nom, cfg, dies, e))
-    # les execucions son molt llargues (fins a 366 dies seguits): d'una en una i amb marge
-    sortides = paralel.mapa(_treball_e16, feines, PROCESSOS[0], titol="E16 execucions", cada=1,
-                            mida=1, espera_maxima=4 * 3600)
-    df = pd.concat([d for d, _ in sortides], ignore_index=True)
-    fotos = pd.DataFrame([f for _, fs in sortides for f in fs])
+            feines.append((nom, _amb_traca(S.carrega_config(S._fusiona(base, esc)), "E16"), dies, e))
+    return feines
+
+
+def E16(n_execucions=3, part=None):
+    """Memoria a llarg termini amb dos anys de dades reals (Ribera de Sio, 2022-2023, anys sencers).
+    El sistema apren tot el 2022 (dies seguits) i es mesura tot el 2023, amb memoria episodica i
+    sense; i, com a referencia, amb memoria pero sense haver viscut el 2022 (comença de zero l'1 de
+    gener de 2023). Unitat = (mes de 2023, execucio).
+
+    Les execucions son molt llargues (fins a 729 dies seguits, i el cicle es fa mes lent a mesura
+    que creix la memoria). Es poden fer per parts: --part k executa nomes la feina k i la desa a
+    resultats/E16/parts/; sense --part, s'executen les que falten i s'analitza tot."""
+    feines = _feines_e16(n_execucions)
+    dparts = os.path.join(carpeta("E16"), "parts")
+    os.makedirs(dparts, exist_ok=True)
+    fitxer = lambda f: os.path.join(dparts, f"{f[0]}_exec{f[3]}")
+    pendents = [k for k, f in enumerate(feines) if not os.path.isfile(fitxer(f) + ".csv.gz")]
+    if part is not None:
+        pendents = [part] if part in pendents else []
+    if pendents:
+        for k in pendents:
+            feines[k] = (feines[k][0], {**feines[k][1], "fitxer_progres": fitxer(feines[k]) + "_progres.txt"},
+                         feines[k][2], feines[k][3])
+        sortides = paralel.mapa(_treball_e16, [feines[k] for k in pendents], PROCESSOS[0], titol="E16 execucions",
+                                cada=1, mida=1, espera_maxima=4 * 3600)
+        for k, (df_k, fotos_k) in zip(pendents, sortides):
+            df_k.to_csv(fitxer(feines[k]) + ".csv.gz", index=False)
+            pd.DataFrame(fotos_k).to_csv(fitxer(feines[k]) + "_fotos.csv", index=False)
+    if part is not None:
+        return {"resum": pd.DataFrame({"part": [part], "feina": [f"{feines[part][0]} exec {feines[part][3]}"]}),
+                "tests": pd.DataFrame()}
+    df = pd.concat([pd.read_csv(fitxer(f) + ".csv.gz") for f in feines], ignore_index=True)
+    fotos = pd.concat([pd.read_csv(fitxer(f) + "_fotos.csv") for f in feines], ignore_index=True)
     d = carpeta("E16")
     fotos.to_csv(os.path.join(d, "E16_coneixement.csv"), index=False)
+    df["dia"] = df["dia"].astype(str)
     df["any"] = df["dia"].str[:4]
     df["bloc"] = df["dia"].str[:7]
     proves = df[df["any"] == "2023"].copy()
-    pb = per_bloc(proves.rename(columns={}))
-    pb["llavor"] = pb["llavor"]
+    pb = per_bloc(proves)
     mets = ["energia_kwh", "h_estres_rad", "h_estres_calor", "h_estres_aigua", "aigua_reg_m3",
             "impasses", "decisions_chunk", "decisions_rl", "decisions_memoria", "ms_per_cicle"]
     t = st.taula_parelles([st.compara_multiples(pb, m, blocs=("bloc", "llavor")) for m in mets])
     resum = resum_blocs(pb, mets)
     # evolucio: temps per cicle i us de la memoria mes a mes (tots dos anys)
     pdia = M.per_dia(df)
-    pdia["mes"] = pdia["dia"].str[:7]
+    pdia["mes"] = pdia["dia"].astype(str).str[:7]
     evol = (pdia.groupby(["etiqueta", "mes"])[["ms_per_cicle", "decisions_memoria", "decisions_chunk",
-                                                "impasses", "energia_kwh", "h_estres_calor"]]
+                                                "impasses", "energia_kwh", "h_estres_calor", "h_estres_aigua"]]
             .mean().round(2).reset_index())
     pb.to_csv(os.path.join(d, "E16_per_mes_2023.csv"), index=False)
     t.to_csv(os.path.join(d, "E16_tests.csv"), index=False)
@@ -713,6 +736,7 @@ def main():
     ap.add_argument("--dies", type=int, default=None, help="nombre de dies (a E8, E9, E10 i E13: d'execucions)")
     ap.add_argument("--llavors", type=int, default=None, help="nombre de llavors (0..n-1)")
     ap.add_argument("--processos", type=int, default=None, help="processos en paral·lel (per defecte, tots els nuclis)")
+    ap.add_argument("--part", type=int, default=None, help="E16: executa nomes la feina k (0..3n-1)")
     ap.add_argument("--traca", action="store_true",
                     help="desa la traca del CLIPS de cada dia (com run_soar) a resultats/<E>/traca/")
     a = ap.parse_args()
@@ -725,6 +749,8 @@ def main():
         kw["n_dies" if a.experiment not in ("E8", "E9", "E10", "E13", "E16") else "n_execucions"] = a.dies
     if a.llavors is not None:
         kw["llavors"] = tuple(range(a.llavors))
+    if a.part is not None:
+        kw["part"] = a.part
     if a.processos:
         PROCESSOS[0] = a.processos
     TRACA[0] = a.traca

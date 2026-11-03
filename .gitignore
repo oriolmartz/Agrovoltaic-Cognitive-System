@@ -48,3 +48,6 @@ simulador/resultats/tmp/
 
 # Generat per verificacio/e1_regressio.py a partir del RDF (no es versiona)
 simulador/clips_core/topologia_rdf.clp
+
+# E16: resultats parcials de les execucions llargues (es regeneren amb experiments.py E16 --part k)
+simulador/resultats/E16/parts/

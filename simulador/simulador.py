@@ -501,6 +501,9 @@ class Simulacio:
                 self.cicle += 1
             if traca:
                 traca.close()
+            if self.cfg.get("fitxer_progres"):          # execucions molt llargues (E16): un apunt per dia
+                with open(self.cfg["fitxer_progres"], "a", encoding="utf-8") as fp:
+                    fp.write(f"{dia} {time.strftime('%H:%M:%S')}\n")
             if hasattr(ctrl, "coneixement"):
                 self.fotos.append({"dia": dia, "cicle": self.cicle, **ctrl.coneixement()})
         return pd.DataFrame(files)
