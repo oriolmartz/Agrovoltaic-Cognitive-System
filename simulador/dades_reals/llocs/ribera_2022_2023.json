@@ -1,0 +1,14 @@
+{
+  "id": "ribera_2022_2023",
+  "nom": "Ribera de Sió (Balaguer), 2022-2023",
+  "lat": 41.8032,
+  "lon": 0.9097,
+  "altitud": 283,
+  "cc_grav": 0.27,
+  "pm_grav": 0.13,
+  "densitat": 1.3,
+  "textura": "argilosa (44 % argila, Haplic Regosol)",
+  "fitxer_xms": "xmscat_ribera-sio_abr-set2023.csv",
+  "fitxer_om": "openmeteo_ribera-sio_2022-2023.json",
+  "fitxer_pvgis": "pvgis_ribera-sio_2023.json"
+}

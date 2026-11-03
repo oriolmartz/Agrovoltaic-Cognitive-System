@@ -113,6 +113,12 @@ def _open_meteo(lloc: Lloc) -> pd.DataFrame:
         "wind_gusts_10m": "vent", "wind_speed_10m": "vent_mitja", "shortwave_radiation": "ghi",
         "et0_fao_evapotranspiration": "et0",
         "soil_moisture_0_to_7cm": "sm_om_0_7", "soil_moisture_7_to_28cm": "sm_om_7_28"})
+    # Open-Meteo aplica a TOTA la serie un desfasament fix: el de la zona el dia que es baixa
+    # (utc_offset_seconds: 7200 si es va baixar a l'estiu, 3600 a l'hivern), sense canvi d'hora.
+    # Es passa a UTC amb aquest desfasament i despres a l'hora local real (amb DST). Sense aixo,
+    # els dies d'hivern d'un fitxer baixat a l'estiu queden 1 h desplaçats (iteracio 24).
+    off = pd.Timedelta(seconds=int(d.get("utc_offset_seconds", 0)))
+    h.index = _utc_a_local(h.index - off)
     # amb DST, l'hora local de la tardor es repeteix: ens quedem amb la primera
     return h[~h.index.duplicated(keep="first")]
 
@@ -169,13 +175,20 @@ def ratio_pvgis(nom_lloc: str) -> float:
 
 
 def dies_disponibles(nom_lloc: str, complets_xms: bool = True) -> list[str]:
-    """Dies amb les 24 hores d'Open-Meteo (i amb humitat XMS-Cat al mati, si cal)."""
+    """Dies amb les 24 hores d'Open-Meteo (i amb humitat XMS-Cat al mati, si cal).
+
+    La humitat XMS-Cat nomes s'exigeix als dies dins del periode que cobreix l'estacio. Els dies
+    de fora (p. ex. el 2022, quan nomes tenim Open-Meteo) es poden fer servir igualment: l'aigua
+    del sol la calcula el balanc hidric del simulador (mode "balanc")."""
     df = carrega(nom_lloc)
+    xms = df["vwc20"].dropna()
+    ini, fi = (xms.index.min().date(), xms.index.max().date()) if len(xms) else (None, None)
     dies = []
     for dia, g in df.groupby(df.index.date):
         if len(g) < 23:
             continue
-        if complets_xms and g.between_time("05:00", "08:00")["vwc20"].isna().all():
+        dins_xms = ini is not None and ini <= dia <= fi
+        if complets_xms and dins_xms and g.between_time("05:00", "08:00")["vwc20"].isna().all():
             continue
         dies.append(str(dia))
     return dies

@@ -1,0 +1,14 @@
+{
+  "id": "cantallops_2022_2023",
+  "nom": "Cantallops (Alt Empordà), 2022-2023",
+  "lat": 42.4198,
+  "lon": 2.9413,
+  "altitud": 179,
+  "cc_grav": 0.14,
+  "pm_grav": 0.07,
+  "densitat": 1.5,
+  "textura": "franca-arenosa (63 % sorra, Skeletic Fluvisol)",
+  "fitxer_xms": "xmscat_cantallops_gen-abr2023.csv",
+  "fitxer_om": "openmeteo_cantallops_2022-2023.json",
+  "fitxer_pvgis": "pvgis_cantallops_2023.json"
+}

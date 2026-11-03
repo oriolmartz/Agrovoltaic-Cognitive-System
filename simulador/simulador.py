@@ -156,6 +156,7 @@ class ControladorSOAR:
                 "impas": ",".join(sorted(t for t, ss in r.impasses if ss == s)),
                 "us_chunk": any(f.startswith("chunk-") for f, _, _ in fonts),
                 "us_rl": any(f == "RL" for f, _, _ in fonts),
+                "us_memoria": any(f == "AV10-memoria" for f, _, _ in fonts),
                 "riscos": ";".join(f"{t}={n}" for t, n in sorted(r.riscos.get(s, []))),
                 "reg": (r.reg[s][0][0], r.reg[s][0][1]) if r.reg.get(s) else None,
                 "reg_motiu": r.reg[s][0][2] if r.reg.get(s) else "",
@@ -228,7 +229,7 @@ class _Basic:
             pan = {**self.domini["panells"][pid], **e.panells[pid]}
             acc, ang = self.angle(s, e, pan)
             out[s] = {"accio": acc, "angle": ang, "motiu": self.nom, "impas": "", "us_chunk": False,
-                      "us_rl": False, "riscos": "", "reg": None, "reg_motiu": "", "invariants": ""}
+                      "us_rl": False, "us_memoria": False, "riscos": "", "reg": None, "reg_motiu": "", "invariants": ""}
         out["_cicle"] = {"regles": 0, "ms": 0.0, "chunks_nous": [], "chunks_nous_tipus": [],
                          "fase_final": "", "fets": 0, "regles_noms": []}
         return out
@@ -558,6 +559,7 @@ class Simulacio:
                 "violacio_seguretat": (fila["vent"] >= pan["vent-maxim"]) and not estowat,
                 "exposicio_vent": (fila["vent"] >= pan["vent-avis"]) and not estowat,
                 "riscos": d["riscos"], "impas": d["impas"], "us_chunk": d["us_chunk"], "us_rl": d["us_rl"],
+                "us_memoria": d.get("us_memoria", False),
                 "motiu": d["motiu"], "invariants_ko": d["invariants"],
                 "reg_mode": self.mode_reg(dec), "reg_accio": reg[0] if reg else None,
                 "reg_dosi_pct": reg[1] if reg else None, "reg_motiu": d.get("reg_motiu", ""),
