@@ -270,7 +270,7 @@ class Simulacio:
         self.llavor = llavor
         self.lloc = dades.LLOCS[cfg["lloc"]]
         self.meteo = dades.carrega(cfg["lloc"])
-        self.ratio = dades.ratio_pvgis(cfg["lloc"])
+        self.ratio_mes = dades.ratio_pvgis_mensual(cfg["lloc"])   # factor de PVGIS de cada mes
         self.domini = domini or coneixement_domini(os.path.join(ARREL, cfg["clp"]), ontologia_per_clp(cfg))
         self.ll = self.domini["llindars"]
         self.pan0 = self.domini["panells"]
@@ -316,8 +316,9 @@ class Simulacio:
             a = self._angle_sector(s)
             tau = fisica.transmissio(a, sc["gcr"])
             rad_c = fila["ghi"] * tau
-            p = fisica.produccio_kw(fila["ghi"], a, opt, sc["kwp"], self.ratio)
-            p_opt = fisica.produccio_kw(fila["ghi"], opt, opt, sc["kwp"], self.ratio)
+            ratio = self.ratio_mes[t.month]
+            p = fisica.produccio_kw(fila["ghi"], a, opt, sc["kwp"], ratio)
+            p_opt = fisica.produccio_kw(fila["ghi"], opt, opt, sc["kwp"], ratio)
             aigua_abans = self._aigua_pct(s, fila)
             mod = self.cfg.get("model", {})
             t_c = fisica.temperatura_cultiu(fila["temp"], rad_c, aigua_abans,

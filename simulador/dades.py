@@ -174,6 +174,31 @@ def ratio_pvgis(nom_lloc: str) -> float:
     return float(df.loc[m, "pv_w_kwp"].sum() / df.loc[m, "ghi"].sum())
 
 
+# Lloc amb el qual es calibra cada lloc: el mateix emplaçament amb Open-Meteo de tot el 2023, perquè
+# PVGIS cobreix tot l'any i el factor es calcula mes a mes (les dades coincideixen al periode comu).
+LLOC_CALIBRACIO = {"ribera": "ribera_2022_2023", "cantallops": "cantallops_2022_2023"}
+
+
+@lru_cache(maxsize=None)
+def ratio_pvgis_mensual(nom_lloc: str) -> dict[int, float]:
+    """El factor de ratio_pvgis calculat MES A MES (1..12).
+
+    El guany del seguidor respecte de la radiacio horitzontal canvia amb l'estacio (amb el sol
+    baix de l'hivern, seguir el sol guanya mes), aixi que un factor unic depen del periode amb
+    que es calibra. Amb un factor per mes, cada dia fa servir el del seu mes. Els mesos sense
+    dades per calibrar fan servir el factor de tot el periode disponible."""
+    nom_cal = LLOC_CALIBRACIO.get(nom_lloc, nom_lloc)
+    if nom_cal not in LLOCS:
+        nom_cal = nom_lloc
+    df = carrega(nom_cal)
+    m = (df["ghi"] > 50) & df["pv_w_kwp"].notna()
+    d = df.loc[m, ["pv_w_kwp", "ghi"]]
+    global_ = float(d["pv_w_kwp"].sum() / d["ghi"].sum())
+    per_mes = d.groupby(d.index.month).sum()
+    return {mes: (float(per_mes.loc[mes, "pv_w_kwp"] / per_mes.loc[mes, "ghi"]) if mes in per_mes.index else global_)
+            for mes in range(1, 13)}
+
+
 def dies_disponibles(nom_lloc: str, complets_xms: bool = True) -> list[str]:
     """Dies amb les 24 hores d'Open-Meteo (i amb humitat XMS-Cat al mati, si cal).
 

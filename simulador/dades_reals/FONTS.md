@@ -78,5 +78,5 @@ Supòsits nostres, sense font, que s'han de dir a l'informe:
 - El visor de l'ICGC no funcionava; les mateixes dades es van baixar de l'ISMN (format "Header+values"), i s'han convertit al format dels CSV de l'ICGC. Es descarten només els valors amb marca de qualitat `C` (fora de rang).
 - **Comprovació:** al període que ja teníem (2023), l'ISMN i l'ICGC donen exactament els mateixos valors (diferència màxima 0, correlació 1) i la mateixa pluja total.
 - Els dies sense dades de l'estació (Cantallops 2022) es fan servir igualment: l'aigua del sòl la calcula el balanç hídric del simulador.
-- Els llocs `ribera_2022_2023` i `cantallops_2022_2023` (`dades_reals/llocs/`) calibren la producció amb PVGIS sobre tot el 2023 (no només abril–setembre), per això el factor és una mica diferent (Ribera 1,10 en lloc d'1,04).
+- **Calibració de la producció (iteració 25):** el factor de PVGIS es calcula **mes a mes** amb tot el 2023 (PVGIS i Open-Meteo d'aquell any), i cada dia fa servir el del seu mes, sigui del 2022 o del 2023. Els llocs `ribera` i `cantallops` es calibren amb les dades dels llocs de 2022–2023, que coincideixen amb les seves al període comú.
 - Cal citar l'ISMN i la xarxa XMS-CAT (condicions d'ús de l'ISMN).

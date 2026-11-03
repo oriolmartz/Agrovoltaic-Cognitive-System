@@ -105,7 +105,7 @@ simulacions soltes a `resultats/simulacions/`.
 | `experiments.py` | Experiments E4–E15. |
 | `paralel.py` | Execució en paral·lel amb progrés, Ctrl+C i detecció de processos penjats. |
 | `escenaris/` | Escenaris JSON per a `simulador.py` (dia normal i cas no vist). |
-| `dades_reals/` | Dades de 2023 (Open-Meteo, XMS-Cat, PVGIS) i `FONTS.md`. |
+| `dades_reals/` | Dades de 2023 dels experiments, dades de 2022–2023 per a E16 (Open-Meteo, XMS-Cat via ISMN), PVGIS i `FONTS.md`. |
 | `CASOS_PROVA.md` | Els casos de prova documentats (es regenera amb `verificacio/casos_prova.py`). |
 | `EXPERIMENTS.md` | Catàleg: pregunta, perspectiva de V&V, disseny, test i ordre de cada experiment. |
 | `REGISTRE_ITERACIONS.md` | Registre d'iteracions (observació → experiment → canvi → regressió). |
@@ -156,7 +156,7 @@ La ratxa que fa mal al seguidor és `wind_gusts_10m` d'Open-Meteo. Es simulen le
 | Què | Com | Paràmetre |
 |---|---|---|
 | Angle òptim | seguidor N-S d'un eix, posició solar NOAA, límit ±55° | — |
-| Producció | `kWp · ratio · GHI/1000 · f(angle)`, amb `f = 0,25 + 0,75·cos(angle − òptim)` | `ratio` calibrat amb PVGIS: 1,04 (Ribera de Sió), 1,15 (Cantallops) |
+| Producció | `kWp · ratio · GHI/1000 · f(angle)`, amb `f = 0,25 + 0,75·cos(angle − òptim)` | `ratio` calibrat amb PVGIS **mes a mes** (tot el 2023): a Ribera de Sió, de 0,93 al juny a 1,31 al gener; a Cantallops, de 0,92 a 1,28 (iteració 25) |
 | Llum al cultiu | `GHI · (1 − GCR·|cos(angle)|)`: panell pla = més ombra (supòsit del CLIPS, `angle-ombra = 0`) | GCR = 0,4 |
 | Temperatura del cultiu | aire + 0,006·llum + 2·(1 − aigua) | — |
 | Aigua al sòl | balanç horari FAO-56: `ETc = ET0·Kc·Ks·(0,3 + 0,7·llum relativa)`, amb Ks (eq. 84) per sota de la RAW; pluja i reg; el que passa de capacitat de camp es perd per percolació | Kc i Zr per cultiu; CC/PM de la fitxa XMS-Cat; p del CLIPS |
