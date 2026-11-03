@@ -637,9 +637,9 @@ def E15(n_dies=None, llavors=(0, 1, 2, 3)):
     return {"resum": resum, "tests": t, "per_cultiu": cult}
 
 
-# ============================================================================ E18: memoria a llarg termini
+# ============================================================================ E16: memoria a llarg termini
 
-def _treball_e18(arg):
+def _treball_e16(arg):
     nom, cfg, dies, llavor = arg
     sim = S.Simulacio(cfg, llavor)
     df = sim.executa(dies, etiqueta=nom)
@@ -649,7 +649,7 @@ def _treball_e18(arg):
     return df, fotos
 
 
-def E18(n_execucions=4):
+def E16(n_execucions=4):
     """Memoria a llarg termini amb dos anys de dades reals (Ribera de Sio, 2022-2023).
     El sistema apren d'abril a setembre de 2022 (dies seguits) i es mesura d'abril a setembre
     de 2023, amb memoria episodica i sense; i, com a referencia, amb memoria pero sense haver
@@ -666,15 +666,15 @@ def E18(n_execucions=4):
     feines = []
     for e in range(n_execucions):
         for nom, (esc, dies) in configs.items():
-            cfg = _amb_traca(S.carrega_config(S._fusiona(base, esc)), "E18")
+            cfg = _amb_traca(S.carrega_config(S._fusiona(base, esc)), "E16")
             feines.append((nom, cfg, dies, e))
     # les execucions son molt llargues (fins a 366 dies seguits): d'una en una i amb marge
-    sortides = paralel.mapa(_treball_e18, feines, PROCESSOS[0], titol="E18 execucions", cada=1,
+    sortides = paralel.mapa(_treball_e16, feines, PROCESSOS[0], titol="E16 execucions", cada=1,
                             mida=1, espera_maxima=4 * 3600)
     df = pd.concat([d for d, _ in sortides], ignore_index=True)
     fotos = pd.DataFrame([f for _, fs in sortides for f in fs])
-    d = carpeta("E18")
-    fotos.to_csv(os.path.join(d, "E18_coneixement.csv"), index=False)
+    d = carpeta("E16")
+    fotos.to_csv(os.path.join(d, "E16_coneixement.csv"), index=False)
     df["any"] = df["dia"].str[:4]
     df["bloc"] = df["dia"].str[:7]
     proves = df[df["any"] == "2023"].copy()
@@ -690,21 +690,21 @@ def E18(n_execucions=4):
     evol = (pdia.groupby(["etiqueta", "mes"])[["ms_per_cicle", "decisions_memoria", "decisions_chunk",
                                                 "impasses", "energia_kwh", "h_estres_calor"]]
             .mean().round(2).reset_index())
-    pb.to_csv(os.path.join(d, "E18_per_mes_2023.csv"), index=False)
-    t.to_csv(os.path.join(d, "E18_tests.csv"), index=False)
-    resum.to_csv(os.path.join(d, "E18_resum.csv"))
-    evol.to_csv(os.path.join(d, "E18_evolucio.csv"), index=False)
+    pb.to_csv(os.path.join(d, "E16_per_mes_2023.csv"), index=False)
+    t.to_csv(os.path.join(d, "E16_tests.csv"), index=False)
+    resum.to_csv(os.path.join(d, "E16_resum.csv"))
+    evol.to_csv(os.path.join(d, "E16_evolucio.csv"), index=False)
     ks = [c for c in fotos.columns if c.startswith("K")]
     integritat = pd.DataFrame({"comprovacio": ks, "fotos": len(fotos),
                                "fotos_amb_problema": [int((fotos[k] > 0).sum()) for k in ks]})
-    integritat.to_csv(os.path.join(d, "E18_integritat.csv"), index=False)
+    integritat.to_csv(os.path.join(d, "E16_integritat.csv"), index=False)
     inv = int((df["invariants_ko"].fillna("") != "").sum())
     print(f"Invariants trencats: {inv} de {len(df)} decisions")
     return {"resum": resum, "tests": t, "evolucio": evol}
 
 
 EXPERIMENTS = {"E4": E4, "E5": E5, "E6": E6, "E7": E7, "E8": E8, "E9": E9, "E10": E10, "E11": E11,
-               "E12": E12, "E13": E13, "E14": E14, "E15": E15, "E18": E18}
+               "E12": E12, "E13": E13, "E14": E14, "E15": E15, "E16": E16}
 
 
 def main():
@@ -722,7 +722,7 @@ def main():
         return
     kw = {}
     if a.dies is not None:
-        kw["n_dies" if a.experiment not in ("E8", "E9", "E10", "E13", "E18") else "n_execucions"] = a.dies
+        kw["n_dies" if a.experiment not in ("E8", "E9", "E10", "E13", "E16") else "n_execucions"] = a.dies
     if a.llavors is not None:
         kw["llavors"] = tuple(range(a.llavors))
     if a.processos:

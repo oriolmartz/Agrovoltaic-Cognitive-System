@@ -8,7 +8,7 @@
   "pm_grav": 0.07,
   "densitat": 1.5,
   "textura": "franca-arenosa (63 % sorra, Skeletic Fluvisol)",
-  "fitxer_xms": "xmscat_cantallops_gen-abr2023.csv",
+  "fitxer_xms": "xmscat_cantallops_2022-2023_ismn.csv",
   "fitxer_om": "openmeteo_cantallops_2022-2023.json",
   "fitxer_pvgis": "pvgis_cantallops_2023.json"
 }

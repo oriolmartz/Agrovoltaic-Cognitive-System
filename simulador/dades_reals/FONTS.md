@@ -65,3 +65,18 @@ Supòsits nostres, sense font, que s'han de dir a l'informe:
 - **El reg de la finca** (línia base `finca`): a les 7 h, si l'aigua és per sota del 45 %, s'omple fins al 90 %.
 - **La superfície de cada sector:** 250 m². Surt de 20 kWp, uns 100 m² de mòduls i GCR = 0,4.
 - **La previsió de pluja** és la pluja real de les pròximes 12 h, amb un soroll lognormal de σ = 0,3.
+
+## Dades de 2022–2023 (afegides el 04/11/2026)
+
+| Fitxer | Font | Lloc | Període | Resolució |
+|---|---|---|---|---|
+| `openmeteo_ribera-sio_2022-2023.json` | Open-Meteo Historical Weather API (ERA5), mateixos camps que els fitxers de 2023 | 41.8032 N, 0.9097 E | 1/1/2022–31/12/2023 | horària (desfasament fix d'hivern, `utc_offset_seconds` = 3600) |
+| `openmeteo_cantallops_2022-2023.json` | Open-Meteo Historical Weather API (ERA5) | 42.4198 N, 2.9413 E | 1/1/2022–31/12/2023 | horària |
+| `xmscat_ribera-sio_2022-2023_ismn.csv` | XMS-Cat (ICGC) via **International Soil Moisture Network** (ISMN, ismn.earth), xarxa XMS-CAT, estació Ribera de Sió: humitat a 5 i 20 cm (Campbell CS655) i pluja | estació RDS | 1/1/2022–31/12/2023 (17.497 hores) | horària, UTC |
+| `xmscat_cantallops_2022-2023_ismn.csv` | ISMN, xarxa XMS-CAT, estació Cantallops | estació CLLP | **1/2/2023**–31/12/2023 (l'estació no té dades del 2022) | horària, UTC |
+
+- El visor de l'ICGC no funcionava; les mateixes dades es van baixar de l'ISMN (format "Header+values"), i s'han convertit al format dels CSV de l'ICGC. Es descarten només els valors amb marca de qualitat `C` (fora de rang).
+- **Comprovació:** al període que ja teníem (2023), l'ISMN i l'ICGC donen exactament els mateixos valors (diferència màxima 0, correlació 1) i la mateixa pluja total.
+- Els dies sense dades de l'estació (Cantallops 2022) es fan servir igualment: l'aigua del sòl la calcula el balanç hídric del simulador.
+- Els llocs `ribera_2022_2023` i `cantallops_2022_2023` (`dades_reals/llocs/`) calibren la producció amb PVGIS sobre tot el 2023 (no només abril–setembre), per això el factor és una mica diferent (Ribera 1,10 en lloc d'1,04).
+- Cal citar l'ISMN i la xarxa XMS-CAT (condicions d'ús de l'ISMN).
