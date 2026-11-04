@@ -1,0 +1,18 @@
+{
+  "original": {
+    "id": "ORIGINAL",
+    "tipus": "-",
+    "descripcio": "sense mutacio",
+    "P1_run_proves": "79 pass, 0 fail",
+    "P2_E3_fallades": 0,
+    "P3_casos_que_fallen": "CP01",
+    "mort_per": "P1,P3",
+    "mort": true,
+    "segons": 32.0
+  },
+  "per_prova": {
+    "P1": 57,
+    "P2": 48,
+    "P3": 55
+  }
+}
