@@ -407,6 +407,53 @@ class ControladorCLIPS:
         if limit >= 1:
             self.env.eval(f"(PYTHON::py-neteja {limit})")
 
+    # ------------------------------------------------------------------ punts de control
+    # Per a execucions mes llargues que el temps que pot durar un proces (E16: dos anys seguits).
+    # Es desa tot l'estat del CLIPS (fets en ordre, regles apreses i defglobals) i es restaura sobre
+    # un controlador nou. Es comprova a verificacio/prova_punt_control.py que el resultat es identic.
+    def desa_estat(self) -> dict:
+        fets = []
+        for f in sorted(self.env.facts(), key=lambda f: f.index):
+            assert not f.template.implied, f"fet ordenat sense plantilla: {f}"
+            # valors de Python (Symbol, str, int, float, tuple): str(f) no escapa les cometes
+            fets.append((f"{f.template.module.name}::{f.template.name}", dict(f)))
+        # env.rules() nomes veu el modul actual: les regles apreses son a DELIBERACIO
+        regles = [str(self.env.find_rule(f"DELIBERACIO::{r}"))
+                  for r in self.env.eval("(get-defrule-list DELIBERACIO)") if str(r).startswith("chunk-")]
+        assert len(regles) == len(self._fets("fragment-apres")), "no es troben totes les regles apreses"
+        glob = []
+        for nom in self.env.eval("(get-defglobal-list *)"):
+            v = self.env.find_global(str(nom)).value
+            glob.append((str(nom), "sym" if isinstance(v, clips.Symbol) else type(v).__name__, str(v)))
+        return {"fets": fets, "regles": regles, "globals": glob, "primer": self.primer,
+                "chunks_coneguts": sorted(self._chunks_coneguts), "mecanismes": dict(self.mecanismes),
+                "modul": str(self.env.eval("(get-current-module)")),
+                "focus": [str(m) for m in self.env.eval("(get-focus-stack)")]}
+
+    def restaura_estat(self, est: dict):
+        for f in list(self.env.facts()):
+            f.retract()
+        plantilles = {}
+        for nom, slots in est["fets"]:
+            if nom not in plantilles:
+                plantilles[nom] = self.env.find_template(nom)
+            plantilles[nom].assert_fact(**slots)
+        self.env.eval("(set-current-module DELIBERACIO)")
+        for r in est["regles"]:
+            self.env.build(r)
+        conv = {"sym": clips.Symbol, "int": int, "float": float, "str": str}
+        for nom, tipus, v in est["globals"]:
+            self.env.find_global(nom).value = conv.get(tipus, clips.Symbol)(v)
+        self.primer = est["primer"]
+        self._chunks_coneguts = set(est["chunks_coneguts"])
+        self.mecanismes = dict(est["mecanismes"])
+        # en restaurar, les regles auto-focus apilen moduls al focus: es deixa com estava
+        self.env.eval("(clear-focus-stack)")
+        for m in reversed(est["focus"]):
+            self.env.eval(f"(focus {m})")
+        self.env.eval(f"(set-current-module {est['modul']})")
+        self.cap.buida()
+
     # ------------------------------------------------------------------ memoria
     def n_fets(self) -> int:
         return len(list(self.env.facts()))

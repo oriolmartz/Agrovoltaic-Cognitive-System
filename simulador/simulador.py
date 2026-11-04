@@ -210,6 +210,13 @@ class ControladorSOAR:
     def coneixement(self) -> dict:
         return self.c.coneixement_apres()
 
+    def desa_estat(self) -> dict:
+        return {"clips": self.c.desa_estat(), "primer_cicle": self.primer_cicle}
+
+    def restaura_estat(self, est: dict):
+        self.c.restaura_estat(est["clips"])
+        self.primer_cicle = est["primer_cicle"]
+
 
 class _Basic:
     """Controladors de referencia (sense regles): mateixa interficie que SOAR."""
@@ -286,6 +293,16 @@ class Simulacio:
         self.ultima = None                                          # l'hora anterior (el que veuen els sensors)
         self.cicle = 1
         self._acc = {s: {"net": 0.0, "brut": 0.0, "kwh": 0.0, "perc": 0.0} for s in SECTORS}
+
+    ESTAT = ("angle", "aigua_mm", "ultima", "cicle", "_acc", "_ultim_mode_reg")
+
+    def desa_estat(self) -> dict:
+        """Estat de la planta (per continuar una execucio llarga en un altre proces)."""
+        return {k: copy.deepcopy(getattr(self, k)) for k in self.ESTAT if hasattr(self, k)}
+
+    def restaura_estat(self, est: dict):
+        for k, v in est.items():
+            setattr(self, k, copy.deepcopy(v))
 
     def _fila(self, t: pd.Timestamp) -> dict:
         m = self.cfg["modificadors"]

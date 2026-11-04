@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import pickle
 import time
 
 import pandas as pd
@@ -640,12 +641,37 @@ def E15(n_dies=None, llavors=(0, 1, 2, 3)):
 # ============================================================================ E16: memoria a llarg termini
 
 def _treball_e16(arg):
+    """Una execucio d'E16 (fins a 729 dies seguits). Pot durar mes que el temps que es pot tenir un
+    proces en marxa, aixi que es fa per trams: passats cfg['minuts_tram'] minuts es desa un punt de
+    control (estat de la planta i de tot el CLIPS: fets, regles apreses, defglobals) i es retorna
+    None; la crida seguent continua des d'alla. verificacio/prova_punt_control.py comprova que el
+    resultat es identic al d'una sola tirada."""
     nom, cfg, dies, llavor = arg
+    pc = cfg.get("punt_control")
+    limit = time.time() + 60 * cfg.get("minuts_tram", 1e9)
     sim = S.Simulacio(cfg, llavor)
-    df = sim.executa(dies, etiqueta=nom)
+    ctrl = S.ControladorSOAR(cfg, sim.domini)
+    dfs, fotos_raw, i0 = [], [], 0
+    if pc and os.path.isfile(pc):
+        with open(pc, "rb") as f:
+            est = pickle.load(f)
+        sim.restaura_estat(est["sim"])
+        ctrl.restaura_estat(est["ctrl"])
+        dfs, fotos_raw, i0 = est["dfs"], est["fotos"], est["i"]
+    for i in range(i0, len(dies)):
+        dfs.append(sim.executa([dies[i]], controlador=ctrl, etiqueta=nom))
+        fotos_raw += sim.fotos
+        if pc and time.time() > limit and i + 1 < len(dies):
+            tmp = pc + ".tmp"
+            with open(tmp, "wb") as f:
+                pickle.dump({"i": i + 1, "sim": sim.desa_estat(), "ctrl": ctrl.desa_estat(),
+                             "dfs": dfs, "fotos": fotos_raw}, f)
+            os.replace(tmp, pc)
+            return None
+    df = pd.concat(dfs, ignore_index=True)
     fotos = [{"config": nom, "execucio": llavor, "dia": f["dia"], "cicle": f["cicle"],
               "n_chunks": len(f.get("chunks", [])), "n_rajoles": len(f.get("rl", [])),
-              "n_epmem": f.get("n_epmem", 0), **_comprova_foto(f)} for f in sim.fotos]
+              "n_epmem": f.get("n_epmem", 0), **_comprova_foto(f)} for f in fotos_raw]
     return df, fotos
 
 
@@ -666,7 +692,7 @@ def _feines_e16(n_execucions):
     return feines
 
 
-def E16(n_execucions=3, part=None):
+def E16(n_execucions=3, part=None, minuts_tram=None):
     """Memoria a llarg termini amb dos anys de dades reals (Ribera de Sio, 2022-2023, anys sencers).
     El sistema apren tot el 2022 (dies seguits) i es mesura tot el 2023, amb memoria episodica i
     sense; i, com a referencia, amb memoria pero sense haver viscut el 2022 (comença de zero l'1 de
@@ -684,13 +710,24 @@ def E16(n_execucions=3, part=None):
         pendents = [part] if part in pendents else []
     if pendents:
         for k in pendents:
-            feines[k] = (feines[k][0], {**feines[k][1], "fitxer_progres": fitxer(feines[k]) + "_progres.txt"},
+            feines[k] = (feines[k][0], {**feines[k][1], "fitxer_progres": fitxer(feines[k]) + "_progres.txt",
+                                        "punt_control": fitxer(feines[k]) + "_punt_control.pkl",
+                                        "minuts_tram": minuts_tram or 1e9},
                          feines[k][2], feines[k][3])
         sortides = paralel.mapa(_treball_e16, [feines[k] for k in pendents], PROCESSOS[0], titol="E16 execucions",
-                                cada=1, mida=1, espera_maxima=4 * 3600)
-        for k, (df_k, fotos_k) in zip(pendents, sortides):
+                                cada=1, mida=1, espera_maxima=24 * 3600)
+        for k, sortida in zip(pendents, sortides):
+            if sortida is None:
+                print(f"[E16] feina {k} ({feines[k][0]} exec {feines[k][3]}): punt de control desat, PENDENT")
+                continue
+            df_k, fotos_k = sortida
             df_k.to_csv(fitxer(feines[k]) + ".csv.gz", index=False)
             pd.DataFrame(fotos_k).to_csv(fitxer(feines[k]) + "_fotos.csv", index=False)
+            if os.path.isfile(fitxer(feines[k]) + "_punt_control.pkl"):
+                os.remove(fitxer(feines[k]) + "_punt_control.pkl")
+        if any(s is None for s in sortides):
+            return {"resum": pd.DataFrame({"pendents": [len([s for s in sortides if s is None])]}),
+                    "tests": pd.DataFrame()}
     if part is not None:
         return {"resum": pd.DataFrame({"part": [part], "feina": [f"{feines[part][0]} exec {feines[part][3]}"]}),
                 "tests": pd.DataFrame()}
@@ -737,6 +774,8 @@ def main():
     ap.add_argument("--llavors", type=int, default=None, help="nombre de llavors (0..n-1)")
     ap.add_argument("--processos", type=int, default=None, help="processos en paral·lel (per defecte, tots els nuclis)")
     ap.add_argument("--part", type=int, default=None, help="E16: executa nomes la feina k (0..3n-1)")
+    ap.add_argument("--minuts-tram", type=float, default=None,
+                    help="E16: passats aquests minuts desa un punt de control i s'atura (es continua tornant-ho a cridar)")
     ap.add_argument("--traca", action="store_true",
                     help="desa la traca del CLIPS de cada dia (com run_soar) a resultats/<E>/traca/")
     a = ap.parse_args()
@@ -751,6 +790,8 @@ def main():
         kw["llavors"] = tuple(range(a.llavors))
     if a.part is not None:
         kw["part"] = a.part
+    if a.minuts_tram is not None:
+        kw["minuts_tram"] = a.minuts_tram
     if a.processos:
         PROCESSOS[0] = a.processos
     TRACA[0] = a.traca
