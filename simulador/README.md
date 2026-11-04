@@ -330,17 +330,17 @@ de Sió, cada mes amb els dies seguits × 4 llavors = 24 blocs; Friedman i Wilco
 
 | Per mes (3 sectors) | Sense reg | Reg de la finca | Reg FAO-56 de llibre | **SOAR (v1_9)** |
 |---|---|---|---|---|
-| Aigua de reg (m³) | 0 | 46 | 68 | **67** |
-| Hores d'estrès hídric | 679 | 385 | 44 | **0,6** |
+| Aigua de reg (m³) | 0 | 46 | 68 | **68** |
+| Hores d'estrès hídric | 679 | 384 | 43 | **0,6** |
 | Aigua perduda per percolació (mm) | 6 | 10 | 28 | 25 |
 | Regs | 0 | 4 | 7 | 11 |
 | Energia de la bomba (kWh) | 0 | 22 | 33 | 32 |
 
-- **Hipòtesi:** "SOAR gasta menys aigua que el reg de llibre amb el mateix estrès o menys". **Es compleix només a mitges.** SOAR gasta **la mateixa aigua** que el reg FAO (67 contra 68 m³/mes, p = 0,6), però deixa el cultiu **pràcticament sense estrès**: 0,6 h/mes contra 44 (p = 1e-4). Fa més regs, però més petits i abans que el cultiu pateixi. La majoria són a les 19 h, l'hora fresca de la tarda.
+- **Hipòtesi:** "SOAR gasta menys aigua que el reg de llibre amb el mateix estrès o menys". **Es compleix només a mitges.** SOAR gasta **la mateixa aigua** que el reg FAO (67,6 contra 68,2 m³/mes, p = 0,66), però deixa el cultiu **pràcticament sense estrès**: 0,6 h/mes contra 43 (p = 1e-4). Fa més regs, però més petits i abans que el cultiu pateixi. La majoria són a les 19 h, l'hora fresca de la tarda.
 - **Per cultiu:**
-  - **Vinya:** SOAR hi gasta la meitat d'aigua que el reg FAO (6,0 contra 12,2 m³/mes) amb menys estrès (0,5 contra 2,5 h). És el reg deficitari: la vinya no s'anticipa i es rega en part.
-  - **Enciam i tomàquet:** SOAR hi gasta una mica més que el reg FAO (29,7 contra 27,1 i 31,7 contra 29,0 m³/mes), però amb 0 hores d'estrès contra 31 i 10.
-- **El reg de la finca** gasta menys aigua, però el cultiu pateix 385 h/mes: el llindar del 45 % és massa baix per a l'enciam (p = 0,30) i el tomàquet.
+  - **Vinya:** SOAR hi gasta la meitat d'aigua que el reg FAO (6,1 contra 12,2 m³/mes) amb menys estrès (0,4 contra 2,2 h). És el reg deficitari: la vinya no s'anticipa i es rega en part.
+  - **Enciam i tomàquet:** SOAR hi gasta una mica més que el reg FAO (29,8 contra 27,1 i 31,7 contra 29,0 m³/mes), però amb 0,2 i 0 hores d'estrès contra 31 i 10.
+- **El reg de la finca** gasta menys aigua, però el cultiu pateix 384 h/mes: el llindar del 45 % és massa baix per a l'enciam (p = 0,30) i el tomàquet.
 - **L'energia de la bomba** és petita al costat de la producció (32 kWh de 11.000 al mes, un 0,3 %), i per això la preferència d'energia gairebé mai no canvia la decisió de regar.
 
 ## Pendent
