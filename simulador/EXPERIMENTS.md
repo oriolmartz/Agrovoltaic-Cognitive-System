@@ -1,7 +1,7 @@
 # Catàleg d'experiments
 
 Cada experiment respon una pregunta concreta i està situat dins del marc de V&V. L'eix és
-Menzies & Pecheur (2005), amb Batarseh & Gonzalez (2015) i Rashid et al. (2019) com a complement.
+Menzies & Pecheur (2005), amb Batarseh & Gonzalez (2015), Rashid et al. (2019) i Tsai, Vishnuvajjala & Zhang (1999) com a complement.
 Els resultats de cada experiment queden a `resultats/<E>/`.
 
 **Verificació** = el sistema està ben construït. Es mira per dins, i el resultat és passa o no passa.

@@ -183,6 +183,16 @@ S'ha de justificar a l'informe com a simplificació.
 | Adaptatiu | Aprendre en uns dies i mesurar-ho en uns altres (validesa externa); capacitat de la funció Q; consistència del que s'aprèn (Rashid) | E8, E9, E10, E13 |
 | Comparació amb una referència (Batarseh) | Seguidor comercial i panell fix amb els mateixos dies; el reg de SOAR contra un reg fix i el reg de llibre de FAO-56 | E4, E5, E7, E14, E15 |
 | Sensibilitat (Batarseh) | Un paràmetre del model cada cop | E12 |
+| Adequació de les proves (Tsai et al.) | *Mutation testing*: s'introdueixen errors a propòsit al CLIPS i es mira quants en detecten les proves | E17 |
+
+**Tsai, Vishnuvajjala & Zhang (1999)**, *Verification and Validation of Knowledge-Based Systems* (IEEE
+TKDE), dona el marc general amb què encaixen totes les proves:
+- **Definicions de l'IEEE** de verificació i validació, i el **marc de proves** en quatre passos: criteris → entrades → sortida esperada → execució i avaluació (E3 i els casos de prova escriuen la sortida esperada abans).
+- **El problema de l'oracle:** sense especificació ni expert és gairebé impossible generar sortides esperades. Fem servir la literatura del domini (FAO, fitxes de cultiu) com a oracle i sistemes de referència a falta d'expert.
+- **Proves per partició d'entrades**, perquè les regions on falla un sistema no són uniformes (E2, E3); **anomalies** de la base de coneixement (E2, E13); **regressió** quan la base evoluciona (E1); **restriccions d'integritat** (E13, E0).
+- **Caixa negra i caixa blanca:** E3, casos de prova i E4–E15 (funcional); cobertura de regles d'E2 i capacitat de la funció Q d'E10 (estructural).
+- **"Tot el sistema, no només la base de coneixement"**: l'agenda (el motor d'inferència, E11), l'explicació i les fases (invariants), i la interfície amb l'ontologia (E0).
+- **Mutation testing** per mesurar com de bones són les proves (E17).
 
 ## Resultats (24/10/2026, v1_9)
 
