@@ -180,7 +180,7 @@ S'ha de justificar a l'informe com a simplificació.
 | Nivell de coneixement | Casos positius i negatius als llindars, amb el resultat esperat escrit abans; casos de prova | E3, casos de prova |
 | No determinista | Llavors de soroll, sensors i fallades; estratègies de l'agenda i salience | E5, E6, E11 |
 | Complex | Invariants a cada cicle (`invariants_ko`, també del reg: I10–I12); escenaris extrems; escalabilitat de la memòria | totes les simulacions, E14 |
-| Adaptatiu | Aprendre en uns dies i mesurar-ho en uns altres (validesa externa); capacitat de la funció Q; consistència del que s'aprèn (Rashid) | E8, E9, E10, E13 |
+| Adaptatiu | Aprendre en uns dies i mesurar-ho en uns altres (validesa externa), també un any sencer i l'any següent; capacitat de la funció Q; consistència del que s'aprèn (Rashid) | E8, E9, E10, E13, E16 |
 | Comparació amb una referència (Batarseh) | Seguidor comercial i panell fix amb els mateixos dies; el reg de SOAR contra un reg fix i el reg de llibre de FAO-56 | E4, E5, E7, E14, E15 |
 | Sensibilitat (Batarseh) | Un paràmetre del model cada cop | E12 |
 | Motor d'inferència (Tsai et al.) | Ordre de les fases del cicle SOAR i una sola acció per sector a cada cicle, amb un control negatiu | E18 |
@@ -195,7 +195,7 @@ TKDE), dona el marc general amb què encaixen totes les proves:
 - **"Tot el sistema, no només la base de coneixement"**: l'agenda (el motor d'inferència, E11), l'explicació i les fases (invariants i E18), i la interfície amb l'ontologia (E0).
 - **Mutation testing** per mesurar com de bones són les proves (E17).
 
-## Resultats (24/10/2026, v1_9)
+## Resultats (04/11/2026, v1_9)
 
 Detalls a `resultats/<E>/`. El catàleg complet (pregunta, perspectiva, disseny i test de cada
 experiment) és a `EXPERIMENTS.md`, i les iteracions a `REGISTRE_ITERACIONS.md`. Tot s'ha tornat a
@@ -211,6 +211,8 @@ amb Ks (iteracions 20–22). E9 i E10 continuen comparant les versions antigues 
 | **E3** llindars (75 casos) | 57/57 de la v1_8 + 18/18 de reg → **75/75** |
 | **E11** agenda (20 dies) | Estratègies `depth`, `breadth`, `lex` i `mea`, especificitat (`simplicity` i `complexity`) i `random` amb 5 llavors: **0 decisions diferents** de 840 (ni del panell ni del reg). **Salience:** si les transicions de fase passen de −10 a 0, amb `depth` el panell canvia el **22,7 %** de les decisions i el reg **no arriba mai a decidir** (0 ordres de reg en 840 cicles: la fase passa abans que es pugui seleccionar). Amb `breadth` no es tanca **cap** cicle. La salience −10 de les transicions és imprescindible |
 | **E13** coneixement après (5 execucions × 20 dies) | 0 problemes a les 9 restriccions (K1–K8), en 100 fotos. En acabar: 2–4 chunks, 73–75 rajoles Q (\|Q\| ≤ 0,68) i 840 episodis (exactament 1 per sector i cicle) |
+| **E17** mutacions (99 mutants) | **80 detectats (80,8 %)**: totes les substitucions d'operador, pes i salience; 9 de 12 llindars; 63 de 79 regles esborrades. La regressió en detecta 57, E3 48 i els casos de prova 55. Els 19 que sobreviuen, a sota |
+| **E18** cicle SOAR (280 cicles, 18 amb impasse) | **0 cicles amb l'ordre de fases incorrecte, 0 regles fora de la seva fase, 0 cicles amb més o menys d'una decisió** per sector. Només surten dos recorreguts: el normal (262) i el que passa una vegada per l'impasse (18). **Control negatiu** (transicions a salience 0): detectats 28 de 28 cicles, tots per decisions que falten (C3). L'ordre de fases no es pot trencar perquè cada regla demana el fet `(fase (nom X))`: el que passa és que hi ha regles que ja no arriben a disparar-se. És la resposta a "fer dues accions seguides": el motor no ho permet, i ho comprova cada cicle |
 | **Invariants** | 0 violacions en totes les simulacions, també les del reg (I10–I12) |
 
 Les regles que E2 no dispara mai són de tres menes:
@@ -221,6 +223,11 @@ Les regles que E2 no dispara mai són de tres menes:
   - `percep-sensor-no-valid`, que només es dispara amb un sensor incoherent i una lectura que sí que arriba;
   - `detecta-impas-sense-candidat` i `resol-sense-candidat`, perquè amb vent crític sempre queda `posicio-seguretat`;
   - `avalua-rebuig-fora-de-limits`, perquè l'angle òptim sempre és dins dels límits.
+
+Els **19 mutants d'E17 que sobreviuen** són de tres menes:
+- **Reg** (els llindars d'anticipació, pluja i hora fresca; `avalua-reg-hora-fresca`, `-energia` i `-estalvi`). Els casos CP12–CP14 i E3 comproven el reg, però no just als llindars que muten ni el desempat entre preferències de reg: **falten casos de prova** amb aquests valors.
+- **Regles que no canvien la decisió:** la neteja de consultes i resultats de la memòria (`epmem-neteja-*`), `explica-decisio` i els avisos (`avisa-dades-pendents`, `avisa-fallada-actuador`). Les proves miren la decisió i no el text ni els fets que queden; caldria comprovar també l'explicació.
+- **Regles redundants o inabastables**, les mateixes que E2 no dispara mai (`percep-sensor-no-valid`, `percep-dades-vent-critic`, `detecta-impas-sense-candidat`, `resol-sense-candidat`, `avalua-rebuig-fora-de-limits`) i `percep-sense-observacio`, `elabora-risc-mecanic-per-previsio` i `detecta-oscillacio`, que queden tapades per altres regles que prenen la mateixa decisió. O bé s'hi afegeix un cas que les necessiti o bé es poden treure.
 
 ### Casos de prova documentats (14 + 1 cas no vist)
 
@@ -343,6 +350,25 @@ de Sió, cada mes amb els dies seguits × 4 llavors = 24 blocs; Friedman i Wilco
 - **El reg de la finca** gasta menys aigua, però el cultiu pateix 384 h/mes: el llindar del 45 % és massa baix per a l'enciam (p = 0,30) i el tomàquet.
 - **L'energia de la bomba** és petita al costat de la producció (32 kWh de 11.000 al mes, un 0,3 %), i per això la preferència d'energia gairebé mai no canvia la decisió de regar.
 
+**E16 – memòria a llarg termini** (Ribera de Sió, 2022–2023, dies seguits; s'aprèn tot el 2022 i es mesura tot el 2023; 3 execucions × 12 mesos = 36 blocs):
+
+| Per mes del 2023 (3 sectors) | Sense memòria | Memòria només el 2023 | **Memòria dels dos anys** |
+|---|---|---|---|
+| Energia (kWh) | 8.942 | 8.807 | 8.772 |
+| Estrès per radiació (h) | 299 | 289 | 286 |
+| Estrès per calor (h) | 397 | 394 | 397 |
+| Estrès hídric (h) | 0,6 | 0,6 | 0,6 |
+| Decisions on intervé la memòria | 0 | 1.133 | 1.204 |
+| Episodis en acabar | 0 | 15.288 | 30.618 |
+| Temps per cicle (ms) | 76 | 165 | 401 |
+
+- **La memòria canvia el comportament, però no és una millora neta:** amb la memòria dels dos anys es fa més ombra, amb un 4 % menys d'estrès per radiació (−12 h/mes, p = 1e-6) i un 1,9 % menys d'energia (−170 kWh/mes, p = 9e-10). L'estrès per calor i l'aigua no canvien.
+- **L'any anterior només compta al principi:** "memòria només el 2023" comença de zero l'1 de gener i, a partir del març, decideix pràcticament igual que la memòria de dos anys (al novembre i al desembre, idèntic). Al gener i al febrer, sense l'any anterior, la memòria encara no fa res (−3 i +71 kWh respecte de sense memòria, contra −107 i −115 amb els dos anys).
+- **Consistència del coneixement (Rashid):** 0 problemes a K1–K6 en 5.466 fotos (una per dia i execució). En acabar, 1–3 chunks i 61–66 rajoles Q.
+- **Escalabilitat:** el temps per cicle creix amb el nombre d'episodis, de 211 ms al gener a 554 ms a l'agost amb la memòria de dos anys. Ve de `epmem-cerca`, que recorre tots els episodis a cada consulta (cost lineal per cicle, quadràtic en el total). Soar ho resol amb un índex invertit per tret (Derbinsky & Laird 2009); aquí queda com a millora per a una versió següent. Amb 42 cicles al dia continua sent molt per sota de l'hora que hi ha entre cicles.
+- **Eficiència del simulador (iteració 27):** abans, el pont Python recorria tots els fets del CLIPS a cada consulta, i amb 15.000 episodis un dia trigava 30 s (el 85 % fora del CLIPS). Ara llegeix només la plantilla que necessita: 5 s/dia, amb **resultats idèntics** columna a columna.
+- **Execucions de més de 2 h:** es fan per trams amb punts de control (tot l'estat de la planta i del CLIPS). `verificacio/prova_punt_control.py` comprova que el resultat és idèntic al d'una sola tirada.
+
 ## Pendent
 
 - **Millores del reg (v1_9) que vam parlar:**
@@ -350,5 +376,7 @@ de Sió, cada mes amb els dies seguits × 4 llavors = 24 blocs; Friedman i Wilco
   - fer servir l'última lectura si falta el sensor d'humitat (impasse de dades);
   - afegir a E12 els paràmetres de disseny del reg (75 % d'anticipació, dosi parcial, soroll de la previsió de pluja).
 
+- **Resultats d'E17:** afegir casos de prova just als llindars del reg (75 % de p, 10 mm de pluja, 8 h) i que comprovin l'explicació; revisar si les regles redundants o inabastables s'han de treure.
+- **Memòria episòdica:** un índex per tret a `epmem-cerca` perquè el cost no creixi amb el nombre d'episodis (E16).
 - **E12, part de pesos i `alfa`:** són dins del CLIPS i no es poden variar des del simulador sense tocar el `.clp`.
 - **Tornar-ho a executar tot** amb la versió final del CLIPS: les ordres són a `EXPERIMENTS.md`.
