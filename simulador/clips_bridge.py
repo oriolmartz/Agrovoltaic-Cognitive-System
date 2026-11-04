@@ -114,6 +114,7 @@ class ControladorCLIPS:
         self.model_ontologic = carrega_model(self.fitxer_ontologia) if self.fitxer_ontologia else None
         self.env = clips.Environment()
         self.cap = _Captura()
+        self._plantilles = None   # nom -> MODUL::nom, per a _fets
         self.env.add_router(self.cap)
         self.vigila_regles = vigila_regles
         self.conserva_sortida = conserva_sortida
@@ -203,7 +204,15 @@ class ControladorCLIPS:
 
     # ------------------------------------------------------------------ utilitats
     def _fets(self, plantilla: str):
-        return [f for f in self.env.facts() if f.template.name == plantilla]
+        """Fets d'una plantilla, en l'ordre de la llista de fets. Es demana al CLIPS nomes la plantilla
+        (GetNextFactInTemplate) en lloc de recorrer tots els fets des de Python: amb milers d'episodis de
+        memoria episodica, recorrer-los tots a cada consulta era el que feia lent el simulador (E16)."""
+        if self._plantilles is None:
+            self._plantilles = {}
+            for q in self.env.eval("(get-deftemplate-list *)"):
+                self._plantilles.setdefault(str(q).rpartition("::")[2], self.env.find_template(str(q)))
+        t = self._plantilles.get(plantilla)
+        return list(t.facts()) if t is not None else []
 
     def _retracta(self, cond):
         for f in list(self.env.facts()):
@@ -362,9 +371,14 @@ class ControladorCLIPS:
             self._neteja(c)
         return res
 
+    LLEGITS = ("ordre-actuador", "operador-seleccionat", "explicacio", "risc", "subobjectiu", "preferencia",
+               "operador", "ordre-reg", "explicacio-reg", "preferencia-reg", "fragment-apres")
+
     def _llegeix(self, c: int) -> ResultatCicle:
         r = ResultatCicle(cicle=c)
-        for f in self.env.facts():
+        # cada plantilla omple les seves pròpies estructures: llegir-les plantilla per plantilla dona el
+        # mateix resultat que recorrer tota la llista de fets
+        for f in (f for t in self.LLEGITS for f in self._fets(t)):
             t = f.template.name
             if t in ("ordre-actuador", "operador-seleccionat", "explicacio", "risc", "impas",
                      "preferencia", "operador", "ordre-reg", "explicacio-reg",
@@ -456,7 +470,7 @@ class ControladorCLIPS:
 
     # ------------------------------------------------------------------ memoria
     def n_fets(self) -> int:
-        return len(list(self.env.facts()))
+        return int(self.env.eval("(length$ (get-fact-list *))"))
 
     def coneixement_apres(self) -> dict:
         """Foto del que s'ha apres (per a la verificacio del coneixement que evoluciona)."""
