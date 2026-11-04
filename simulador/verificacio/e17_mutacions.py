@@ -177,6 +177,14 @@ def _prova(m: dict) -> dict:
 BASE = {}
 
 
+def _prova_i_desa(arg):
+    m, fitxer = arg
+    r = _prova(m)
+    pd.to_pickle(r, fitxer + ".tmp")
+    os.replace(fitxer + ".tmp", fitxer)
+    return r
+
+
 def _init(base):
     BASE.update(base)
 
@@ -201,11 +209,22 @@ def main():
     llista = mutants(text)
     if a.nomes_llindars:
         llista = [m for m in llista if m["tipus"] != "regla esborrada"]
-    res = paralel.mapa(_prova, llista, a.processos, initializer=_init, initargs=(base,), titol="E17 mutants", cada=5)
+    # cada mutant es desa en acabar (resultats/E17/fets/): si l'execucio s'interromp, es continua
+    fets = os.path.join(DIR, "fets")
+    os.makedirs(fets, exist_ok=True)
+    fet = lambda m: os.path.join(fets, f"{m['id']}.pkl")
+    pendents = [m for m in llista if not os.path.isfile(fet(m))]
+    print(f"{len(llista) - len(pendents)} mutants ja fets, {len(pendents)} pendents")
+    if pendents:
+        paralel.mapa(_prova_i_desa, [(m, fet(m)) for m in pendents], a.processos,
+                     initializer=_init, initargs=(base,), titol="E17 mutants", cada=5,
+                     mida=1, espera_maxima=900)   # un mutant per tros: n'hi ha de lents (bucles fins al limit)
+    res = [pd.read_pickle(fet(m)) for m in llista]
     df = pd.DataFrame(res)
     shutil.rmtree(os.path.join(DIR, "mutants"), ignore_errors=True)
     os.makedirs(DIR, exist_ok=True)
     df.to_csv(os.path.join(DIR, "E17_mutants.csv"), index=False)
+    shutil.rmtree(fets, ignore_errors=True)
     resum = (df.groupby("tipus").agg(mutants=("id", "size"), morts=("mort", "sum")).assign(
         pct_morts=lambda x: (100 * x["morts"] / x["mutants"]).round(1)))
     resum.loc["TOTAL"] = [len(df), int(df["mort"].sum()), round(100 * df["mort"].mean(), 1)]
