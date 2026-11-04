@@ -1,4 +1,4 @@
-"""E17 - Simulacio de periodes llargs amb dades reals (capa web).
+"""UI (interficie web, no es un experiment del sistema) - Simulacio de periodes llargs amb dades reals (capa web).
 
 Comprova, sense navegador:
   1. el cataleg d'escenaris porta la durada en dies calculada de les dades reals;
@@ -7,7 +7,7 @@ Comprova, sense navegador:
   3. un treball curt en processos (3 controladors, 3 dies) acaba amb la taula DIARIA, el progres,
      l'estadistica aparellada i els registres horaris de cada dia (el que consumeix el 3D).
 
-Us:  python verificacio/e17_periode.py     (uns 20-40 s)
+Us:  python verificacio/ui_periode.py     (uns 20-40 s)
 """
 
 import json
@@ -79,7 +79,7 @@ def main():
     print("lloc nou registrat per JSON: ok")
     r = comprova_treball()
     print(f"treball en processos ({os.cpu_count()} CPU): {r['elapsed_s']} s, {len(r['stats']['pairs'])} comparacions aparellades")
-    print("E17 OK - periodes llargs amb dades reals: cataleg amb durada, lloc nou per JSON, treball en processos i estadistica")
+    print("UI periodes OK - periodes llargs amb dades reals: cataleg amb durada, lloc nou per JSON, treball en processos i estadistica")
 
 
 if __name__ == "__main__":      # necessari perque els processos fills (spawn) funcionin tambe a Windows

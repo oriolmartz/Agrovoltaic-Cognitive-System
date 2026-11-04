@@ -175,4 +175,4 @@ simulador/
 ```
 
 - Escenaris de demostració d'un dia: `demo_sequera_reg` (el CLIPS decideix regar) i `demo_pluja_real`. De període: `ribera_6_mesos` (183 dies), `cantallops_hivern_primavera` (95) i `ribera_estiu_menys_pluja` (62, *what-if*).
-- Comprovacions: `python verificacio/e15_frontend.py` (estàtica) i `python verificacio/e17_periode.py` (catàleg, lloc nou per JSON i treball en processos).
+- Comprovacions: `python verificacio/ui_frontend.py` (estàtica) i `python verificacio/ui_periode.py` (catàleg, lloc nou per JSON i treball en processos).

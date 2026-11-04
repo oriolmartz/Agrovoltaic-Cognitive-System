@@ -8,7 +8,7 @@ nou, amb la durada en dies calculada a partir de les dades.
    XMS-Cat (`.csv`) i PVGIS (`.json`).
 2. Copia `exemple.json.plantilla` com a `<id>.json` (l'`id` és el nom del lloc als escenaris,
    camp `"lloc"`) i omple els camps.
-3. Comprova-ho: `python dades.py` (taula de cobertura) i `python verificacio/e17_periode.py`.
+3. Comprova-ho: `python dades.py` (taula de cobertura) i `python verificacio/ui_periode.py`.
 
 Per **ampliar un lloc existent** (més mesos al mateix període) n'hi ha prou amb substituir els
 fitxers de dades per versions més llargues i actualitzar el nom del fitxer a `dades.LLOCS` o al

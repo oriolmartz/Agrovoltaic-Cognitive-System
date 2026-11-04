@@ -1,4 +1,4 @@
-"""E16: verificacio del segon actuador (reg) i del balanc hidric v1.9.
+"""Prova rapida del segon actuador (reg) i del balanc hidric v1.9 (no es un dels experiments E0-E18).
 
 Comprova propietats fisques sense CLIPS i, si clipspy es disponible, executa
 una simulacio seca amb el controlador actiu per verificar que CLIPS genera
@@ -41,7 +41,7 @@ assert "(defrule aplica-reg" in accio
 try:
     import clips  # noqa: F401
 except Exception:
-    print("E16 PARTIAL OK - fisica i contracte de reg validats; clipspy no disponible en aquest entorn")
+    print("Prova reg PARCIAL OK - fisica i contracte de reg validats; clipspy no disponible en aquest entorn")
     raise SystemExit(0)
 
 from simulador import Simulacio, carrega_config, selecciona_dies
@@ -55,7 +55,7 @@ cfg["mode_dies"] = "independents"
 dies = selecciona_dies(cfg, n=1, llavor=16)
 assert dies, "sense dies disponibles"
 
-df = Simulacio(cfg, llavor=16).executa(dies, etiqueta="E16-reg")
+df = Simulacio(cfg, llavor=16).executa(dies, etiqueta="prova-reg")
 assert not df.empty
 assert "reg_net_mm" in df.columns and "reg_dosi_pct" in df.columns
 assert (df["reg_dosi_pct"].fillna(0) > 0).any(), "CLIPS no ha generat cap ordre de reg sota estres hidric"
@@ -63,4 +63,4 @@ assert (df["reg_dosi_pct"].fillna(0) <= 100.0 + 1e-9).all()
 assert (df["aigua_pct"] <= 100.0 + 1e-9).all()
 assert (df["aigua_pct"] >= -1e-9).all()
 
-print("E16 OK - CLIPS decideix el reg i el simulador aplica un balanc hidric coherent")
+print("Prova reg OK - CLIPS decideix el reg i el simulador aplica un balanc hidric coherent")

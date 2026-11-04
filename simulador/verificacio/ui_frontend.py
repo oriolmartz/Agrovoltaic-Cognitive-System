@@ -1,4 +1,4 @@
-"""E15: comprovacions estàtiques del dashboard i del bessó digital WebGL."""
+"""UI (interficie web, no es un experiment del sistema): comprovacions estàtiques del dashboard i del bessó digital WebGL."""
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -11,7 +11,7 @@ required = [
 ]
 missing = [str(p.relative_to(ROOT)) for p in required if not p.is_file()]
 if missing:
-    raise SystemExit(f"E15 KO - falten: {', '.join(missing)}")
+    raise SystemExit(f"UI frontend KO - falten: {', '.join(missing)}")
 
 html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
 app_js = (ROOT / "frontend" / "app.js").read_text(encoding="utf-8")
@@ -40,5 +40,5 @@ checks = {
 }
 ko = [k for k, ok in checks.items() if not ok]
 if ko:
-    raise SystemExit("E15 KO - " + ", ".join(ko))
-print("E15 OK - dashboard WebGL 3D present i separat de la logica de decisio")
+    raise SystemExit("UI frontend KO - " + ", ".join(ko))
+print("UI frontend OK - dashboard WebGL 3D present i separat de la logica de decisio")
