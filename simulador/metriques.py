@@ -20,7 +20,7 @@ def _oscillacions(acc: pd.Series) -> int:
 def per_dia(df: pd.DataFrame) -> pd.DataFrame:
     """Una fila per (etiqueta, controlador, llavor, dia)."""
     df = df.copy()
-    for col in ("reg_m3", "reg_net_mm", "bomba_kwh", "percolacio_mm", "us_memoria"):   # CSV d'abans del reg (v1_9)
+    for col in ("reg_m3", "reg_net_mm", "bomba_kwh", "percolacio_mm", "us_memoria", "us_smem"):   # CSV d'abans del reg (v1_9)
         if col not in df:
             df[col] = 0.0
     g = df.groupby(CLAU, sort=False)
@@ -44,6 +44,7 @@ def per_dia(df: pd.DataFrame) -> pd.DataFrame:
         decisions_chunk=("us_chunk", "sum"),
         decisions_rl=("us_rl", "sum"),
         decisions_memoria=("us_memoria", "sum"),
+        decisions_smem=("us_smem", "sum"),
         invariants_ko=("invariants_ko", lambda x: int((x.fillna("") != "").sum())),
         regles_per_cicle=("regles", lambda x: x[x > 0].mean() if (x > 0).any() else 0.0),
         ms_per_cicle=("ms", lambda x: x[x > 0].mean() if (x > 0).any() else 0.0),
@@ -78,7 +79,7 @@ def per_dia(df: pd.DataFrame) -> pd.DataFrame:
 
 METRIQUES = ["energia_kwh", "rendiment_pct", "h_estres_rad", "h_estres_calor", "h_calor_critica",
              "h_estres_aigua", "violacions", "exposicions", "moviment_graus", "canvis_operador",
-             "oscillacions", "oscillacions_angle", "impasses", "chunks_nous", "decisions_chunk", "decisions_rl", "decisions_memoria",
+             "oscillacions", "oscillacions_angle", "impasses", "chunks_nous", "decisions_chunk", "decisions_rl", "decisions_memoria", "decisions_smem",
              "invariants_ko", "aigua_final_pct", "aigua_reg_m3", "regs", "bomba_kwh", "energia_neta_kwh",
              "percolacio_mm", "regles_per_cicle", "ms_per_cicle"]
 

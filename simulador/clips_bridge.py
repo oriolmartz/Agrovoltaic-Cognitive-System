@@ -384,7 +384,7 @@ class ControladorCLIPS:
         return res
 
     LLEGITS = ("ordre-actuador", "operador-seleccionat", "explicacio", "risc", "subobjectiu", "preferencia",
-               "operador", "ordre-reg", "explicacio-reg", "preferencia-reg", "fragment-apres")
+               "operador", "ordre-reg", "explicacio-reg", "preferencia-reg", "fragment-apres", "epmem-consulta")
 
     def _llegeix(self, c: int) -> ResultatCicle:
         r = ResultatCicle(cicle=c)
@@ -421,10 +421,6 @@ class ControladorCLIPS:
             elif t == "preferencia-reg":
                 if str(f["tipus"]) == "rebuig":
                     r.reg_rebutjats.setdefault(str(f["sector"]), set()).add(str(f["op"]))
-            elif t == "epmem-episodi":
-                r.n_epmem += 1
-            elif t == "smem-resum":
-                r.n_smem += 1
             elif t == "epmem-consulta":
                 if int(f["cicle"]) == c and str(f["tipus"]) == "query":
                     r.consultes_epmem[str(f["sector"])] = r.consultes_epmem.get(str(f["sector"]), 0) + 1
@@ -433,7 +429,21 @@ class ControladorCLIPS:
                 if nom not in self._chunks_coneguts:
                     self._chunks_coneguts.add(nom)
                     r.chunks_nous.append((nom, str(f["impas-origen"])))
+        # la memoria pot tenir desenes de milers d'episodis: es compten al CLIPS, no des de Python
+        r.n_epmem, r.n_smem = self.compta("epmem-episodi"), self.compta("smem-resum")
         return r
+
+    def compta(self, plantilla: str) -> int:
+        """Nombre de fets d'una plantilla de DOMINI, comptat dins del CLIPS."""
+        if self._plantilles is None:
+            self._fets(plantilla)
+        if plantilla not in self._plantilles:
+            return 0
+        m = self.env.eval("(get-current-module)")
+        self.env.eval("(set-current-module DOMINI)")
+        n = int(self.env.eval(f"(length$ (find-all-facts ((?f {plantilla})) TRUE))"))
+        self.env.eval(f"(set-current-module {m})")
+        return n
 
     def _neteja(self, c: int):
         limit = c - MARGE_NETEJA
@@ -498,7 +508,8 @@ class ControladorCLIPS:
                   for f in self._fets("fragment-apres")]
         q = [{"tret": str(f["tret"]), "op": str(f["op"]), "q": float(f["q"]), "n": int(f["n"])}
              for f in self._fets("rl-valor")]
-        ep = len(self._fets("epmem-episodi"))
+        ep = self.compta("epmem-episodi")
         regles_chunk = [str(r) for r in self.env.eval("(get-defrule-list DELIBERACIO)")
                         if str(r).startswith("chunk-")]
-        return {"chunks": chunks, "rl": q, "n_epmem": ep, "regles_chunk": regles_chunk}
+        return {"chunks": chunks, "rl": q, "n_epmem": ep, "n_smem": self.compta("smem-resum"),
+                "regles_chunk": regles_chunk}
