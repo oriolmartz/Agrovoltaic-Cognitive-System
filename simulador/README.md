@@ -397,6 +397,27 @@ de Sió, cada mes amb els dies seguits × 4 llavors = 24 blocs; Friedman i Wilco
 - **Eficiència del simulador (iteració 27):** abans, el pont Python recorria tots els fets del CLIPS a cada consulta, i amb 15.000 episodis un dia trigava 30 s (el 85 % fora del CLIPS). Ara llegeix només la plantilla que necessita: 5 s/dia, amb **resultats idèntics** columna a columna.
 - **Execucions de més de 2 h:** es fan per trams amb punts de control (tot l'estat de la planta i del CLIPS). `verificacio/prova_punt_control.py` comprova que el resultat és idèntic al d'una sola tirada.
 
+**E20 – memòria semàntica** (iteració 29; Ribera de Sió, tot el 2023, dies seguits; 2 execucions × 12 mesos = 24 blocs; versió amb la iteració 30):
+
+| Per mes (3 sectors) | Sense memòria | Episòdica | Episòdica + semàntica | Semàntica amb finestra |
+|---|---|---|---|---|
+| Energia (kWh) | 8.931 | 8.806 | 8.937 | 8.936 |
+| Estrès per radiació (h) | 296 | 290 | 298 | 297 |
+| Estrès per calor (h) | 396 | 395 | 396 | 396 |
+| Estrès hídric (h) | 0,7 | 0,6 | 0,6 | 0,6 |
+| Impasses | 1,2 | 1,2 | **0** | **0** |
+| Decisions amb memòria episòdica / semàntica | 0 / 0 | 1.158 / 0 | 391 / 1.244 | 366 / 1.244 |
+| Episodis a la MT al desembre | 0 | 15.288 | 15.288 | **294** |
+| Resums semàntics al desembre | 0 | 0 | 163 | 164 |
+| Temps per cicle al desembre (ms) | 185 | 410 | 175 | 142 |
+
+- **La semàntica gairebé no canvia les decisions:** decideix el 97 % de les vegades igual que sense memòria, i l'energia i l'estrès no són diferents de sense memòria (p = 1 en tots dos casos). L'episòdica sí que canvia el comportament, com a E16: un 1,4 % menys d'energia i un 2,2 % menys d'estrès per radiació (p < 0,001). El motiu és la fórmula pes·(bona − dolenta)/(n + 2): quan un resum acumula molts casos barrejats, el valor queda a prop de 0. En canvi, l'episòdica pren el valor de l'últim episodi semblant, que pot ser ±2 sencer.
+- **Sí que fa dues coses útils:** elimina els impasses, perquè el petit valor del resum desempata, i a mesura que hi ha resums amb n ≥ 3 deixa de consultar la memòria episòdica. Les decisions amb episòdica baixen de 1.158 a 1 al mes al desembre, i el temps per cicle es queda a menys de la meitat del de l'episòdica.
+- **La finestra controla el creixement:** amb la finestra, a la memòria de treball hi ha sempre 294 episodis, en lloc dels 15.288 de final d'any, i dona els mateixos resultats que sense finestra (energia +1 kWh, p = 1). És el més ràpid dels tres amb memòria.
+- **Consistència (Rashid):** 0 problemes a K1–K6 en 2.912 fotos.
+- **Temps per cicle:** les execucions compartien els dos processadors, així que els valors absoluts de ms tenen soroll. La comparació que compta és la de l'episòdica (que creix amb els episodis) amb la semàntica (que s'estabilitza).
+- **Conclusió:** la memòria semàntica resol el problema d'escalabilitat de l'episòdica, però a costa de treure-li quasi tot l'efecte sobre les decisions. Si es volgués que el resum pesés més, caldria un pes més gran o una fórmula que no es dilueixi amb n, per exemple (bona − dolenta)/n sense el +2. Però llavors s'hauria de tornar a comprovar el límit amb la seguretat (iteració 31).
+
 ## Pendent
 
 - **Millores del reg (v1_9) que vam parlar:**
