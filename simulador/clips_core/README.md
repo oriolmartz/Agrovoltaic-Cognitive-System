@@ -12,7 +12,8 @@ clips_core/
 ├── memory/
 │   ├── episodic.clp            # MEMORIA: epmem
 │   ├── reinforcement.clp       # REFORC: Q / RL
-│   └── chunking.clp            # APRENENTATGE: chunking procedural
+│   ├── chunking.clp            # APRENENTATGE: chunking procedural
+│   └── semantic.clp            # SEMANTICA: consolidació d'episodis (smem), apagada per defecte
 ├── reasoning/
 │   ├── deliberacio.clp         # percepció, elaboració, proposta, avaluació
 │   └── decisio.clp             # selecció i detecció d'impasses
@@ -53,7 +54,7 @@ Per comprovar el mapping RDF abans de provar el controlador:
 python verificacio/e0_ontologia.py
 ```
 
-Per passar les proves de la versió canònica (79), executeu E1, que primer projecta la topologia del RDF a
+Per passar les proves de la versió canònica (91), executeu E1, que primer projecta la topologia del RDF a
 `topologia_rdf.clp` i avisa si `soar.clp` no està al dia amb els mòduls:
 
 ```bash

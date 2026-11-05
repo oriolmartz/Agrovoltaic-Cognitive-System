@@ -707,6 +707,8 @@
 ; l'ultima vegada que vaig fer aixo en una situacio com aquesta?". El cue es la
 ; situacio actual del sector (sector, cultiu, riscos, cobertura) i es exigeix que
 ; l'episodi recuperat hagi usat el mateix operador.
+; Si la memoria semantica ja en sap prou (smem-resum amb n >= minim), no es consulta
+; la memoria episodica: ho resol avalua-memoria-semantica.
 (defrule avalua-memoria-consulta
   (declare (auto-focus TRUE))
   (fase (nom avaluacio))
@@ -714,6 +716,9 @@
   (epmem-config (aprenentatge on))
   (operador (sector ?s) (cicle ?c) (nom ?op) (estat proposat))
   (not (epmem-consulta (id =(sym-cat Q- ?s - ?op - ?c))))
+  (not (and (smem-config (actiu on) (minim-casos ?mn))
+            (smem-situacio (sector ?s) (cicle ?c) (clau $?k))
+            (smem-resum (sector ?s) (operador ?op) (situacio $?k) (n ?n&:(>= ?n ?mn)))))
   =>
   (assert (epmem-consulta (id (sym-cat Q- ?s - ?op - ?c)) (sector ?s) (cicle ?c)
                           (etiqueta ?op)
@@ -744,6 +749,31 @@
                        (valor ?val) (font AV10-memoria)))
   (assert (traca (pas ?c) (fase avaluacio)
                  (missatge (str-cat ?s ": " ?op " " ?val " per memoria episodica (episodi " ?m ")")))))
+
+; Memoria semantica: "que se d'aquest operador en aquesta situacio?". El valor fa servir
+; tota l'experiencia consolidada, no nomes l'ultim episodi:
+;   pes * (bona - dolenta) / (n + k)      (k: amb pocs casos, el valor es petit)
+; Es crea sempre (tambe amb valor 0) perque quedi a la traca quina memoria ha respost.
+(defrule avalua-memoria-semantica
+  (declare (auto-focus TRUE))
+  (fase (nom avaluacio))
+  (cicle (numero ?c))
+  (epmem-config (aprenentatge on) (pes-memoria ?pes))
+  (smem-config (actiu on) (minim-casos ?mn) (k ?k))
+  (operador (sector ?s) (cicle ?c) (nom ?op) (estat proposat))
+  (smem-situacio (sector ?s) (cicle ?c) (clau $?cl))
+  (smem-resum (sector ?s) (operador ?op) (situacio $?cl)
+              (bona ?b) (neutra ?nt) (dolenta ?d) (n ?n&:(>= ?n ?mn)))
+  (not (preferencia (op ?op) (sector ?s) (cicle ?c) (font AV11-memoria-semantica)))
+  =>
+  (bind ?val (/ (round (* 100 ?pes (/ (- ?b ?d) (+ ?n ?k)))) 100))
+  (printout t "[AVALUACIO] " ?s ": " ?op " " ?val " (memoria semantica: " ?b " be, " ?nt
+              " neutre, " ?d " malament en " ?n " casos)." crlf)
+  (assert (preferencia (op ?op) (sector ?s) (cicle ?c) (tipus numerica)
+                       (valor ?val) (font AV11-memoria-semantica)))
+  (assert (traca (pas ?c) (fase avaluacio)
+                 (missatge (str-cat ?s ": " ?op " " ?val " per memoria semantica (" ?b " be, "
+                                    ?d " malament de " ?n ")")))))
 
 ; --- v1_9: AVALUACIO del reg ------------------------------------------------------
 

@@ -34,7 +34,7 @@ SENSORS = _MODEL_DEFECTE.tipus_sensors
 #  fragment-apres son memoria a llarg termini i NO s'esborren mai.)
 FETS_DE_CICLE = ("observacio", "prediccio", "energia", "risc", "operador", "preferencia",
                  "operador-seleccionat", "impas", "ordre-actuador", "explicacio",
-                 "episodi", "rl-traca",
+                 "episodi", "rl-traca", "smem-situacio",
                  # v1_9: decisio de reg
                  "moment", "necessitat-reg", "operador-reg", "preferencia-reg", "reg-seleccionat",
                  "ordre-reg", "explicacio-reg")
@@ -91,6 +91,9 @@ class ResultatCicle:
     reg: dict = field(default_factory=dict)           # sector -> [(accio, dosi %, motiu)]   (v1_9)
     reg_explicacio: dict = field(default_factory=dict)
     reg_rebutjats: dict = field(default_factory=dict)  # sector -> {op}
+    consultes_epmem: dict = field(default_factory=dict)  # sector -> consultes a la memoria episodica
+    n_epmem: int = 0                                  # episodis a la memoria de treball
+    n_smem: int = 0                                   # resums de la memoria semantica
     regles_disparades: int = 0
     regles: list = field(default_factory=list)        # noms de regles disparades (si watch)
     sortida: str = ""
@@ -103,6 +106,7 @@ class ControladorCLIPS:
     def __init__(self, fitxer_clp: str, *, fitxer_ontologia: str | None = None,
                  reforc: bool | None = None, parelles: bool | None = None,
                  chunking: bool | None = None, epmem: bool | None = None,
+                 smem: bool | None = None, smem_finestra: int = 0, smem_arxiu: str = "",
                  estrategia: str | None = None, vigila_regles: bool = False,
                  conserva_sortida: bool = False, neteja: bool = True):
         self.fitxer = os.path.abspath(fitxer_clp)
@@ -136,6 +140,7 @@ class ControladorCLIPS:
         if vigila_regles:
             self.env.eval("(watch rules)")
         self._interruptors = {"reforc": reforc, "parelles": parelles, "chunking": chunking, "epmem": epmem}
+        self._smem = (smem, int(smem_finestra or 0), smem_arxiu or "")
         self.reinicia()
 
     def reinicia(self):
@@ -162,6 +167,13 @@ class ControladorCLIPS:
             except clips.CLIPSError:
                 # versio sense aquest mecanisme (p. ex. v1_5 no te REFORC)
                 self.mecanismes[nom] = None
+        smem, finestra, arxiu = self._smem
+        if smem is not None:
+            try:
+                self.env.eval(f'(SEMANTICA::smem-configura {"on" if smem else "off"} {finestra} "{arxiu}")')
+                self.mecanismes["smem"] = smem
+            except clips.CLIPSError:
+                self.mecanismes["smem"] = None   # versio sense memoria semantica
         # el deffacts de l'escenari porta dades del cicle 1: les treiem, les posa el simulador
         self.env.eval("(PYTHON::py-treu-entrades)")
         self.env.eval("(set-current-module DOMINI)")   # els asserts de Python van a DOMINI
@@ -409,6 +421,13 @@ class ControladorCLIPS:
             elif t == "preferencia-reg":
                 if str(f["tipus"]) == "rebuig":
                     r.reg_rebutjats.setdefault(str(f["sector"]), set()).add(str(f["op"]))
+            elif t == "epmem-episodi":
+                r.n_epmem += 1
+            elif t == "smem-resum":
+                r.n_smem += 1
+            elif t == "epmem-consulta":
+                if int(f["cicle"]) == c and str(f["tipus"]) == "query":
+                    r.consultes_epmem[str(f["sector"])] = r.consultes_epmem.get(str(f["sector"]), 0) + 1
             elif t == "fragment-apres":
                 nom = str(f["nom"])
                 if nom not in self._chunks_coneguts:

@@ -27,12 +27,15 @@
 ;   R3     empat forcat a Sector_3         -> el reforç el desfa sense impasse
 ;   R4     empat forcat, epsilon enorme    -> Q no decideix: impasse + chunk RL (valor inicial prior)
 ;   R5     el panell de Sector_3 no arriba -> recompensa -1: el valor del chunk baixa
+; Despres, proves del reg (G1-G4) i de la memoria semantica (S1-S5: consolidacio,
+; consulta semantica en lloc de l'episodica i arxiu dels episodis fora de la finestra).
 ;
 ; Els chunks es busquen per impas-origen i cicle, no pel nom (chunk-N depen de l'ordre).
 ; ============================================================================
 
 (remove "epmem_prova.dat")
 (remove "chunks_prova.dat")
+(remove "smem_arxiu_prova.dat")
 
 (load "soar.clp")
 ; La topologia (sectors, cultius, panells i sensors) ve de ../../ontologia_model.rdf. Aquest
@@ -44,7 +47,8 @@
   (import MEMORIA deffunction ?ALL)
   (import APRENENTATGE deffunction ?ALL)
   (import DELIBERACIO deffunction ?ALL)
-  (import REFORC deffunction ?ALL))
+  (import REFORC deffunction ?ALL)
+  (import SEMANTICA deffunction ?ALL))
 
 (defglobal ?*ok* = 0 ?*ko* = 0)
 
@@ -566,5 +570,61 @@
          (and (eq ?o:cicle 4) (> ?o:dosi (- 100 (if (eq ?o:sector Sector_2) then 65.0 else 80.0)))))))
 (prova "G4 fase final: espera" (any-factp ((?f fase)) (eq ?f:nom espera)))
 
+
+; --- S: memoria semantica per consolidacio --------------------------------------
+; 5 cicles d'operacio normal iguals: cada sector repeteix situacio i operador.
+; minim-casos 3 (per defecte), finestra 2 cicles, arxiu a smem_arxiu_prova.dat.
+(printout t crlf "=== S: memoria semantica (consolidacio i arxiu) ===" crlf)
+(reset)
+(set-current-module PROVA)
+(activa-persistencia "")
+(activa-reforc off)
+(epmem-aprenentatge on)
+(smem-configura on 2 "smem_arxiu_prova.dat")
+
+(deffunction suma-n-resums ()
+  (bind ?t 0)
+  (do-for-all-facts ((?r smem-resum)) TRUE (bind ?t (+ ?t ?r:n)))
+  ?t)
+
+(deffunction cicle-normal (?c)
+  (if (> ?c 1) then (aplica-ordres (- ?c 1)) (nou-cicle))
+  (dades-ciclo ?c 4.0 4.0 4.0)
+  (run)
+  (set-current-module PROVA)
+  TRUE)
+
+(cicle-normal 1)
+(cicle-normal 2)
+(prova "S1 els 3 episodis del cicle 1 estan consolidats"
+       (= 3 (length$ (find-all-facts ((?e epmem-episodi)) (and (eq ?e:cicle 1) (eq ?e:consolidat si))))))
+(prova "S1 la clau de l'episodi no porta el sector"
+       (not (any-factp ((?e epmem-episodi)) (member$ (sym-cat sector= ?e:sector) ?e:clau))))
+(prova "S1 un resum per sector amb n = 1" (and (= 3 (length$ (find-all-facts ((?r smem-resum)) TRUE)))
+                                                (= 3 (suma-n-resums))))
+(prova "S1 amb n < minim es consulta la memoria episodica"
+       (any-factp ((?q epmem-consulta)) (and (eq ?q:sector Sector_2) (eq ?q:cicle 2))))
+
+(cicle-normal 3)
+(cicle-normal 4)
+(prova "S2 Sector_2: amb n >= 3 respon la memoria semantica"
+       (any-factp ((?p preferencia)) (and (eq ?p:sector Sector_2) (eq ?p:cicle 4) (eq ?p:op mantenir-posicio)
+                                          (eq ?p:font AV11-memoria-semantica))))
+(prova "S2 Sector_2: i no es consulta la memoria episodica per a mantenir-posicio"
+       (not (any-factp ((?q epmem-consulta)) (eq ?q:id Q-Sector_2-mantenir-posicio-4))))
+(prova "S2 la preferencia semantica es positiva (sempre ha anat be)"
+       (any-factp ((?p preferencia)) (and (eq ?p:sector Sector_2) (eq ?p:cicle 4)
+                                          (eq ?p:font AV11-memoria-semantica) (> ?p:valor 0))))
+
+(cicle-normal 5)
+(prova "S3 cada episodi valorat compta una vegada (12 = 4 cicles x 3 sectors)" (= 12 (suma-n-resums)))
+(prova "S4 finestra: no queda cap episodi consolidat de cicles <= 3"
+       (not (any-factp ((?e epmem-episodi)) (<= ?e:cicle 3))))
+(prova "S4 finestra: queden els episodis dels cicles 4 i 5" (= 6 (n-episodis)))
+(prova "S5 l'arxiu existeix" (fitxer-existeix "smem_arxiu_prova.dat"))
+(set-current-module DOMINI)
+(load-facts "smem_arxiu_prova.dat")
+(set-current-module PROVA)
+(prova "S5 l'arxiu es pot tornar a carregar: 9 episodis mes (cicles 1-3)" (= 15 (n-episodis)))
 
 (printout t crlf "=== RESUM: " ?*ok* " correctes, " ?*ko* " incorrectes ===" crlf)

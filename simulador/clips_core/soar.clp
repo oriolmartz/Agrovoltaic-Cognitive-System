@@ -35,10 +35,12 @@
 ; 5) RESULTATS / HISTORIC
 ;    operador-seleccionat, ordre-actuador, explicacio, episodi, traca,
 ;    fragment-apres, epmem-episodi (+ epmem-config, epmem-estat,
-;    epmem-consulta, epmem-resultat per gestionar-lo)
-;    Origen: seleccio, aplicacio, explicacio, monitoratge, chunking i MEMORIA.
+;    epmem-consulta, epmem-resultat per gestionar-lo), smem-resum (+ smem-config,
+;    smem-situacio)
+;    Origen: seleccio, aplicacio, explicacio, monitoratge, chunking, MEMORIA i SEMANTICA.
 ;    Persistencia: resultats del cicle; episodi es la memoria de treball del cicle
-;    anterior; fragment-apres i epmem-episodi son memoria a llarg termini (fitxer).
+;    anterior; fragment-apres i epmem-episodi son memoria a llarg termini (fitxer);
+;    smem-resum es memoria semantica (consolidacio dels episodis).
 ;    Modifica: DECISIO, ACCIO i IMPAS.
 ;
 ; A mes, sector, cultiu, llindars-cultiu i panell son coneixement/estat del domini
@@ -453,7 +455,9 @@
   (slot motiu (type STRING) (default ""))         ; criteri de seleccio
   (slot resultat (allowed-symbols pendent correcte fallada) (default pendent))
   (slot valoracio (allowed-symbols pendent bona neutra dolenta) (default pendent))
-  (multislot trets))                              ; descripcio indexable de l'episodi
+  (multislot trets)                               ; descripcio indexable de l'episodi
+  (multislot clau)                                ; situacio canonica (trets ordenats, sense sector)
+  (slot consolidat (allowed-symbols si no) (default no))) ; ja comptat a smem-resum
 
 ; CONTROL | Origen: DELIBERACIO | Persistencia: fins al cicle seguent | Modifica: DELIBERACIO, MEMORIA
 ; Comanda de consulta (equivalent a epmem.command). Una consulta pendent es processa
@@ -488,6 +492,37 @@
   (slot puntuacio (type NUMBER) (default 0))
   (slot normalitzada (type NUMBER) (default 0))    ; cardinalitat / mida del cue
   (slot perfecte (allowed-symbols si no) (default no))) ; tots els trets satisfets
+
+; MEMORIA SEMANTICA PER CONSOLIDACIO (modul SEMANTICA, memory/semantic.clp)
+; =============================================================================
+; Coneixement independent de quan es va aprendre (Laird 2022, sec. 6): per a cada
+; situacio i operador, quantes vegades ha anat be, neutre o malament.
+
+; CONTROL | Origen: usuari | Persistencia: global | Modifica: usuari (smem-configura)
+(deftemplate smem-config
+  (slot actiu (allowed-symbols on off) (default off))
+  (slot minim-casos (type INTEGER) (default 3))   ; per sota, el resum no decideix (es consulta epmem)
+  (slot k (type NUMBER) (default 2))              ; prudencia: valor = pes * (bona - dolenta) / (n + k)
+  (slot finestra (type INTEGER) (default 0))      ; cicles d'episodis consolidats a la MT (0 = tots)
+  (slot arxiu (type STRING) (default "")))        ; on s'arxiven els episodis que surten de la MT
+
+; DERIVAT | Origen: SEMANTICA (proposta) | Persistencia: 1 cicle | Modifica: SEMANTICA
+; Clau de la situacio actual d'un sector, la mateixa que es guarda als episodis.
+(deftemplate smem-situacio
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (multislot clau))
+
+; RESULTAT/HISTORIC | Origen: SEMANTICA (consolidacio) | Persistencia: global | Modifica: SEMANTICA
+(deftemplate smem-resum
+  (slot sector (type SYMBOL))
+  (slot operador (type SYMBOL))
+  (multislot situacio)
+  (slot bona (type INTEGER) (default 0))
+  (slot neutra (type INTEGER) (default 0))
+  (slot dolenta (type INTEGER) (default 0))
+  (slot n (type INTEGER) (default 0))
+  (slot darrer-cicle (type INTEGER) (default 0)))
 
 ; CONEIXEMENT OPERACIONAL INICIAL
 ; La topologia de la planta (sectors, cultius, panells i sensors) NO es duplica
@@ -642,6 +677,17 @@
   (do-for-all-facts ((?r risc)) (and (eq ?r:sector ?s) (eq ?r:cicle ?c))
     (bind ?cue (create$ ?cue (epmem-tret risc (sym-cat ?r:tipus - ?r:nivell)))))
   (create$ ?cue (epmem-tret cobertura (epmem-banda-cobertura (epmem-cobertura ?s ?c)))))
+
+(deffunction epmem-despres (?a ?b)
+  (> (str-compare ?a ?b) 0))
+
+; Clau canonica de la situacio per a la memoria semantica: els mateixos trets del cue,
+; sense el sector (va a part) i ordenats, perque l'ordre dels fets risc no canvii la clau.
+(deffunction epmem-clau-situacio (?s ?c)
+  (bind ?r (create$))
+  (progn$ (?t (epmem-cue-situacio ?s ?c))
+    (if (neq (str-index "sector=" (str-cat ?t)) 1) then (bind ?r (create$ ?r ?t))))
+  (sort epmem-despres ?r))
 
 ; Trets complets d'un episodi: situacio + operador + impasse + resultat + valoracio.
 (deffunction epmem-trets (?s ?c ?op ?imp ?res ?val)
@@ -821,7 +867,8 @@
                          (risc-total (epmem-risc-total ?s ?c))
                          (cobertura (epmem-cobertura ?s ?c))
                          (impas ?imp) (motiu ?mot)
-                         (trets (epmem-trets ?s ?c ?op ?imp pendent pendent))))
+                         (trets (epmem-trets ?s ?c ?op ?imp pendent pendent))
+                         (clau (epmem-clau-situacio ?s ?c))))
   (printout t "[EPMEM] NOU EPISODI #" ?id ": " ?s ", cicle " ?c ", " ?op "." crlf)
   (modify ?st (seguent-id (+ ?id 1)) (brut si)))
 
@@ -1617,6 +1664,8 @@
 ; l'ultima vegada que vaig fer aixo en una situacio com aquesta?". El cue es la
 ; situacio actual del sector (sector, cultiu, riscos, cobertura) i es exigeix que
 ; l'episodi recuperat hagi usat el mateix operador.
+; Si la memoria semantica ja en sap prou (smem-resum amb n >= minim), no es consulta
+; la memoria episodica: ho resol avalua-memoria-semantica.
 (defrule avalua-memoria-consulta
   (declare (auto-focus TRUE))
   (fase (nom avaluacio))
@@ -1624,6 +1673,9 @@
   (epmem-config (aprenentatge on))
   (operador (sector ?s) (cicle ?c) (nom ?op) (estat proposat))
   (not (epmem-consulta (id =(sym-cat Q- ?s - ?op - ?c))))
+  (not (and (smem-config (actiu on) (minim-casos ?mn))
+            (smem-situacio (sector ?s) (cicle ?c) (clau $?k))
+            (smem-resum (sector ?s) (operador ?op) (situacio $?k) (n ?n&:(>= ?n ?mn)))))
   =>
   (assert (epmem-consulta (id (sym-cat Q- ?s - ?op - ?c)) (sector ?s) (cicle ?c)
                           (etiqueta ?op)
@@ -1654,6 +1706,31 @@
                        (valor ?val) (font AV10-memoria)))
   (assert (traca (pas ?c) (fase avaluacio)
                  (missatge (str-cat ?s ": " ?op " " ?val " per memoria episodica (episodi " ?m ")")))))
+
+; Memoria semantica: "que se d'aquest operador en aquesta situacio?". El valor fa servir
+; tota l'experiencia consolidada, no nomes l'ultim episodi:
+;   pes * (bona - dolenta) / (n + k)      (k: amb pocs casos, el valor es petit)
+; Es crea sempre (tambe amb valor 0) perque quedi a la traca quina memoria ha respost.
+(defrule avalua-memoria-semantica
+  (declare (auto-focus TRUE))
+  (fase (nom avaluacio))
+  (cicle (numero ?c))
+  (epmem-config (aprenentatge on) (pes-memoria ?pes))
+  (smem-config (actiu on) (minim-casos ?mn) (k ?k))
+  (operador (sector ?s) (cicle ?c) (nom ?op) (estat proposat))
+  (smem-situacio (sector ?s) (cicle ?c) (clau $?cl))
+  (smem-resum (sector ?s) (operador ?op) (situacio $?cl)
+              (bona ?b) (neutra ?nt) (dolenta ?d) (n ?n&:(>= ?n ?mn)))
+  (not (preferencia (op ?op) (sector ?s) (cicle ?c) (font AV11-memoria-semantica)))
+  =>
+  (bind ?val (/ (round (* 100 ?pes (/ (- ?b ?d) (+ ?n ?k)))) 100))
+  (printout t "[AVALUACIO] " ?s ": " ?op " " ?val " (memoria semantica: " ?b " be, " ?nt
+              " neutre, " ?d " malament en " ?n " casos)." crlf)
+  (assert (preferencia (op ?op) (sector ?s) (cicle ?c) (tipus numerica)
+                       (valor ?val) (font AV11-memoria-semantica)))
+  (assert (traca (pas ?c) (fase avaluacio)
+                 (missatge (str-cat ?s ": " ?op " " ?val " per memoria semantica (" ?b " be, "
+                                    ?d " malament de " ?n ")")))))
 
 ; --- v1_9: AVALUACIO del reg ------------------------------------------------------
 
@@ -2382,6 +2459,118 @@
   (bind ?*fitxer-chunks* ?fitxer)
   (carrega-chunks ?fitxer))
 
+(defmodule SEMANTICA
+  (import DOMINI ?ALL)
+  (import MEMORIA deffunction ?ALL)
+  (import APRENENTATGE deffunction ?ALL)
+  (export deffunction ?ALL))
+
+;  MEMORIA SEMANTICA PER CONSOLIDACIO -------------------------------------------
+; La memoria episodica guarda QUE VA PASSAR i QUAN; aquest modul en treu el que se
+; SAP independentment de quan es va aprendre: per a cada (sector, situacio, operador),
+; quantes vegades ha anat be, neutre o malament (smem-resum).
+;
+; D'on surt cada peca:
+;   - Episodis -> coneixement general: "La consolidacio transforma episodis en
+;     coneixement mes general" i "consolidar experiencies repetides"
+;     (Arquitectures Cognitives INTRO, diap. 51 i 78); "Resums de memoria episodica
+;     i creacio d'abstraccions semantiques" (Arquitectura SOAR, diap. 45).
+;   - Que sigui semantica: es coneixement independent del moment (Laird 2022, sec. 6-7).
+;   - Que la desi una regla: Soar no te aprenentatge automatic de la memoria semantica,
+;     pero l'agent hi pot desar deliberadament (Laird 2022, sec. 6).
+;   - Prudencia (minim-casos i k): "Consolidar episodis en coneixement semantic sense
+;     introduir falsedats" (Arquitectura SOAR, diap. 54 i 57).
+;   - Consulta per patro (Rete) i no recorrent el magatzem (Arquitectura SOAR, diap. 24).
+;   - Finestra i arxiu: decisio NOSTRA. Soar no oblida episodis (Laird 2022, sec. 7);
+;     aqui surten de la memoria de treball pero es conserven al fitxer d'arxiu.
+;
+; Cicle de vida:
+;   proposta    : smem-situacio-actual calcula la clau de la situacio de cada sector;
+;                 la valoracio de l'episodi anterior (MEMORIA) dispara la consolidacio
+;   avaluacio   : DELIBERACIO::avalua-memoria-semantica fa servir el resum si n >= minim;
+;                 si no, es consulta la memoria episodica com abans (avalua-memoria-consulta)
+;   proposta    : smem-arxiva treu de la MT els episodis consolidats fora de la finestra
+
+(deffacts smem-inicial
+  (smem-config))
+
+; Interficie per a l'usuari i el pont Python (com activa-reforc, epmem-aprenentatge).
+(deffunction smem-configura (?actiu ?finestra ?arxiu)
+  (do-for-all-facts ((?k smem-config)) TRUE
+    (modify ?k (actiu ?actiu) (finestra ?finestra) (arxiu ?arxiu)))
+  ?actiu)
+
+; Afegeix un episodi al fitxer d'arxiu, en format de load-facts.
+(deffunction smem-escriu-arxiu (?fitxer ?e)
+  (if (not (open ?fitxer smem-arx "a")) then
+     (printout t "[SMEM] No es pot escriure a " ?fitxer crlf)
+     (return FALSE))
+  (printout smem-arx "(epmem-episodi")
+  (progn$ (?sl (fact-slot-names ?e))
+    (printout smem-arx " (" ?sl " " (text-constant (fact-slot-value ?e ?sl)) ")"))
+  (printout smem-arx ")" crlf)
+  (close smem-arx)
+  TRUE)
+
+; 1. Clau de la situacio actual (els riscos del cicle ja estan elaborats a proposta).
+(defrule smem-situacio-actual
+  (declare (auto-focus TRUE))
+  (smem-config (actiu on))
+  (fase (nom proposta))
+  (cicle (numero ?c))
+  (sector (id ?s))
+  (not (smem-situacio (sector ?s) (cicle ?c)))
+  =>
+  (assert (smem-situacio (sector ?s) (cicle ?c) (clau (epmem-clau-situacio ?s ?c)))))
+
+; 2. CONSOLIDACIO: cada episodi valorat suma una vegada al seu resum.
+(defrule smem-consolida-nou
+  (declare (auto-focus TRUE))
+  (smem-config (actiu on))
+  ?e <- (epmem-episodi (cicle ?ec) (sector ?s) (operador ?op) (valoracio ?v&~pendent)
+                       (consolidat no) (clau $?k&:(> (length$ ?k) 0)))
+  (not (smem-resum (sector ?s) (operador ?op) (situacio $?k)))
+  =>
+  (assert (smem-resum (sector ?s) (operador ?op) (situacio ?k) (n 1) (darrer-cicle ?ec)
+                      (bona (if (eq ?v bona) then 1 else 0))
+                      (neutra (if (eq ?v neutra) then 1 else 0))
+                      (dolenta (if (eq ?v dolenta) then 1 else 0))))
+  (modify ?e (consolidat si)))
+
+(defrule smem-consolida
+  (declare (auto-focus TRUE))
+  (smem-config (actiu on))
+  ?e <- (epmem-episodi (cicle ?ec) (sector ?s) (operador ?op) (valoracio ?v&~pendent)
+                       (consolidat no) (clau $?k&:(> (length$ ?k) 0)))
+  ?r <- (smem-resum (sector ?s) (operador ?op) (situacio $?k)
+                    (bona ?b) (neutra ?nt) (dolenta ?d) (n ?n))
+  =>
+  (modify ?r (n (+ ?n 1)) (darrer-cicle ?ec)
+             (bona (+ ?b (if (eq ?v bona) then 1 else 0)))
+             (neutra (+ ?nt (if (eq ?v neutra) then 1 else 0)))
+             (dolenta (+ ?d (if (eq ?v dolenta) then 1 else 0))))
+  (modify ?e (consolidat si)))
+
+; 3. ARXIU: els episodis ja consolidats i fora de la finestra surten de la memoria de
+;    treball (i, si hi ha fitxer, s'hi afegeixen). El que ensenyaven ja es al resum.
+;    A proposta i no a monitoratge: alla tanca-cicle (auto-focus) pot tancar la fase abans.
+(defrule smem-arxiva
+  (declare (auto-focus TRUE))
+  (smem-config (actiu on) (finestra ?w&:(> ?w 0)) (arxiu ?fx))
+  (fase (nom proposta))
+  (cicle (numero ?c))
+  ?e <- (epmem-episodi (cicle ?ec&:(<= ?ec (- ?c ?w))) (consolidat si))
+  =>
+  (if (neq ?fx "") then (smem-escriu-arxiu ?fx ?e))
+  (retract ?e))
+
+; Que s'ha consolidat (equivalent a epmem-informe).
+(deffunction smem-informe ()
+  (printout t crlf "[SMEM] " (length$ (find-all-facts ((?r smem-resum)) TRUE)) " resums." crlf)
+  (do-for-all-facts ((?r smem-resum)) TRUE
+    (printout t "   " ?r:sector " " ?r:operador " " ?r:situacio ": " ?r:bona " bona, "
+                ?r:neutra " neutra, " ?r:dolenta " dolenta" crlf))
+  TRUE)
 (defmodule MAIN
   (import APRENENTATGE deffunction ?ALL)
   (import MEMORIA deffunction ?ALL))

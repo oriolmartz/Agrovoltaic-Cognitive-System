@@ -90,6 +90,17 @@
     (bind ?cue (create$ ?cue (epmem-tret risc (sym-cat ?r:tipus - ?r:nivell)))))
   (create$ ?cue (epmem-tret cobertura (epmem-banda-cobertura (epmem-cobertura ?s ?c)))))
 
+(deffunction epmem-despres (?a ?b)
+  (> (str-compare ?a ?b) 0))
+
+; Clau canonica de la situacio per a la memoria semantica: els mateixos trets del cue,
+; sense el sector (va a part) i ordenats, perque l'ordre dels fets risc no canvii la clau.
+(deffunction epmem-clau-situacio (?s ?c)
+  (bind ?r (create$))
+  (progn$ (?t (epmem-cue-situacio ?s ?c))
+    (if (neq (str-index "sector=" (str-cat ?t)) 1) then (bind ?r (create$ ?r ?t))))
+  (sort epmem-despres ?r))
+
 ; Trets complets d'un episodi: situacio + operador + impasse + resultat + valoracio.
 (deffunction epmem-trets (?s ?c ?op ?imp ?res ?val)
   (bind ?t (epmem-cue-situacio ?s ?c))
@@ -268,7 +279,8 @@
                          (risc-total (epmem-risc-total ?s ?c))
                          (cobertura (epmem-cobertura ?s ?c))
                          (impas ?imp) (motiu ?mot)
-                         (trets (epmem-trets ?s ?c ?op ?imp pendent pendent))))
+                         (trets (epmem-trets ?s ?c ?op ?imp pendent pendent))
+                         (clau (epmem-clau-situacio ?s ?c))))
   (printout t "[EPMEM] NOU EPISODI #" ?id ": " ?s ", cicle " ?c ", " ?op "." crlf)
   (modify ?st (seguent-id (+ ?id 1)) (brut si)))
 

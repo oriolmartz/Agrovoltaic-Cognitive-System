@@ -35,10 +35,12 @@
 ; 5) RESULTATS / HISTORIC
 ;    operador-seleccionat, ordre-actuador, explicacio, episodi, traca,
 ;    fragment-apres, epmem-episodi (+ epmem-config, epmem-estat,
-;    epmem-consulta, epmem-resultat per gestionar-lo)
-;    Origen: seleccio, aplicacio, explicacio, monitoratge, chunking i MEMORIA.
+;    epmem-consulta, epmem-resultat per gestionar-lo), smem-resum (+ smem-config,
+;    smem-situacio)
+;    Origen: seleccio, aplicacio, explicacio, monitoratge, chunking, MEMORIA i SEMANTICA.
 ;    Persistencia: resultats del cicle; episodi es la memoria de treball del cicle
-;    anterior; fragment-apres i epmem-episodi son memoria a llarg termini (fitxer).
+;    anterior; fragment-apres i epmem-episodi son memoria a llarg termini (fitxer);
+;    smem-resum es memoria semantica (consolidacio dels episodis).
 ;    Modifica: DECISIO, ACCIO i IMPAS.
 ;
 ; A mes, sector, cultiu, llindars-cultiu i panell son coneixement/estat del domini
@@ -453,7 +455,9 @@
   (slot motiu (type STRING) (default ""))         ; criteri de seleccio
   (slot resultat (allowed-symbols pendent correcte fallada) (default pendent))
   (slot valoracio (allowed-symbols pendent bona neutra dolenta) (default pendent))
-  (multislot trets))                              ; descripcio indexable de l'episodi
+  (multislot trets)                               ; descripcio indexable de l'episodi
+  (multislot clau)                                ; situacio canonica (trets ordenats, sense sector)
+  (slot consolidat (allowed-symbols si no) (default no))) ; ja comptat a smem-resum
 
 ; CONTROL | Origen: DELIBERACIO | Persistencia: fins al cicle seguent | Modifica: DELIBERACIO, MEMORIA
 ; Comanda de consulta (equivalent a epmem.command). Una consulta pendent es processa
@@ -488,6 +492,37 @@
   (slot puntuacio (type NUMBER) (default 0))
   (slot normalitzada (type NUMBER) (default 0))    ; cardinalitat / mida del cue
   (slot perfecte (allowed-symbols si no) (default no))) ; tots els trets satisfets
+
+; MEMORIA SEMANTICA PER CONSOLIDACIO (modul SEMANTICA, memory/semantic.clp)
+; =============================================================================
+; Coneixement independent de quan es va aprendre (Laird 2022, sec. 6): per a cada
+; situacio i operador, quantes vegades ha anat be, neutre o malament.
+
+; CONTROL | Origen: usuari | Persistencia: global | Modifica: usuari (smem-configura)
+(deftemplate smem-config
+  (slot actiu (allowed-symbols on off) (default off))
+  (slot minim-casos (type INTEGER) (default 3))   ; per sota, el resum no decideix (es consulta epmem)
+  (slot k (type NUMBER) (default 2))              ; prudencia: valor = pes * (bona - dolenta) / (n + k)
+  (slot finestra (type INTEGER) (default 0))      ; cicles d'episodis consolidats a la MT (0 = tots)
+  (slot arxiu (type STRING) (default "")))        ; on s'arxiven els episodis que surten de la MT
+
+; DERIVAT | Origen: SEMANTICA (proposta) | Persistencia: 1 cicle | Modifica: SEMANTICA
+; Clau de la situacio actual d'un sector, la mateixa que es guarda als episodis.
+(deftemplate smem-situacio
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (multislot clau))
+
+; RESULTAT/HISTORIC | Origen: SEMANTICA (consolidacio) | Persistencia: global | Modifica: SEMANTICA
+(deftemplate smem-resum
+  (slot sector (type SYMBOL))
+  (slot operador (type SYMBOL))
+  (multislot situacio)
+  (slot bona (type INTEGER) (default 0))
+  (slot neutra (type INTEGER) (default 0))
+  (slot dolenta (type INTEGER) (default 0))
+  (slot n (type INTEGER) (default 0))
+  (slot darrer-cicle (type INTEGER) (default 0)))
 
 ; CONEIXEMENT OPERACIONAL INICIAL
 ; La topologia de la planta (sectors, cultius, panells i sensors) NO es duplica

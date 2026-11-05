@@ -116,6 +116,8 @@ class ControladorSOAR:
         self.c = ControladorCLIPS(self.clp, fitxer_ontologia=ontologia_per_clp(cfg),
                                   reforc=cc.get("reforc"), parelles=cc.get("parelles"),
                                   chunking=cc.get("chunking"), epmem=cc.get("epmem"),
+                                  smem=cc.get("smem"), smem_finestra=cc.get("smem_finestra", 0),
+                                  smem_arxiu=cc.get("smem_arxiu", ""),
                                   estrategia=cc.get("estrategia"),
                                   vigila_regles=cc.get("vigila_regles", False),
                                   conserva_sortida=bool(cfg.get("traca_dir")))

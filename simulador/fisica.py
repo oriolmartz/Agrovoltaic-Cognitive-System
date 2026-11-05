@@ -123,3 +123,17 @@ def pas_balanc_hidric(aigua_mm: float, taw: float, et0: float, kc: float, pluja:
     perc = max(0.0, nou - taw)
     etc_real = etc if nou >= 0 else etc + nou
     return max(0.0, min(taw, nou)), perc, etc_real
+
+
+def balanc_hidric_detall(aigua_mm: float, taw: float, et0: float, kc: float, pluja: float,
+                         transm: float, gcr: float = 0.0,
+                         p: float | None = None) -> dict[str, float]:
+    """Calcula el balanc hidric i retorna els resultats amb noms de camp."""
+    aigua_nova, drenatge, et_c = pas_balanc_hidric(
+        aigua_mm, taw, et0, kc, pluja, transm, gcr, p
+    )
+    return {
+        "aigua_mm": aigua_nova,
+        "drenatge_mm": drenatge,
+        "et_c_mm": et_c,
+    }
