@@ -158,8 +158,9 @@ La ratxa que fa mal al seguidor és `wind_gusts_10m` d'Open-Meteo. Es simulen le
 | Angle òptim | seguidor N-S d'un eix, posició solar NOAA, límit ±55° | — |
 | Producció | `kWp · ratio · GHI/1000 · f(angle)`, amb `f = 0,25 + 0,75·cos(angle − òptim)` | `ratio` calibrat amb PVGIS **mes a mes** (tot el 2023): a Ribera de Sió, de 0,93 al juny a 1,31 al gener; a Cantallops, de 0,92 a 1,28 (iteració 25) |
 | Llum al cultiu | `GHI · (1 − GCR·|cos(angle)|)`: panell pla = més ombra (supòsit del CLIPS, `angle-ombra = 0`) | GCR = 0,4 |
-| Temperatura del cultiu | aire + 0,006·llum + 2·(1 − aigua) | — |
-| Aigua al sòl | balanç horari FAO-56: `ETc = ET0·Kc·Ks·(0,3 + 0,7·llum relativa)`, amb Ks (eq. 84) per sota de la RAW; pluja i reg; el que passa de capacitat de camp es perd per percolació | Kc i Zr per cultiu; CC/PM de la fitxa XMS-Cat; p del CLIPS |
+| Temperatura del cultiu | **balanç d'energia de la coberta** (Jackson et al. 1981): `Tc = Ta + ra·(Rn − G − λE)/(ρ·cp)`, amb λE = l'ETc real del balanç hídric (el reg i la falta d'aigua hi compten), Rn, G, ra i vent a 2 m de FAO-56 i correcció d'estabilitat (Choudhury et al. 1986). Validat amb mesures agrovoltaiques (Marrou et al. 2013): sota el panell, ~4–5 °C més fresc de dia i més calent de nit | cap coeficient ajustat a mà; fonts a `dades_reals/FONTS.md`. Abans (fins a la v1_9, `"temperatura": "simple"`): aire + 0,006·llum + 2·(1 − aigua), que donava 3 vegades menys efecte de l'ombra |
+| Calendari de cultiu | fase fenològica, Kc i alçada de cada dia (`fenologia.py`): enciam en 3 plantacions, tomàquet de maig a setembre, vinya d'abril a octubre; la resta, sense cultiu. El simulador informa la fase i la sensibilitat al CLIPS, que hi raona | FAO-56 taules 11 i 12; calendari de Lleida (FONTS.md). `"fenologia": false` = cultiu tot l'any amb el Kc fix |
+| Aigua al sòl | balanç horari FAO-56: `ETc = ET0·Kc·Ks·(0,3 + 0,7·llum relativa)` (Kc del calendari de cultiu), amb Ks (eq. 84) per sota de la RAW; pluja i reg; el que passa de capacitat de camp es perd per percolació | Kc i Zr per cultiu; CC/PM de la fitxa XMS-Cat; p del CLIPS |
 | Reg | dosi neta = la que arriba al sòl; aigua bruta = neta / 0,85 (degoteig); bomba 0,48 kWh/m³; sector de 250 m² | fonts a `dades_reals/FONTS.md` |
 | Demanda | base + pic de tarda (bombes, refrigeració) | 6 + 8 kW per sector |
 
@@ -397,6 +398,21 @@ de Sió, cada mes amb els dies seguits × 4 llavors = 24 blocs; Friedman i Wilco
 - **Escalabilitat:** el temps per cicle creix amb el nombre d'episodis, de 211 ms al gener a 554 ms a l'agost amb la memòria de dos anys. Ve de `epmem-cerca`, que recorre tots els episodis a cada consulta (cost lineal per cicle, quadràtic en el total). Soar ho resol amb un índex invertit per tret (Derbinsky & Laird 2009); aquí queda com a millora per a una versió següent. Amb 42 cicles al dia continua sent molt per sota de l'hora que hi ha entre cicles.
 - **Eficiència del simulador (iteració 27):** abans, el pont Python recorria tots els fets del CLIPS a cada consulta, i amb 15.000 episodis un dia trigava 30 s (el 85 % fora del CLIPS). Ara llegeix només la plantilla que necessita: 5 s/dia, amb **resultats idèntics** columna a columna.
 - **Execucions de més de 2 h:** es fan per trams amb punts de control (tot l'estat de la planta i del CLIPS). `verificacio/prova_punt_control.py` comprova que el resultat és idèntic al d'una sola tirada.
+
+**E21 – model físic del cultiu** (bloc 1: balanç d'energia de la coberta i calendari de cultiu; 48 dies del 2023 a Ribera, 4 per mes; SOAR, seguidor i panell fix amb el model d'abans i el nou):
+
+| Per dia (3 sectors) | SOAR − seguidor, model v1_9 | SOAR − seguidor, model nou |
+|---|---|---|
+| Estrès per calor (h) | −0,04 (p = 0,16, **no significatiu**) | **−0,25 (p = 0,003)** |
+| Calor crítica (h) | −0,08 (p = 0,046) | **−0,23 (p = 0,005)** |
+| Estrès per radiació (h) | −0,73 (p < 0,001) | −0,54 (p < 0,001) |
+| Energia (kWh) | −17,5 (−5,5 %) | −15,5 (−4,9 %) |
+
+- **Amb un model físic correcte, la protecció contra la calor es veu.** Amb la fórmula simple, l'ombra només treia 1,7 °C i SOAR no reduïa l'estrès per calor de manera significativa (E12). Amb el balanç d'energia, l'ombra treu 4–5 °C, com es mesura en instal·lacions reals, i la diferència passa a ser significativa.
+- **L'efecte continua sent petit:** fins i tot el panell fix pla, que fa ombra tot el dia, només treu un 6 % de les hores d'estrès per calor respecte del seguidor. La major part de la calor ve de l'aire. **Això ara és una conclusió amb un model validat, no un efecte de la fórmula.**
+- **El reg refreda:** amb el balanç d'energia, un cultiu ben regat i a l'ombra pot quedar per sota de la temperatura de l'aire (el tomàquet el 20/7/2023: 32 °C amb 35 °C d'aire). Amb el sòl sec, l'enciam i el tomàquet estan uns 7,5 °C més calents al migdia que regats; la vinya, 1,6 °C.
+- **Calendari de cultiu:** fora de temporada no hi ha cultiu i no es compta estrès (abans l'enciam patia calor al juliol encara que no n'hi hagués de plantat). La fase fenològica arriba al CLIPS, que tracta com a alt un risc mitjà de calor o de radiació en les fases sensibles (tomàquet i vinya en floració, enciam formant el cabdell). Casos de prova F01–F08 a E3.
+- **Sensibilitat (E12):** les dues peces del model que no surten de FAO-56 (el panell tapa el cel de nit i la correcció d'estabilitat) es poden apagar a E12.
 
 **E20 – memòria semàntica** (iteració 29; Ribera de Sió, tot el 2023, dies seguits; 2 execucions × 12 mesos = 24 blocs; versió amb la iteració 30):
 

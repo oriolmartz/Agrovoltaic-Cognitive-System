@@ -96,6 +96,87 @@ def temperatura_cultiu(t_aire: float, rad_cultiu: float, aigua_pct: float,
     return t_aire + k_rad * max(rad_cultiu, 0.0) + k_sec * (1 - aigua_pct / 100.0)
 
 
+# ----------------------------------------------------------------------------- balanc d'energia de la coberta
+# Temperatura de la coberta pel balanc d'energia (Jackson et al. 1981):
+#     Rn - G = H + lambda*E,   H = rho*cp*(Tc - Ta)/ra   =>   Tc = Ta + ra*(Rn - G - lambda*E)/(rho*cp)
+# La lambda*E es l'evapotranspiracio real del balanc d'aigua (ETc = ET0*Kc*Ks*ombra), de manera que
+# el reg i l'ombra refreden el cultiu amb el mateix model que fa servir el balanc hidric.
+# Components de FAO-56 (Allen et al. 1998) i de la versio horaria ASCE (Snyder & Eching 2002):
+# radiacio neta (eq. 38-39, amb el factor de nuvolositat de la nit igual al de l'ultima hora de dia),
+# flux de calor del sol (eq. 45-46), resistencia aerodinamica (eq. 4) i vent a 2 m (eq. 47).
+# Correccio d'estabilitat de ra amb el nombre de Richardson (Choudhury, Reginato & Idso 1986).
+
+SIGMA = 5.670e-8           # W m-2 K-4
+RHO_CP = 1.20 * 1013.0     # J m-3 K-1 (aire a ~20 C)
+LAMBDA = 2.45e6            # J kg-1 (calor latent, FAO-56)
+ALBEDO = 0.23              # FAO-56 eq. 38
+GSC = 1367.0               # W m-2, constant solar
+
+
+def pressio_vapor_sat(t: float) -> float:
+    """kPa (FAO-56 eq. 11)."""
+    return 0.6108 * math.exp(17.27 * t / (t + 237.3))
+
+
+def vent_2m(u10: float) -> float:
+    """Vent a 2 m a partir del de 10 m (FAO-56 eq. 47), amb el minim de 0,5 m/s de l'ASCE."""
+    return max(0.5, u10 * 4.87 / math.log(67.8 * 10 - 5.42))
+
+
+def factor_nuvolositat(rs: float, elev_graus: float, altitud_m: float) -> float | None:
+    """f = 1,35 Rs/Rso - 0,35 (FAO-56 eq. 39). Nomes amb el sol prou alt (> 17,2 graus, ASCE);
+    si no, None i es fa servir l'ultim valor de dia."""
+    if elev_graus <= 17.2:
+        return None
+    rso = (0.75 + 2e-5 * altitud_m) * GSC * math.sin(math.radians(elev_graus))   # eq. 37
+    r = min(1.0, max(0.3, rs / rso)) if rso > 0 else 0.5
+    return 1.35 * r - 0.35
+
+
+def radiacio_neta(rs_cultiu: float, t_aire: float, hr: float, f_nuvol: float, vista_cel: float) -> float:
+    """Radiacio neta a la coberta (W/m2). L'ona curta es la que arriba al cultiu; l'ona llarga
+    que es perd cap al cel es redueix en la part del cel que tapa el panell (el panell, a prop
+    de la temperatura de l'aire, torna radiacio cap avall): per aixo de nit el cultiu sota el
+    panell queda mes calent (Marrou et al. 2013)."""
+    ea = pressio_vapor_sat(t_aire) * max(0.0, min(100.0, hr)) / 100.0
+    rnl = SIGMA * (t_aire + 273.15) ** 4 * (0.34 - 0.14 * math.sqrt(ea)) * f_nuvol
+    return (1 - ALBEDO) * max(rs_cultiu, 0.0) - rnl * vista_cel
+
+
+def resistencia_aerodinamica(h: float, u2: float, z: float = 2.0) -> float:
+    """ra (s/m) en condicions neutres (FAO-56 eq. 4): d = 2/3 h, zom = 0,123 h, zoh = 0,1 zom."""
+    h = max(h, 0.05)
+    d, zom = 2 * h / 3, 0.123 * h
+    zoh = 0.1 * zom
+    z = max(z, d + 0.5)       # mesura per sobre de la coberta (vinya alta)
+    return math.log((z - d) / zom) * math.log((z - d) / zoh) / (0.41 ** 2 * u2)
+
+
+def temperatura_coberta(t_aire: float, rn: float, et_mm_h: float, h: float, u2: float,
+                        estabilitat: bool = True) -> float:
+    """Tc pel balanc d'energia, amb G de FAO-56 (eq. 45-46) i ra corregida per estabilitat
+    (estabilitat=False: ra neutra, per a l'analisi de sensibilitat)."""
+    g = 0.1 * rn if rn > 0 else 0.5 * rn
+    le = LAMBDA * max(et_mm_h, 0.0) / 3600.0          # W/m2
+    disp = rn - g - le                                  # energia que escalfa l'aire (H)
+    ra0 = resistencia_aerodinamica(h, u2)
+    ra, dt = ra0, 0.0
+    if not estabilitat:
+        return t_aire + ra0 * disp / RHO_CP
+    for _ in range(20):                                 # Choudhury et al. (1986), punt fix amortit
+        ri = 5 * 9.81 * 2.0 * dt / ((t_aire + 273.15) * u2 ** 2)
+        if ri >= 0:
+            ra = ra0 / (1 + ri) ** 0.75                 # inestable: la convecció baixa ra
+        else:
+            ra = ra0 / (1 + max(ri, -0.5)) ** 2         # estable (nit): ra puja
+        nou = ra * disp / RHO_CP
+        if abs(nou - dt) < 0.01:
+            dt = nou
+            break
+        dt = 0.5 * (dt + nou)
+    return t_aire + dt
+
+
 # ----------------------------------------------------------------------------- aigua
 
 def taw_mm(theta_cc: float, theta_pm: float, zr_m: float) -> float:

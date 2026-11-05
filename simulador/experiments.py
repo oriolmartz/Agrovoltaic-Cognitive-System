@@ -18,6 +18,7 @@ import os
 import pickle
 import time
 
+import numpy as np
 import pandas as pd
 
 import dades
@@ -204,8 +205,12 @@ def _sector_gcr(g):
 VARIACIONS_MODEL = {
     # parametre: (valors, com es posa a l'escenari). El valor del mig es el de config.json.
     "gcr": ([0.2, 0.4, 0.6], _sector_gcr),
-    "k_rad": ([0.003, 0.006, 0.012], lambda v: {"model": {"k_rad": v}}),
-    "k_sec": ([1.0, 2.0, 4.0], lambda v: {"model": {"k_sec": v}}),
+    # model de temperatura de la coberta (balanc d'energia): les dues peces que no surten de FAO-56
+    "vista_cel_panell": ([False, True], lambda v: {"model": {"vista_cel_panell": v}}),
+    "estabilitat": ([False, True], lambda v: {"model": {"estabilitat": v}}),
+    # model simple de la v1_9 (abans del balanc d'energia)
+    "k_rad": ([0.003, 0.006, 0.012], lambda v: {"model": {"temperatura": "simple", "fenologia": False, "k_rad": v}}),
+    "k_sec": ([1.0, 2.0, 4.0], lambda v: {"model": {"temperatura": "simple", "fenologia": False, "k_sec": v}}),
 }
 VARIACIONS_PREVISIO = {
     "previsio_vent_sigma": ([0.15, 0.4, 0.8], lambda v: {"soroll": {"previsio_vent_sigma": v}}),
@@ -846,8 +851,53 @@ def E20(n_execucions=2, part=None, minuts_tram=None):
     return {"resum": resum, "tests": t, "evolucio": evol}
 
 
+MODEL_V19 = {"model": {"temperatura": "simple", "fenologia": False}}
+MODEL_NOU = {"model": {"temperatura": "balanc", "fenologia": True}}
+
+
+def E21(n_dies=48, llavors=(0,)):
+    """Model fisic nou (balanc d'energia de la coberta i calendari de cultiu) contra el de la v1_9.
+
+    Hipotesi: amb una temperatura del cultiu fisicament valida (validada amb Marrou et al. 2013) i
+    amb la fase fenologica, l'ombra i el reg protegeixen de la calor, i SOAR redueix l'estres per
+    calor respecte del seguidor comercial (amb el model simple, E12, no era significatiu).
+    Mateixos dies (4 per mes del 2023, Ribera de Sio) per a totes les configuracions."""
+    lloc = "ribera_2022_2023"
+    cfg = S.carrega_config({"lloc": lloc, "dies": {"des_de": "2023-01-01", "fins_a": "2023-12-31"}})
+    tots = S.selecciona_dies(cfg)
+    rng = np.random.default_rng(21)
+    per_mes = max(1, n_dies // 12)
+    dies = sorted(d for m in range(1, 13)
+                  for d in rng.choice([x for x in tots if int(x[5:7]) == m], size=per_mes, replace=False))
+    configs = {}
+    for nm, mod in (("v19", MODEL_V19), ("nou", MODEL_NOU)):
+        for ct in ("soar", "seguidor", "fix"):
+            configs[f"{nm}|{ct}"] = S._fusiona({"lloc": lloc, "controlador": {"tipus": ct}}, mod)
+    df = executa(configs, dies, llavors, experiment=NOM_EXP[0])
+    r = analitza(df, ["energia_kwh", "h_estres_calor", "h_calor_critica", "h_estres_rad", "h_estres_aigua",
+                      "aigua_reg_m3", "exposicions", "moviment_graus"], "E21_model_fisic")
+    # SOAR - seguidor dins de cada model (la pregunta de l'experiment)
+    d = r["per_dia"]
+    d["model"] = d["etiqueta"].str.split("|").str[0]
+    d["ctrl"] = d["etiqueta"].str.split("|").str[1]
+    files = []
+    for nm, g in d.groupby("model"):
+        w = g.pivot_table(index=["dia", "llavor"], columns="ctrl",
+                          values=["energia_kwh", "h_estres_calor", "h_calor_critica", "h_estres_rad"])
+        for m in ("energia_kwh", "h_estres_calor", "h_calor_critica", "h_estres_rad"):
+            x, y = w[(m, "soar")], w[(m, "seguidor")]
+            p = st.stats.wilcoxon(x, y).pvalue if (x != y).any() else 1.0
+            files.append({"model": nm, "metrica": m, "soar": x.mean(), "seguidor": y.mean(),
+                          "soar-seguidor": (x - y).mean(), "p (Wilcoxon)": p})
+    t = pd.DataFrame(files).round(4)
+    t.to_csv(os.path.join(carpeta("E21_model_fisic"), "E21_soar_vs_seguidor.csv"), index=False)
+    r["soar_vs_seguidor"] = t
+    print(t.to_string(index=False))
+    return r
+
+
 EXPERIMENTS = {"E4": E4, "E5": E5, "E6": E6, "E7": E7, "E8": E8, "E9": E9, "E10": E10, "E11": E11,
-               "E12": E12, "E13": E13, "E14": E14, "E15": E15, "E16": E16, "E20": E20}
+               "E12": E12, "E13": E13, "E14": E14, "E15": E15, "E16": E16, "E20": E20, "E21": E21}
 
 
 def main():

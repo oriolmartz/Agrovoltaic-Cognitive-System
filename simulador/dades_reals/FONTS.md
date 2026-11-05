@@ -80,3 +80,47 @@ Supòsits nostres, sense font, que s'han de dir a l'informe:
 - Els dies sense dades de l'estació (Cantallops 2022) es fan servir igualment: l'aigua del sòl la calcula el balanç hídric del simulador.
 - **Calibració de la producció (iteració 25):** el factor de PVGIS es calcula **mes a mes** amb tot el 2023 (PVGIS i Open-Meteo d'aquell any), i cada dia fa servir el del seu mes, sigui del 2022 o del 2023. Els llocs `ribera` i `cantallops` es calibren amb les dades dels llocs de 2022–2023, que coincideixen amb les seves al període comú.
 - Cal citar l'ISMN i la xarxa XMS-CAT (condicions d'ús de l'ISMN).
+
+## Model físic del cultiu (bloc 1, 05/11/2026)
+
+### Temperatura de la coberta: balanç d'energia (`fisica.temperatura_coberta`)
+
+`Tc = Ta + ra·(Rn − G − λE)/(ρ·cp)`. Totes les peces surten de les fonts següents; el model **no té cap coeficient ajustat a mà**:
+
+| Peça | Font | Què se n'agafa |
+|---|---|---|
+| Forma del balanç i relació Tc − Ta | Jackson, R.D., Idso, S.B., Reginato, R.J. & Pinter, P.J. (1981). Canopy temperature as a crop water stress indicator. *Water Resources Research* 17, 1133–1138 | La coberta s'escalfa per sobre de l'aire amb l'energia que no es fa servir per transpirar |
+| λE (transpiració) | FAO-56 (Allen, Pereira, Raes & Smith 1998), *Crop evapotranspiration*, FAO Irrigation and Drainage Paper 56 | ETc = ET0·Kc·Ks del mateix balanç hídric del simulador: el reg i la falta d'aigua canvien la temperatura del cultiu |
+| Radiació neta, G, ra, vent a 2 m | FAO-56, eq. 4, 11, 37–39, 45–47 | albedo 0,23; ona llarga amb el factor de núvols; G = 0,1·Rn de dia i 0,5·Rn de nit; d = 2/3·h, zom = 0,123·h, zoh = 0,1·zom |
+| Versió horària | Snyder, R.L. & Eching, S. (2002, rev. 2008). *Penman-Monteith (hourly) reference evapotranspiration equations*. UC Davis / California DWR | el factor de núvols de nit és el de l'última hora amb el sol a més de 17,2°; vent mínim de 0,5 m/s |
+| Estabilitat de l'aire | Choudhury, B.J., Reginato, R.J. & Idso, S.B. (1986). An analysis of infrared temperature observations over wheat and calculation of latent heat flux. *Agricultural and Forest Meteorology* 37, 75–88 | ra/(1+Ri)^0,75 amb aire inestable i ra/(1+Ri)^2 amb aire estable |
+| Humitat relativa i vent mitjà | Open-Meteo (ja als fitxers) | dèficit de pressió de vapor i resistència aerodinàmica |
+
+**Suposició pròpia:** sota el panell, l'ona llarga que el cultiu perd cap al cel es multiplica per la fracció de cel que es veu (la mateixa transmissió del panell). El panell és a prop de la temperatura de l'aire i torna radiació cap avall.
+
+**Validació** (`verificacio/v_temperatura_coberta.py`, tot el 2023 a Ribera, comparat amb Marrou, H. et al. (2013). Microclimate under agrivoltaic systems: Is crop growth rate affected in the partial shade of solar panels? *Agricultural and Forest Meteorology* 177, 117–132):
+
+| | Model (enciam / tomàquet / vinya) | Marrou et al. 2013 (mesurat) |
+|---|---|---|
+| Sota el panell − a ple sol, migdia | −4,5 / −4,9 / −1,4 °C | −5 a −5,7 °C (enciam, cogombre), −3 °C (blat) |
+| Sota el panell − a ple sol, nit (21–01 h) | +5,8 / +3,3 / +0,6 °C | fins a +4,3 °C (enciam), +2 °C (blat) |
+| Fórmula d'abans (0,006·llum), migdia | −1,7 °C per a tots | — |
+
+La fórmula anterior donava unes tres vegades menys efecte de l'ombra que el mesurat. La vinya en surt poc afectada perquè és alta i ben ventilada (ra petita).
+
+### Calendari de cultiu i fase fenològica (`fenologia.py`)
+
+| Cultiu | Calendari | Font |
+|---|---|---|
+| Enciam | 3 plantacions seguides: 1/2 (140 dies), 21/6 (75 dies), 4/9 (105 dies); sense cultiu del 18/12 al 31/1 | Durades: FAO-56, taula 11 (files mediterrànies de febrer, abril i novembre-gener). Època: horta de Lleida, "sempre menys el desembre i el gener" (Paeria, *L'hort a la tardor*) |
+| Tomàquet | Trasplantament l'1/5, 145 dies (fins al 22/9) | FAO-56, taula 11 (abril-maig, Mediterrània) |
+| Vinya | Brotada l'1/4, 210 dies; repòs del 28/10 al 31/3 | FAO-56, taula 11 (vi, latituds mitjanes, abril). Floració a finals de maig - mitjan juny, verol a finals de juliol i verema cap a mitjan setembre: unes dues setmanes abans que a Ribera del Duero (Ramos, Jones & Yuste: floració 16/6, verol 12/8 de mitjana; Universitat de Lleida). A Raimat (Costers del Segre), el 2022 la verema del chardonnay va començar el 29/7 (Nació Digital, 2/8/2022) |
+| Kc i alçada | Corba de FAO-56 (fig. 25) amb els Kc i les alçades màximes de la taula 12. Sense cultiu, Kc = 0,30 (evaporació del sòl) | FAO-56 |
+
+| Fase de més sensibilitat | Per què | Font |
+|---|---|---|
+| Tomàquet en floració | el quallat falla amb calor moderada continuada (32/26 °C dia/nit) | Sato, S., Peet, M.M. & Thomas, J.F. (2000). *Plant, Cell and Environment* 23, 719–726 |
+| Enciam formant el cabdell i a prop de la collita | la calor fa que s'espigui i amargui | criteri agronòmic general (fitxes de cultiu) |
+| Vinya en floració | calor i falta d'aigua redueixen el quallat; la resta del cicle, sensibilitat baixa (reg deficitari controlat, ja suposat a la base de coneixement, AWRI) | — |
+
+**Limitacions:** les dates són fixes cada any (no depenen dels graus-dia); la profunditat d'arrels és constant; l'enciam es torna a plantar el mateix dia que es cull.

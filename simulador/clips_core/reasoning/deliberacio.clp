@@ -269,7 +269,7 @@
   (fase (nom elaboracio))
   (cicle (numero ?c))
   (sector (id ?s) (cultiu ?cu))
-  (cultiu (id ?cu) (tipus ?tc))
+  (cultiu (id ?cu) (tipus ?tc) (fase ~repos))     ; sense cultiu a la parcel·la no hi ha res a protegir
   (llindars-cultiu (tipus ?tc) (temp-optima-max ?opt) (temp-absoluta-max ?abs))
   (observacio (sector ?s) (cicle ?c) (temperatura-cultiu ?t&:(numberp ?t)))
   (not (risc (sector ?s) (cicle ?c) (tipus temperatura)))
@@ -287,7 +287,7 @@
   (fase (nom elaboracio))
   (cicle (numero ?c))
   (sector (id ?s) (cultiu ?cu))
-  (cultiu (id ?cu) (tipus ?tc))
+  (cultiu (id ?cu) (tipus ?tc) (fase ~repos))     ; sense cultiu a la parcel·la no hi ha res a protegir
   (llindars-cultiu (tipus ?tc) (fraccio-esgotament-p ?p))
   (observacio (sector ?s) (cicle ?c) (humitat-sol ?h&:(numberp ?h)))
   (not (risc (sector ?s) (cicle ?c) (tipus estres-hidric)))
@@ -305,7 +305,7 @@
   (fase (nom elaboracio))
   (cicle (numero ?c))
   (sector (id ?s) (cultiu ?cu))
-  (cultiu (id ?cu) (tipus ?tc))
+  (cultiu (id ?cu) (tipus ?tc) (fase ~repos))     ; sense cultiu a la parcel·la no hi ha res a protegir
   (llindars-cultiu (tipus ?tc) (radiacio-optima-max ?opt) (radiacio-estres ?est))
   (observacio (sector ?s) (cicle ?c) (radiacio ?r&:(numberp ?r)))
   (not (risc (sector ?s) (cicle ?c) (tipus exces-radiacio)))
@@ -317,6 +317,23 @@
     (assert (risc (sector ?s) (cicle ?c) (tipus exces-radiacio) (nivell ?n) (font E4-radiacio)))
     (assert (traca (pas ?c) (fase elaboracio)
                    (missatge (str-cat ?s ": radiacio " ?r " W/m2, risc de radiacio " ?n))))))
+
+; La fase fenologica fa el cultiu mes o menys sensible (p. ex. el tomaquet a la floracio: el
+; quallat falla amb calor moderada, Sato et al. 2000). Si el calendari de cultiu informa una fase
+; de sensibilitat alta, un risc de temperatura o de radiacio mitja es tracta com a alt.
+; Nomes amb la fase coneguda: sense calendari (fase desconeguda) no canvia res.
+(defrule elabora-risc-per-sensibilitat
+  (declare (auto-focus TRUE))
+  (fase (nom elaboracio))
+  (cicle (numero ?c))
+  (sector (id ?s) (cultiu ?cu))
+  (cultiu (id ?cu) (tipus ?tc) (fase ?fs&~desconeguda&~repos) (sensibilitat alt|critic))
+  ?r <- (risc (sector ?s) (cicle ?c) (tipus ?t&temperatura|exces-radiacio) (nivell mitja))
+  =>
+  (printout t "[ELABORACIO] " ?s ": " ?tc " en " ?fs " (sensibilitat alta). El risc de " ?t " passa de mitja a alt." crlf)
+  (modify ?r (nivell alt) (font E6-sensibilitat))
+  (assert (traca (pas ?c) (fase elaboracio)
+                 (missatge (str-cat ?s ": " ?tc " en " ?fs ", risc de " ?t " alt per sensibilitat")))))
 
 ; molta llum i molta calor alhora fan mal de veritat al cultiu
 (defrule elabora-radiacio-amb-calor
@@ -358,7 +375,7 @@
   (fase (nom elaboracio))
   (cicle (numero ?c))
   (sector (id ?s) (cultiu ?cu))
-  (cultiu (id ?cu) (tipus ?tc))
+  (cultiu (id ?cu) (tipus ?tc) (fase ~repos))     ; sense cultiu a la parcel·la no hi ha res a protegir
   (llindars-cultiu (tipus ?tc) (fraccio-esgotament-p ?p))
   (reg-config (anticipacio ?an))
   (observacio (sector ?s) (cicle ?c) (humitat-sol ?h&:(numberp ?h)))

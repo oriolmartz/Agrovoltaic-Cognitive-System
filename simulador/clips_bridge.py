@@ -297,6 +297,17 @@ class ControladorCLIPS:
         existents = {t.name for t in self.env.templates()}
         assert "observacio" in existents, "no es troben les plantilles de DOMINI"
         self.te_reg = "ordre-reg" in existents          # v1_9: el sistema tambe decideix el reg
+        # fase fenologica i sensibilitat del cultiu (dades del calendari de cultiu del simulador)
+        self.te_fase = "cultiu" in existents and any(
+            sl.name == "fase" for sl in self.env.find_template("cultiu").slots)
+        if self.te_fase:
+            self.env.build(
+                "(deffunction PYTHON::py-cultiu (?s ?fase ?sens)"
+                "  (do-for-fact ((?x sector)) (eq ?x:id ?s)"
+                "    (do-for-fact ((?k cultiu)) (eq ?k:id ?x:cultiu)"
+                "      (if (or (neq ?k:fase ?fase) (neq ?k:sensibilitat ?sens))"
+                "       then (modify ?k (fase ?fase) (sensibilitat ?sens)))))"
+                "  TRUE)")
         cos = "".join(f"(do-for-all-facts ((?f {t})) (<= ?f:cicle ?limit) (retract ?f))"
                       for t in FETS_DE_CICLE if t in existents)
         self.env.build(
@@ -347,6 +358,11 @@ class ControladorCLIPS:
                 f"(energia (sector {sector}) (cicle {c})"
                 f" (produccio-actual {_sym(energia['produccio'])})"
                 f" (demanda {_sym(energia['demanda'])}))")
+
+    def escriu_cultiu(self, sector: str, fase: str, sensibilitat: str):
+        """Fase fenologica i sensibilitat del cultiu del sector (calendari de cultiu)."""
+        if self.te_fase:
+            self.env.eval(f"(PYTHON::py-cultiu {sector} {fase} {sensibilitat})")
 
     def escriu_moment(self, c: int, hora: int):
         """Hora local del cicle (nomes les versions amb reg la fan servir)."""

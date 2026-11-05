@@ -47,11 +47,11 @@ PRED_BASE = {"radiacio": 100.0, "temperatura": 20.0, "vent": 3.0, "pluja": 0.0}
 ABS = "absent"   # marca d'una lectura que no arriba
 
 
-def cas(id, descripcio, sector, obs=None, pred=None, panell=None, hora=12, **esperat):
+def cas(id, descripcio, sector, obs=None, pred=None, panell=None, hora=12, cultiu=None, **esperat):
     """esperat: risc_<tipus>=nivell|None, accio=, accio_no=, candidat=, no_candidat=, rebutjat=,
-    reg=, reg_no=, dosi= (v1_9)"""
+    reg=, reg_no=, dosi= (v1_9). cultiu=(fase, sensibilitat): fase fenologica del sector."""
     return {"id": id, "descripcio": descripcio, "sector": sector, "obs": obs or {}, "pred": pred or {},
-            "panell": panell or {}, "hora": hora, "esperat": esperat}
+            "panell": panell or {}, "hora": hora, "cultiu": cultiu, "esperat": esperat}
 
 
 CASOS = [
@@ -171,6 +171,25 @@ CASOS = [
     cas("G17", "enciam 23,4 % (alt) i 30 mm previstos: no es rega", S2, {"humitat-sol": 23.4}, {"pluja": 30.0},
         reg="no-regar"),
     cas("G18", "sense lectura d'humitat: no es rega", S2, {"humitat-sol": ABS}, hora=7, reg="no-regar"),
+
+    # ------------------------------------------------------------------ fase fenologica (calendari de cultiu)
+    cas("F01", "tomaquet en floracio (sensibilitat alta) a 29 C: el risc mitja passa a alt", S1,
+        {"temperatura-cultiu": 29.0}, cultiu=("floracio", "alt"), risc_temperatura="alt"),
+    cas("F02", "tomaquet en fructificacio (sensibilitat mitja) a 29 C: es queda mitja", S1,
+        {"temperatura-cultiu": 29.0}, cultiu=("fructificacio", "mitja"), risc_temperatura="mitja"),
+    cas("F03", "tomaquet en floracio a 33 C: ja era alt, no passa a critic", S1,
+        {"temperatura-cultiu": 33.0}, cultiu=("floracio", "alt"), risc_temperatura="alt"),
+    cas("F04", "tomaquet en floracio amb 400 W/m2: radiacio mitja passa a alta", S1,
+        {"radiacio": 400.0}, cultiu=("floracio", "alt"), risc_exces_radiacio="alt"),
+    cas("F05", "tomaquet sense cultiu (repos) a 36 C: cap risc del cultiu ni ombra", S1,
+        {"temperatura-cultiu": 36.0, "radiacio": 600.0}, cultiu=("repos", "baix"), risc_temperatura=None,
+        risc_exces_radiacio=None, no_candidat="orientar-ombra"),
+    cas("F06", "tomaquet sense cultiu (repos) amb el sol sec: no hi ha estres ni es rega", S1,
+        {"humitat-sol": 30.0}, cultiu=("repos", "baix"), hora=7, risc_estres_hidric=None, reg="no-regar"),
+    cas("F07", "vinya en floracio (alta) amb 66 % a les 7 h: s'anticipa el reg", S3,
+        {"humitat-sol": 66.0}, cultiu=("floracio", "alt"), hora=7, reg_no="no-regar"),
+    cas("F08", "vinya en fructificacio (baixa) amb 66 % a les 7 h: reg deficitari, no s'anticipa", S3,
+        {"humitat-sol": 66.0}, cultiu=("fructificacio", "baix"), hora=7, reg="no-regar"),
 ]
 
 
@@ -193,6 +212,11 @@ def executa_cas(clp: str, c: dict) -> dict:
             ctrl.escriu_sensor(s, tp, True, "valida" if obs.get(tp) is not None else "absent", 1)
         ctrl.afegeix_entrades(1, s, obs, pred, {"produccio": 10.0, "demanda": 12.0})
     ctrl.escriu_moment(1, c["hora"])
+    if c.get("cultiu"):
+        if not ctrl.te_fase:
+            del ctrl
+            return None                  # versio sense fase fenologica: el cas no s'aplica
+        ctrl.escriu_cultiu(c["sector"], *c["cultiu"])
     r = ctrl.executa_cicle()
     s = c["sector"]
     riscos = dict(r.riscos.get(s, []))

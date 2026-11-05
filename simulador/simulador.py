@@ -27,6 +27,7 @@ import numpy as np
 import pandas as pd
 
 import dades
+import fenologia
 import fisica
 from clips_bridge import SECTORS, SENSORS, ControladorCLIPS
 from ontology_loader import carrega_model
@@ -103,6 +104,7 @@ class Entrada:
     panells: dict       # id -> {angle, angle-optim-produccio, disponible, estat-mecanic}
     sensors: dict       # sector -> {sensor: True si la lectura ha arribat}
     hora: int = 12      # hora local del cicle
+    cultius: dict | None = None   # sector -> (fase, sensibilitat) si hi ha calendari de cultiu
 
 
 class ControladorSOAR:
@@ -143,6 +145,9 @@ class ControladorSOAR:
                 c.escriu_sensor(s, tp, operatiu=True, qualitat="valida" if ok else "absent", c=n)
             c.afegeix_entrades(n, s, e.obs[s], e.pred.get(s), e.energia[s])
         c.escriu_moment(n, e.hora)
+        if e.cultius:
+            for s, (fase, sens) in e.cultius.items():
+                c.escriu_cultiu(s, fase, sens)
         t0 = time.perf_counter()
         r = c.executa_cicle()
         ms = 1000 * (time.perf_counter() - t0)
@@ -296,8 +301,26 @@ class Simulacio:
         self.ultima = None                                          # l'hora anterior (el que veuen els sensors)
         self.cicle = 1
         self._acc = {s: {"net": 0.0, "brut": 0.0, "kwh": 0.0, "perc": 0.0} for s in SECTORS}
+        self._f_nuvol = 0.6       # factor de nuvolositat de la nit (ASCE: valor inicial 0,6)
 
-    ESTAT = ("angle", "aigua_mm", "ultima", "cicle", "_acc", "_ultim_mode_reg")
+    ESTAT = ("angle", "aigua_mm", "ultima", "cicle", "_acc", "_ultim_mode_reg", "_f_nuvol")
+
+    def _model(self) -> dict:
+        """Opcions del model fisic. 'temperatura': 'balanc' (balanc d'energia de la coberta) o
+        'simple' (aire + k_rad*llum + k_sec*sec, versions fins a la v1_9). 'fenologia': calendari
+        de cultiu (fase, Kc i alcada) o, si es fals, cultiu tot l'any amb el Kc del config."""
+        mod = self.cfg.get("model", {})
+        return {"temperatura": mod.get("temperatura", "simple"), "fenologia": bool(mod.get("fenologia", False)),
+                "k_rad": mod.get("k_rad", 0.006), "k_sec": mod.get("k_sec", 2.0),
+                # sensibilitat del balanc d'energia (E12): el panell tapa el cel (suposicio propia)
+                # i la correccio d'estabilitat de ra (Choudhury et al. 1986)
+                "vista_cel_panell": bool(mod.get("vista_cel_panell", True)),
+                "estabilitat": bool(mod.get("estabilitat", True))}
+
+    def fenologia(self, s, t) -> fenologia.EstatCultiu | None:
+        if not self._model()["fenologia"]:
+            return None
+        return fenologia.estat(self.ll[s]["cultiu"], t.date() if hasattr(t, "date") else t)
 
     def desa_estat(self) -> dict:
         """Estat de la planta (per continuar una execucio llarga en un altre proces)."""
@@ -310,9 +333,13 @@ class Simulacio:
     def _fila(self, t: pd.Timestamp) -> dict:
         m = self.cfg["modificadors"]
         f = self.meteo.loc[t]
+        hr = f.get("hr", float("nan"))
+        um = f.get("vent_mitja", float("nan"))
         return {"temp": float(f["temp"]) + m["temp_delta"], "vent": float(f["vent"]) * m["vent_factor"],
                 "ghi": max(0.0, float(f["ghi"]) * m["rad_factor"]), "pluja": float(f["pluja"]) * m["pluja_factor"],
-                "et0": float(f["et0"]), "aigua_xms": float(f["aigua_pct"]) if not math.isnan(f["aigua_pct"]) else None}
+                "et0": float(f["et0"]), "aigua_xms": float(f["aigua_pct"]) if not math.isnan(f["aigua_pct"]) else None,
+                "hr": 60.0 if math.isnan(hr) else float(hr),
+                "vent_mitja": (float(f["vent"]) / 1.5 if math.isnan(um) else float(um)) * m["vent_factor"]}
 
     def _aigua_pct(self, s, fila=None):
         if self.cfg["humitat"]["mode"] == "mesurada" and fila is not None and fila["aigua_xms"] is not None:
@@ -331,8 +358,16 @@ class Simulacio:
         opt = fisica.angle_seguiment(elev, az)
         out = {"angle_optim": opt, "sectors": {}}
         hcfg = self.cfg["humitat"]
+        mod = self._model()
+        if mod["temperatura"] == "balanc":
+            f = fisica.factor_nuvolositat(fila["ghi"], elev, self.lloc.altitud)
+            if f is not None:
+                self._f_nuvol = f
+            u2 = fisica.vent_2m(fila["vent_mitja"])
         for s in SECTORS:
             sc = self.cfg["sectors"][s]
+            fen = self.fenologia(s, t)
+            kc = fen.kc if fen else sc["kc"]
             a = self._angle_sector(s)
             tau = fisica.transmissio(a, sc["gcr"])
             rad_c = fila["ghi"] * tau
@@ -340,16 +375,24 @@ class Simulacio:
             p = fisica.produccio_kw(fila["ghi"], a, opt, sc["kwp"], ratio)
             p_opt = fisica.produccio_kw(fila["ghi"], opt, opt, sc["kwp"], ratio)
             aigua_abans = self._aigua_pct(s, fila)
-            mod = self.cfg.get("model", {})
-            t_c = fisica.temperatura_cultiu(fila["temp"], rad_c, aigua_abans,
-                                            k_rad=mod.get("k_rad", 0.006), k_sec=mod.get("k_sec", 2.0))
+            etc = None
             if hcfg["mode"] == "balanc":
                 p_cultiu = self.ll[s]["fraccio-esgotament-p"] if hcfg.get("ks", True) else None
-                self.aigua_mm[s], perc, _ = fisica.pas_balanc_hidric(
-                    self.aigua_mm[s], self.taw[s], fila["et0"], sc["kc"], fila["pluja"], tau, sc["gcr"], p_cultiu)
+                self.aigua_mm[s], perc, etc = fisica.pas_balanc_hidric(
+                    self.aigua_mm[s], self.taw[s], fila["et0"], kc, fila["pluja"], tau, sc["gcr"], p_cultiu)
                 self._acc[s]["perc"] += perc
+            if mod["temperatura"] == "balanc":
+                if etc is None:     # humitat mesurada: sense balanc, ET potencial amb l'ombra
+                    etc = fila["et0"] * kc * (0.3 + 0.7 * tau)
+                h = fen.h if fen else fenologia.CULTIUS[self.ll[s]["cultiu"]]["h_max"]
+                rn = fisica.radiacio_neta(rad_c, fila["temp"], fila["hr"], self._f_nuvol,
+                                          tau if mod["vista_cel_panell"] else 1.0)
+                t_c = fisica.temperatura_coberta(fila["temp"], rn, etc, h, u2, mod["estabilitat"])
+            else:
+                t_c = fisica.temperatura_cultiu(fila["temp"], rad_c, aigua_abans, k_rad=mod["k_rad"], k_sec=mod["k_sec"])
             out["sectors"][s] = {"angle": a, "rad_cultiu": rad_c, "t_cultiu": t_c, "P_kw": p,
-                                 "P_opt_kw": p_opt, "aigua_pct": self._aigua_pct(s, fila)}
+                                 "P_opt_kw": p_opt, "aigua_pct": self._aigua_pct(s, fila),
+                                 "etc_mm": etc, "fen": fen}
         return out
 
     # ------------------------------------------------------------------ reg
@@ -457,7 +500,13 @@ class Simulacio:
                 disp, mec = "no", "avariat"
             panells[pid] = {"angle": round(self.angle[pid], 2), "angle-optim-produccio": round(opt_ara, 1),
                             "disponible": disp, "estat-mecanic": mec}
-        return Entrada(self.cicle, obs, pred, ene, panells, sens, hora=t.hour)
+        cult = None
+        if self._model()["fenologia"]:
+            cult = {}
+            for s in SECTORS:
+                e = self.fenologia(s, t)
+                cult[s] = (e.fase, e.sensibilitat)
+        return Entrada(self.cicle, obs, pred, ene, panells, sens, hora=t.hour, cultius=cult)
 
     # ------------------------------------------------------------------ actuadors
     def _panell_avariat(self, pid):
@@ -560,6 +609,8 @@ class Simulacio:
             pan = next(p for p in self.pan0.values() if p["sector"] == s)
             ll = self.ll[s]
             fs = fis["sectors"][s]
+            fen = fs.get("fen")
+            actiu = fen.actiu if fen else True
             d = dec[s]
             estowat = abs(fs["angle"] - pan["angle-seguretat"]) <= pan["tolerancia-angle"]
             acc = self._acc[s]
@@ -576,10 +627,14 @@ class Simulacio:
                 "sensors_absents": ",".join(k for k, v in ent.sensors[s].items() if not v),
                 "P_kw": fs["P_kw"], "P_opt_kw": fs["P_opt_kw"], "demanda_kw": ent.energia[s]["demanda"],
                 "rad_cultiu": fs["rad_cultiu"], "t_cultiu": fs["t_cultiu"], "aigua_pct": fs["aigua_pct"],
-                "estres_rad": fs["rad_cultiu"] > ll["radiacio-estres"],
-                "estres_calor": fs["t_cultiu"] > ll["temp-optima-max"],
-                "calor_critica": fs["t_cultiu"] > ll["temp-absoluta-max"],
-                "estres_aigua": fs["aigua_pct"] < 100 * (1 - ll["fraccio-esgotament-p"]),
+                # l'estres nomes compta quan hi ha cultiu a la parcel·la (calendari de cultiu)
+                "cultiu_actiu": actiu, "fase": fen.fase if fen else "",
+                "sensibilitat": fen.sensibilitat if fen else "", "kc": fen.kc if fen else self.cfg["sectors"][s]["kc"],
+                "etc_mm": fs.get("etc_mm"),
+                "estres_rad": actiu and fs["rad_cultiu"] > ll["radiacio-estres"],
+                "estres_calor": actiu and fs["t_cultiu"] > ll["temp-optima-max"],
+                "calor_critica": actiu and fs["t_cultiu"] > ll["temp-absoluta-max"],
+                "estres_aigua": actiu and fs["aigua_pct"] < 100 * (1 - ll["fraccio-esgotament-p"]),
                 "violacio_seguretat": (fila["vent"] >= pan["vent-maxim"]) and not estowat,
                 "exposicio_vent": (fila["vent"] >= pan["vent-avis"]) and not estowat,
                 "riscos": d["riscos"], "impas": d["impas"], "us_chunk": d["us_chunk"], "us_rl": d["us_rl"],
