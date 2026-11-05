@@ -7,18 +7,11 @@
 [ELABORACIO] El risc mecanic de Sector_1 activa l'objectiu Obj_Seguretat.
 [ELABORACIO -> PROPOSTA]
 [PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
-[PROPOSTA] Sector_3: orientar-produccio (30.0 graus).
 [PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
-[PROPOSTA] Sector_2: orientar-produccio (30.0 graus).
 [PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
-[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
 [PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
 [PROPOSTA -> AVALUACIO]
-[AVALUACIO] Sector_1: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
 [AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
-[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
-[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
-[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
 [AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
 [AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
 [AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
@@ -29,7 +22,6 @@
 [AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
 [AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
 [AVALUACIO -> SELECCIO]
-[SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
 [SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
 [SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
 [SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
@@ -47,20 +39,20 @@
    Accio:      posicio-seguretat a 0.0 graus
    Riscos:     mecanic=critic
    Candidats:  posicio-seguretat(0)
-   Descartats: mantenir-posicio orientar-produccio
+   Descartats: mantenir-posicio
    Criteri:    unica opcio que compleix les restriccions dures
 
 [EXPLICACIO] Sector_2, cicle 1
    Accio:      mantenir-posicio a 30.0 graus
    Riscos:     cap
-   Candidats:  mantenir-posicio(4) orientar-produccio(3)
+   Candidats:  mantenir-posicio(4)
    Descartats: cap
    Criteri:    maxima valoracio (4 punts)
 
 [EXPLICACIO] Sector_3, cicle 1
    Accio:      mantenir-posicio a 30.0 graus
    Riscos:     cap
-   Candidats:  mantenir-posicio(4) orientar-produccio(3)
+   Candidats:  mantenir-posicio(4)
    Descartats: cap
    Criteri:    maxima valoracio (4 punts)
 

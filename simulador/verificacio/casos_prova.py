@@ -65,10 +65,11 @@ CASOS = [
      ]},
     {"id": "CP02", "titol": "Vent crític", "cobertura": "seguretat",
      "objectiu": "Amb una ratxa de 18 m/s (≥ 16, el màxim del fabricant), el panell ha d'anar a la posició "
-                 "de seguretat, i la resta d'opcions han de quedar rebutjades. Els altres sectors no se n'han de veure afectats.",
+                 "de seguretat. Com que ja és a l'angle òptim de producció, no s'ha de seleccionar orientar-produccio. "
+                 "Els altres sectors no se n'han de veure afectats.",
      "cicles": [
          cicle(obs={S1: {"vent": 18.0}},
-               **{S1: {"accio": "posicio-seguretat", "riscos": {"mecanic": "critic"}, "rebutjat": "orientar-produccio"},
+               **{S1: {"accio": "posicio-seguretat", "riscos": {"mecanic": "critic"}, "accio_no": "orientar-produccio"},
                   S2: {"accio_no": "posicio-seguretat"}}),
      ]},
     {"id": "CP03", "titol": "Seguretat anticipada per previsió", "cobertura": "seguretat",

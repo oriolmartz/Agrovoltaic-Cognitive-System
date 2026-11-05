@@ -181,12 +181,6 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
     <rdfs:label xml:lang="ca">Observació Temperatura Aire</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Risc_Meteorologic_Advers">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Risc_Agronomic"/>
-    <rdfs:label xml:lang="ca">Risc meteorològic advers</rdfs:label>
-    <rdfs:comment xml:lang="ca">Episodi meteorològic advers (pluja intensa, calamarsa) que pot malmetre el cultiu.</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Obj_Produccio_Cultiu">
     <dom:te_prioritat rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Obj_Produccio_Energia"/>
     <rdf:type rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Objectiu_Produccio_Cultiu"/>
@@ -1045,7 +1039,7 @@
     <rdf:rest rdf:nodeID="N445537c2cbda41a785acf5f314d8b8df"/>
   </rdf:Description>
   <rdf:Description rdf:nodeID="N806411b3cd4a4b26a3e9212df6e7f943">
-    <rdf:rest rdf:nodeID="Nc676d027fc4e4b0a9e326358ed5a4ab1"/>
+    <rdf:rest rdf:nodeID="N0b4a62d515144c8e9fea6b29e5631adb"/>
     <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Risc_Mecanic"/>
   </rdf:Description>
   <rdf:Description rdf:nodeID="N48fb7ec6be5542fca0f52c6c75e1e1b3">
@@ -1237,10 +1231,6 @@
   <rdf:Description rdf:about="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Objectiu_Seguretat">
     <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Objectiu"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="Nc676d027fc4e4b0a9e326358ed5a4ab1">
-    <rdf:rest rdf:nodeID="N0b4a62d515144c8e9fea6b29e5631adb"/>
-    <rdf:first rdf:resource="http://www.semanticweb.org/maxvi/ontologies/2026/8/OntologiaDomini#Risc_Meteorologic_Advers"/>
   </rdf:Description>
   <rdf:Description rdf:nodeID="N052531573f2545e5bb5e1e42c8dc4ee6">
     <owl:intersectionOf rdf:nodeID="N78edb3da27034de1a8d4d75563631b90"/>

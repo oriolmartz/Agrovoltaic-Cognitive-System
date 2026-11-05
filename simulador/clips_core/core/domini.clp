@@ -158,7 +158,7 @@
   (slot sector (type SYMBOL))
   (slot cicle (type INTEGER))
   (slot tipus (allowed-symbols mecanic fallada-actuador dades
-                               estres-hidric exces-radiacio temperatura meteorologic-advers))
+                               estres-hidric exces-radiacio temperatura))
   (slot nivell (allowed-symbols baix mitja alt critic))
   (slot font (type SYMBOL)))   ; regla que l'ha detectat (traçabilitat)
 
@@ -187,7 +187,7 @@
 ; Quin tipus de risc activa quin objectiu.            Ontologia: activa (hasValue)
 (deftemplate activa
   (slot tipus-risc (allowed-symbols mecanic fallada-actuador dades
-                                    estres-hidric exces-radiacio temperatura meteorologic-advers))
+                                    estres-hidric exces-radiacio temperatura))
   (slot objectiu (type SYMBOL)))
 
 
@@ -583,6 +583,5 @@
   (activa (tipus-risc estres-hidric) (objectiu Obj_Produccio_Cultiu))
   (activa (tipus-risc exces-radiacio) (objectiu Obj_Produccio_Cultiu))
   (activa (tipus-risc temperatura) (objectiu Obj_Produccio_Cultiu))
-  (activa (tipus-risc meteorologic-advers) (objectiu Obj_Produccio_Cultiu))
   (activa (tipus-risc mecanic) (objectiu Obj_Seguretat))
   (activa (tipus-risc fallada-actuador) (objectiu Obj_Seguretat)))

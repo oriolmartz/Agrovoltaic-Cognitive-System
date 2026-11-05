@@ -179,6 +179,9 @@
 (prova "C1 Sector_1 selecciona orientar-produccio" (seleccionat Sector_1 1 orientar-produccio))
 (prova "C1 Sector_2 selecciona mantenir-posicio (ja es a l'angle optim)"
        (seleccionat Sector_2 1 mantenir-posicio))
+(prova "C1 Sector_2 no proposa orientar-produccio (ja es a l'angle optim)"
+       (not (any-factp ((?o operador))
+              (and (eq ?o:sector Sector_2) (eq ?o:cicle 1) (eq ?o:nom orientar-produccio)))))
 (prova "C1 Sector_3 selecciona orientar-produccio" (seleccionat Sector_3 1 orientar-produccio))
 (prova "C1 cap risc elaborat" (not (any-factp ((?r risc)) (eq ?r:cicle 1))))
 (prova "C1 tres episodis a la memoria de treball"
@@ -215,7 +218,9 @@
 (run)
 (set-current-module PROVA)
 (prova "C3 risc mecanic critic a Sector_1" (risc-de Sector_1 3 mecanic critic))
-(prova "C3 orientar-produccio rebutjat (restriccio dura)" (rebuig Sector_1 3 orientar-produccio))
+(prova "C3 Sector_1 no proposa orientar-produccio (ja es a l'angle optim)"
+       (not (any-factp ((?o operador))
+              (and (eq ?o:sector Sector_1) (eq ?o:cicle 3) (eq ?o:nom orientar-produccio)))))
 (prova "C3 Sector_1 selecciona posicio-seguretat" (seleccionat Sector_1 3 posicio-seguretat))
 (prova "C3 ordre d'actuador posicio-seguretat a Sector_1"
        (ordre-de-accio Sector_1 3 posicio-seguretat))
@@ -261,36 +266,32 @@
               (eq ?p:font ?*chunk-dades*))))
 
 ; --- C6 -----------------------------------------------------------------------
-(printout t crlf "=== C6: empat forcat a Sector_3 ===" crlf)
+(printout t crlf "=== C6: Sector_3 ja es a l'angle optim ===" crlf)
 (aplica-ordres 5)
 (nou-cicle)
 (dades-ciclo 6 4.0 4.0 4.0)
-; A C5 Sector_3 tenia orientar-produccio 7.0 i mantenir-posicio 4: +3 a mantenir-posicio = empat.
-(assert (preferencia (op mantenir-posicio) (sector Sector_3) (cicle 6) (tipus numerica)
-                     (valor 3.0) (font prova)))
 (run)
 (set-current-module PROVA)
 (defglobal ?*chunk-empat* = FALSE)
 (bind ?*chunk-empat* (chunk-de empat 6))
-(prova "C6 impasse d'empat a Sector_3 i chunk apres" (neq ?*chunk-empat* FALSE))
-(prova "C6 el chunk d'empat inclou els objectius consultats"
-       (neq (str-index "(objectiu " (codi-de ?*chunk-empat*)) FALSE))
-(prova "C6 Sector_3 selecciona orientar-produccio (energia preval)"
-       (seleccionat Sector_3 6 orientar-produccio))
-(prova "C6 el motiu explica l'empat" (parla-d-empat Sector_3 6))
+(prova "C6 Sector_3 no proposa orientar-produccio (ja es a l'angle optim)"
+       (not (any-factp ((?o operador))
+              (and (eq ?o:sector Sector_3) (eq ?o:cicle 6) (eq ?o:nom orientar-produccio))))
+(prova "C6 Sector_3 selecciona mantenir-posicio" (seleccionat Sector_3 6 mantenir-posicio))
+(prova "C6 no hi ha impasse ni chunk d'empat" (eq ?*chunk-empat* FALSE))
 
 ; --- C7 -----------------------------------------------------------------------
-(printout t crlf "=== C7: sense empat a Sector_3 (el chunk dispara igualment) ===" crlf)
+(printout t crlf "=== C7: Sector_3 continua a l'angle optim ===" crlf)
 (aplica-ordres 6)
 (nou-cicle)
 (dades-ciclo 7 4.0 4.0 4.0)
 (run)
 (set-current-module PROVA)
-(prova "C7 el chunk d'empat ha generat la preferencia millor-que"
-       (any-factp ((?p preferencia))
-         (and (eq ?p:sector Sector_3) (eq ?p:cicle 7) (eq ?p:tipus millor-que)
-              (eq ?p:font ?*chunk-empat*))))
-(prova "C7 Sector_3 selecciona orientar-produccio" (seleccionat Sector_3 7 orientar-produccio))
+(prova "C7 no es genera preferencia per al chunk d'empat"
+       (not (any-factp ((?p preferencia))
+              (and (eq ?p:sector Sector_3) (eq ?p:cicle 7) (eq ?p:tipus millor-que)
+                   (eq ?p:font ?*chunk-empat*))))
+(prova "C7 Sector_3 selecciona mantenir-posicio" (seleccionat Sector_3 7 mantenir-posicio))
 (prova "C7 sense empat real, el motiu no parla d'empat" (not (parla-d-empat Sector_3 7)))
 
 ; --- C8 / C9: branca historial ------------------------------------------------
@@ -377,14 +378,6 @@
 ; REFORÇ
 ; =============================================================================
 
-; R2, R3 i R4 son la mateixa situacio a Sector_3: amb les puntuacions de R2 (sense
-; injeccio) s'iguala mantenir-posicio a orientar-produccio.
-(deffunction empata-sector-3 (?c)
-  (bind ?d (- (puntuacio Sector_3 orientar-produccio 2)
-              (puntuacio Sector_3 mantenir-posicio 2)))
-  (assert (preferencia (op mantenir-posicio) (sector Sector_3) (cicle ?c) (tipus numerica)
-                       (valor ?d) (font prova))))
-
 (deffunction q-de (?tret ?op)
   (bind ?r FALSE)
   (do-for-fact ((?v rl-valor)) (and (eq ?v:tret ?tret) (eq ?v:op ?op)) (bind ?r ?v))
@@ -419,31 +412,26 @@
 (aplica-ordres 2)
 (nou-cicle)
 (dades-ciclo 3 4.0 4.0 4.0)
-(empata-sector-3 3)
 (run)
 (set-current-module PROVA)
-(prova "R3 l'empat de Sector_3 el desfa el reforç, sense impasse"
+(prova "R3 Sector_3 a l'angle optim no genera impasse ni preferencia RL"
        (and (not (any-factp ((?g subobjectiu)) (eq ?g:id G-Sector_3-3)))
-            (any-factp ((?p preferencia))
-              (and (eq ?p:sector Sector_3) (eq ?p:cicle 3) (eq ?p:tipus millor-que) (eq ?p:font RL)))))
-(prova "R3 el motiu ho explica" (neq (str-index "desfet per RL" (motiu-de Sector_3 3)) FALSE))
+            (not (any-factp ((?p preferencia))
+                   (and (eq ?p:sector Sector_3) (eq ?p:cicle 3) (eq ?p:tipus millor-que)
+                        (eq ?p:font RL)))))
+(prova "R3 Sector_3 selecciona mantenir-posicio" (seleccionat Sector_3 3 mantenir-posicio))
 
 (aplica-ordres 3)
 (nou-cicle)
 (dades-ciclo 4 4.0 4.0 4.0)
-(empata-sector-3 4)
 (do-for-all-facts ((?k rl-config)) TRUE (modify ?k (epsilon 1000)))
 (run)
 (set-current-module PROVA)
 (do-for-all-facts ((?k rl-config)) TRUE (modify ?k (epsilon 0.05)))
 (defglobal ?*chunk-rl* = FALSE)
 (bind ?*chunk-rl* (chunk-de empat 4))
-(prova "R4 sense prou diferencia de Q hi ha impasse i s'apren un chunk" (neq ?*chunk-rl* FALSE))
-(prova "R4 el chunk apren una preferencia rl, no un millor-que fix"
-       (and (neq (str-index "(tipus rl)" (codi-de ?*chunk-rl*)) FALSE)
-            (eq (str-index "(tipus millor-que)" (codi-de ?*chunk-rl*)) FALSE)))
-(prova "R4 la rajola del chunk comença amb el valor prior"
-       (= (rl-q ?*chunk-rl* orientar-produccio) 0.5))
+(prova "R4 Sector_3 a l'angle optim no genera impasse ni chunk" (eq ?*chunk-rl* FALSE))
+(prova "R4 Sector_3 selecciona mantenir-posicio" (seleccionat Sector_3 4 mantenir-posicio))
 
 ; el simulador falla: el panell de Sector_3 no arriba a l'angle ordenat
 (aplica-ordres 4)
@@ -453,8 +441,7 @@
 (dades-ciclo 5 4.0 4.0 4.0)
 (run)
 (set-current-module PROVA)
-(prova "R5 recompensa -1: el valor del chunk baixa per sota del prior"
-       (and ?*chunk-rl* (< (rl-q ?*chunk-rl* orientar-produccio) 0.5)))
+(prova "R5 sense chunk RL no s'actualitza cap valor" (eq ?*chunk-rl* FALSE))
 
 ; =============================================================================
 ; v1_9: PROVES DEL REG (sessio nova, sense reforç ni memoria episodica)

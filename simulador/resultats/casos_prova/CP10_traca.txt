@@ -8,18 +8,12 @@
 [ELABORACIO] Sector_2: s'ha gastat el 80.0% de l'aigua disponible (enciam tolera 30.0%). Necessitat de reg critic.
 [ELABORACIO -> PROPOSTA]
 [PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
-[PROPOSTA] Sector_3: orientar-produccio (30.0 graus).
 [PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
-[PROPOSTA] Sector_2: orientar-produccio (30.0 graus).
 [PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
-[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
 [PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
 [PROPOSTA] Sector_2: regar-complet (+80.0% de l'aigua disponible) i regar-parcial (+65.0%), hi ha estres hidric.
 [PROPOSTA -> AVALUACIO]
 [AVALUACIO] Sector_2: orientar-ombra +9 (cultiu, risc estres-hidric critic).
-[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
-[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
-[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
 [AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
 [AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
 [AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
@@ -49,21 +43,21 @@
 [EXPLICACIO] Sector_2, cicle 1
    Accio:      orientar-ombra a 0.0 graus
    Riscos:     estres-hidric=critic
-   Candidats:  mantenir-posicio(4) orientar-produccio(3) orientar-ombra(9)
+   Candidats:  mantenir-posicio(4) orientar-ombra(9)
    Descartats: cap
    Criteri:    maxima valoracio (9 punts)
 
 [EXPLICACIO] Sector_1, cicle 1
    Accio:      mantenir-posicio a 30.0 graus
    Riscos:     cap
-   Candidats:  mantenir-posicio(4) orientar-produccio(3)
+   Candidats:  mantenir-posicio(4)
    Descartats: cap
    Criteri:    maxima valoracio (4 punts)
 
 [EXPLICACIO] Sector_3, cicle 1
    Accio:      mantenir-posicio a 30.0 graus
    Riscos:     cap
-   Candidats:  mantenir-posicio(4) orientar-produccio(3)
+   Candidats:  mantenir-posicio(4)
    Descartats: cap
    Criteri:    maxima valoracio (4 punts)
 

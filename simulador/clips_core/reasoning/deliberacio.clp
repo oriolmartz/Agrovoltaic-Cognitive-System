@@ -178,34 +178,6 @@
   (assert (traca (pas ?c) (fase percepcio)
                  (missatge (str-cat ?s ": lectura absent, risc de dades " ?n)))))
 
-(defrule percep-sensor-no-valid
-  (declare (auto-focus TRUE))
-  (fase (nom percepcio))
-  (cicle (numero ?c))
-  (estat-sensor (sector ?s) (tipus ?tp) (operatiu ?op) (qualitat ?q))
-  (test (or (eq ?op no) (neq ?q valida)))
-  (not (risc (sector ?s) (cicle ?c) (tipus dades)))
-  =>
-  (bind ?n (if (eq ?tp vent) then critic else alt))
-  (printout t "[PERCEPCIO] " ?s ": el sensor de " ?tp " no es fiable (operatiu=" ?op
-              ", qualitat=" ?q "). Risc de dades " ?n "." crlf)
-  (assert (risc (sector ?s) (cicle ?c) (tipus dades) (nivell ?n) (font P2-sensor-no-valid)))
-  (assert (traca (pas ?c) (fase percepcio)
-                 (missatge (str-cat ?s ": sensor de " ?tp " no fiable, risc de dades " ?n)))))
-
-; si ja hi havia un risc de dades alt i el problema afecta el vent, passa a critic
-(defrule percep-dades-vent-critic
-  (declare (auto-focus TRUE))
-  (fase (nom percepcio))
-  (cicle (numero ?c))
-  ?r <- (risc (sector ?s) (cicle ?c) (tipus dades) (nivell alt))
-  (or (observacio (sector ?s) (cicle ?c) (vent absent))
-      (estat-sensor (sector ?s) (tipus vent) (qualitat ~valida))
-      (estat-sensor (sector ?s) (tipus vent) (operatiu no)))
-  =>
-  (printout t "[PERCEPCIO] " ?s ": el problema de dades afecta el vent; el risc passa a critic." crlf)
-  (modify ?r (nivell critic) (font P3-dades-vent)))
-
 (defrule percep-sense-observacio
   (declare (auto-focus TRUE))
   (fase (nom percepcio))
@@ -443,7 +415,8 @@
   (fase (nom proposta))
   (cicle (numero ?c))
   (sector (id ?s))
-  (panell (sector ?s) (angle-optim-produccio ?ang))
+  (panell (sector ?s) (angle ?actual) (angle-optim-produccio ?ang) (tolerancia-angle ?tol))
+  (test (> (abs (- ?actual ?ang)) ?tol))
   (not (panell (sector ?s) (disponible no)))
   (not (panell (sector ?s) (estat-mecanic avariat)))
   (not (operador (sector ?s) (cicle ?c) (nom orientar-produccio)))

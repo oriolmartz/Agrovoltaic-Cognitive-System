@@ -60,7 +60,7 @@ CASOS = [
     cas("V02", "vent 12,0: avis", S1, {"vent": 12.0}, risc_mecanic="alt", candidat="posicio-seguretat"),
     cas("V03", "vent 15,9: just sota el maxim", S1, {"vent": 15.9}, risc_mecanic="alt", candidat="posicio-seguretat"),
     cas("V04", "vent 16,0: maxim, seguretat obligatoria", S1, {"vent": 16.0}, risc_mecanic="critic",
-        accio="posicio-seguretat", rebutjat="orientar-produccio"),
+        panell={"angle": 20.0}, accio="posicio-seguretat", rebutjat="orientar-produccio"),
     cas("V05", "vent 4 pero previsio 16: mana la pitjor", S1, {"vent": 4.0}, {"vent": 16.0},
         risc_mecanic="critic", accio="posicio-seguretat"),
     cas("V06", "vent 4 i previsio 12: avis per previsio", S1, {"vent": 4.0}, {"vent": 12.0}, risc_mecanic="alt"),
@@ -178,7 +178,9 @@ def executa_cas(clp: str, c: dict) -> dict:
     ctrl = ControladorCLIPS(clp, reforc=False, chunking=False, epmem=False)
     for pid, p in ctrl.panells().items():
         extra = c["panell"] if p["sector"] == c["sector"] else {}
-        ctrl.escriu_panell(pid, angle=30.0, **{"angle-optim-produccio": 30.0}, **extra)
+        estat_panell = {"angle": 30.0, "angle-optim-produccio": 30.0}
+        estat_panell.update(extra)
+        ctrl.escriu_panell(pid, **estat_panell)
     for s in SECTORS:
         obs = dict(BASE[s])
         pred = dict(PRED_BASE)
