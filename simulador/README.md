@@ -182,7 +182,7 @@ S'ha de justificar a l'informe com a simplificació.
 | Complex | Invariants a cada cicle (`invariants_ko`, també del reg: I10–I12); escenaris extrems; escalabilitat de la memòria | totes les simulacions, E14 |
 | Adaptatiu | Aprendre en uns dies i mesurar-ho en uns altres (validesa externa), també un any sencer i l'any següent; capacitat de la funció Q; consistència del que s'aprèn (Rashid) | E8, E9, E10, E13, E16 |
 | Comparació amb una referència (Batarseh) | Seguidor comercial i panell fix amb els mateixos dies; el reg de SOAR contra un reg fix i el reg de llibre de FAO-56 | E4, E5, E7, E14, E15 |
-| Sensibilitat (Batarseh) | Un paràmetre del model cada cop | E12 |
+| Sensibilitat (Batarseh) | Un paràmetre del model cada cop; els pesos i les constants de la valoració, amb la justificació analítica de cadascun | E12, E19 |
 | Motor d'inferència (Tsai et al.) | Ordre de les fases del cicle SOAR i una sola acció per sector a cada cicle, amb un control negatiu | E18 |
 | Adequació de les proves (Tsai et al.) | *Mutation testing*: s'introdueixen errors a propòsit al CLIPS i es mira quants en detecten les proves | E17 |
 
@@ -242,6 +242,34 @@ cada cas.
   massa especificada.
 - **Cas no vist (tramuntana del 27/03/2023 a Cantallops):** SOAR, 0 violacions i 2 h d'exposició.
   Seguidor comercial, 5 violacions i 11 h d'exposició.
+
+### Justificació dels números de la valoració (E19)
+
+`python verificacio/e19_pesos.py`. Els números de `pes-objectiu`, `nivell-a-numero`, l'estabilitat i
+`puntuacio` es van triar a mà. E19 els justifica de dues maneres:
+- **Analíticament**, amb les desigualtats que han de complir perquè la suma de preferències respecti les prioritats. Es calculen en totes les situacions possibles: vent, tres riscos del cultiu, cobertura de la demanda, panell a l'òptim i operador anterior.
+- **Empíricament**, amb 25 variants del `.clp` sobre els mateixos dies reals: 20 de Ribera i 20 de vent de Cantallops, amb memòria.
+
+| Element | Valor | Justificació | Què passa si es canvia (dies reals) |
+|---|---|---|---|
+| Pes de **seguretat** | 5 | Amb vent alt (no crític), la seguretat ha de guanyar l'energia: cal 2·w_seg > energia alt (3·2) + moviment (1) + estabilitat (2) = 9. **5 és l'enter més petit que ho compleix.** Amb vent crític no hi compten els pesos: és una restricció dura (rebuig) | 3 → 3 violacions i 4 vegades més exposició; 4 → 1 violació; 7 o 10 → igual que 5 o una mica millor |
+| Pesos de **cultiu i energia** | 3 i 3 | Iguals a propòsit: es comparen els **nivells** de risc i, si empaten, l'impasse ho resol per la prioritat (el cultiu va abans). Si fossin diferents, l'impasse d'empat no sortiria mai | energia 2 → −5 % d'energia (guanya l'ombra amb riscos lleus); energia 4 → 1 violació (supera la seguretat) |
+| Pes d'**estabilitat** | 2 | Ha de ser més petit que un nivell d'un objectiu principal (3·1). Així repetir l'operador només desfà quasi-empats i no capgira mai una diferència real | 0–1 → més canvis d'operador; 3 → 1,5 impasses/dia; 4 → −5 % d'energia (s'enganxa a l'operador anterior) |
+| Pes de **moviment** | 1 | Més petit que l'estabilitat i que un nivell: només desempata entre quedar-se i moure's | 2 → 1,45 impasses/dia (empata amb l'estabilitat) |
+| **Nivells** | 0, 1, 2, 3 | Ordinals, de l'escala de quatre nivells del domini (baix, mitjà, alt, crític). Lineals per simplicitat | 0-1-2-4, 0-1-3-6, 0-1-4-9 i 0-2-3-4 → 98–100 % de decisions iguals, cap violació. **Les conclusions no depenen de l'escala** |
+| **Requerida** | +1000 | Ha de superar qualsevol suma de preferències numèriques: com a màxim 31 (ombra amb 3 riscos crítics + estabilitat + memòria) contra un mínim de −2 a l'operador requerit. N'hi ha prou amb més de 33; 1000 dona un marge de 30 vegades | De 0 a 100, cap canvi en dies reals; vegeu la graella |
+| **Millor / pitjor** | +100 / −100 | **Cap regla genera aquestes preferències**: és codi mort, heretat de les preferències de Soar | — |
+| Pes de la **memòria** | ±2 | No entrava en el càlcul de les prioritats | 0 o 1 → menys exposició al vent (com seguretat 7) |
+
+**El que no funciona del tot: la memòria i l'estabilitat poden superar la seguretat.** La preferència
+de memòria (fins a ±2) es va afegir després dels pesos. En el pitjor cas resta 2 a `posicio-seguretat`
+i en suma 2 a `mantenir-posicio`, i aleshores 10 − 2 < 6 + 1 + 2 + 2. Amb els 95 dies de Cantallops
+passa en **6 de 682 cicles amb vent alt** (0,9 %): el panell es queda orientat a producció amb vent de
+12–16 m/s. Amb el vent crític no pot passar. Hi ha dues solucions, amb el mateix efecte en dies reals:
+- pujar la seguretat a 7, que és el mínim que ho garanteix també amb memòria;
+- limitar la memòria perquè no pugui puntuar contra la seguretat.
+
+Hi ha 81 cicles més on guanya l'ombra o mantenir-se per davant de la seguretat, però és inofensiu: l'angle d'ombra i el de seguretat són tots dos 0°.
 
 ### Validació
 
