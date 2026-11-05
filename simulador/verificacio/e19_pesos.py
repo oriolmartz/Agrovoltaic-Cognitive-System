@@ -64,8 +64,10 @@ def puntuacions(w, L, vent, riscos, cob, optim, prev):
     return ops
 
 
-def analitica(w=BASE, L=NIVELLS, pm=PES_MEMORIA):
-    """Marge minim (mes prioritari - menys prioritari) en totes les situacions."""
+def analitica(w=BASE, L=NIVELLS, pm=PES_MEMORIA, memoria_amb_vent=False):
+    """Marge minim (mes prioritari - menys prioritari) en totes les situacions.
+    memoria_amb_vent: si la memoria puntua tambe amb risc mecanic (comportament fins a la iteracio 33).
+    Des de la iteracio 34, amb vent d'avis la memoria no puntua."""
     pitjor = {}
     niv = ["baix", "mitja", "alt", "critic"]
     for vent, t, r, h, cob, optim, prev in itertools.product(
@@ -76,7 +78,8 @@ def analitica(w=BASE, L=NIVELLS, pm=PES_MEMORIA):
             if OBJ[a] >= OBJ[b]:
                 continue
             for amb_memoria in (False, True):
-                marge = ops[a] - ops[b] - (2 * pm if amb_memoria else 0)
+                mem = amb_memoria and (vent == "baix" or memoria_amb_vent)
+                marge = ops[a] - ops[b] - (2 * pm if mem else 0)
                 k = (a, b, amb_memoria)
                 if k not in pitjor or marge < pitjor[k][0]:
                     pitjor[k] = (marge, dict(vent=vent, temperatura=t, radiacio=r, hidric=h, cobertura=cob,
@@ -240,8 +243,11 @@ def main():
     for ws in range(3, 13):
         t = analitica({**BASE, "seguretat": ws})
         e = t[(t["objectiu"] == "seguretat") & (t["objectiu_contra"] == "energia")]
+        t0 = analitica({**BASE, "seguretat": ws}, memoria_amb_vent=True)
+        e0 = t0[(t0["objectiu"] == "seguretat") & (t0["objectiu_contra"] == "energia")]
         llindar.append({"pes_seguretat": ws, "marge_sense_memoria": e[~e["amb_memoria"]]["marge_minim"].min(),
-                        "marge_amb_memoria": e[e["amb_memoria"]]["marge_minim"].min()})
+                        "marge_amb_memoria": e[e["amb_memoria"]]["marge_minim"].min(),
+                        "marge_amb_memoria_fins_iteracio_33": e0[e0["amb_memoria"]]["marge_minim"].min()})
     llindar = pd.DataFrame(llindar)
     llindar.to_csv(os.path.join(DIR, "E19_llindar_seguretat.csv"), index=False)
     print(llindar.to_string())

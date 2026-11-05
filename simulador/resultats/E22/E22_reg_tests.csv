@@ -1,0 +1,5 @@
+metrica,A,B,n,mitjana A,mitjana B,A-B,IC95,p (Holm),efecte,Friedman p
+h_estres_aigua,valvula_30,valvula_ok,6,1.33,0.67,0.67,"(0.167, 1.333)",0.25,+0.71 (gran),-
+aigua_reg_m3,valvula_30,valvula_ok,6,68.29,68.51,-0.22,"(-1.696, 0.743)",0.62,+0.38 (mitja),-
+regs,valvula_30,valvula_ok,6,10.83,11.0,-0.17,"(-0.5, 0.0)",1,-0.29 (petit),-
+h_estres_calor,valvula_30,valvula_ok,6,704.0,704.17,-0.17,"(-1.0, 0.5)",1,-0.05 (negligible),-

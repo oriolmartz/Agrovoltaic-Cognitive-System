@@ -1,0 +1,3 @@
+config,regs_fallats,detectats,regs_correctes,falses_alarmes,sensibilitat_pct,falses_alarmes_pct
+valvula_30,24,24,52,0,100.0,0.0
+valvula_ok,0,0,62,0,,0.0

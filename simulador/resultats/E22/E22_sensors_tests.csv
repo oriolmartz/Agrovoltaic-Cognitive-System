@@ -1,0 +1,22 @@
+metrica,A,B,n,mitjana A,mitjana B,A-B,IC95,p (Holm),efecte,Friedman p
+impasses,errors,errors_sense_historial,60,0.82,0.78,0.03,"(0.0, 0.083)",0.16,+0.07 (negligible),2.8e-19
+impasses,errors,sense_errors,60,0.82,0.03,0.78,"(0.65, 0.917)",3.6e-10,+0.93 (gran),2.8e-19
+impasses,errors_sense_historial,sense_errors,60,0.78,0.03,0.75,"(0.617, 0.883)",3.6e-10,+0.92 (gran),2.8e-19
+violacions,errors,errors_sense_historial,60,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+violacions,errors,sense_errors,60,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+violacions,errors_sense_historial,sense_errors,60,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+exposicions,errors,errors_sense_historial,60,0.22,0.2,0.02,"(0.0, 0.05)",0.4,+0.03 (negligible),0.14
+exposicions,errors,sense_errors,60,0.22,0.12,0.1,"(-0.017, 0.25)",0.4,+0.12 (petit),0.14
+exposicions,errors_sense_historial,sense_errors,60,0.2,0.12,0.08,"(-0.017, 0.2)",0.4,+0.12 (petit),0.14
+h_estres_aigua,errors,errors_sense_historial,60,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+h_estres_aigua,errors,sense_errors,60,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+h_estres_aigua,errors_sense_historial,sense_errors,60,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+h_estres_calor,errors,errors_sense_historial,60,16.9,16.97,-0.07,"(-0.167, 0.017)",0.47,-0.10 (negligible),0.22
+h_estres_calor,errors,sense_errors,60,16.9,16.92,-0.02,"(-0.1, 0.05)",0.65,-0.00 (negligible),0.22
+h_estres_calor,errors_sense_historial,sense_errors,60,16.97,16.92,0.05,"(-0.017, 0.117)",0.47,+0.10 (negligible),0.22
+energia_kwh,errors,errors_sense_historial,60,372.54,374.01,-1.47,"(-2.329, -0.617)",0.00068,-0.57 (gran),8.5e-07
+energia_kwh,errors,sense_errors,60,372.54,371.78,0.77,"(-0.196, 1.669)",0.037,+0.31 (mitja),8.5e-07
+energia_kwh,errors_sense_historial,sense_errors,60,374.01,371.78,2.23,"(0.978, 3.398)",0.00013,+0.61 (gran),8.5e-07
+invariants_ko,errors,errors_sense_historial,60,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+invariants_ko,errors,sense_errors,60,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1
+invariants_ko,errors_sense_historial,sense_errors,60,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),1

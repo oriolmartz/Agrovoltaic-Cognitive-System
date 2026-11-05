@@ -148,7 +148,37 @@
   (slot tipus (allowed-symbols humitat-sol pluja radiacio temperatura-aire temperatura-cultiu vent))
   (slot operatiu (allowed-symbols si no))
   (slot qualitat (allowed-symbols valida absent incoherent))
-  (slot cicle-ultima-lectura (type INTEGER)))
+  (slot cicle-ultima-lectura (type INTEGER))
+  ; ultima lectura valida (la desa el CLIPS a la percepcio; iteracio 35): historial per a una
+  ; lectura que falta
+  (slot ultim-valor (type NUMBER SYMBOL) (allowed-symbols cap) (default cap))
+  (slot cicle-ultim-valor (type INTEGER) (default 0)))
+
+; CONFIG | Origen: disseny (iteracio 35) | Persistencia: estatica | Modifica: ningu
+; Quants cicles es pot fer servir l'ultima lectura d'un sensor que falta. La humitat del sol
+; canvia a poc a poc (el balanc hidric en mou com a molt un parell de punts per hora), la
+; temperatura i la radiacio canvien d'una hora a l'altra i el vent no es substitueix mai
+; (seguretat: sense lectura de vent hi ha l'impasse de dades).
+(deftemplate dades-config
+  (slot edat-maxima-humitat (type INTEGER) (default 3))
+  (slot edat-maxima-altres (type INTEGER) (default 1)))
+
+; DERIVAT | Origen: PERCEPCIO | Persistencia: 1 cicle | Modifica: DELIBERACIO
+; Lectura que falta i que s'ha substituit per l'ultima valida (traçabilitat).
+(deftemplate lectura-estimada
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot tipus (type SYMBOL))
+  (slot valor (type NUMBER))
+  (slot edat (type INTEGER)))                 ; cicles des de la lectura
+
+; DERIVAT | Origen: PERCEPCIO | Persistencia: 1 cicle | Modifica: DELIBERACIO
+; Lectura descartada per impossible (fora del rang fisic del sensor).
+(deftemplate lectura-incoherent
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot tipus (type SYMBOL))
+  (slot valor (type NUMBER)))
 
 ; FETS DERIVATS (elaboració)
 
@@ -157,7 +187,7 @@
 (deftemplate risc
   (slot sector (type SYMBOL))
   (slot cicle (type INTEGER))
-  (slot tipus (allowed-symbols mecanic fallada-actuador dades
+  (slot tipus (allowed-symbols mecanic fallada-actuador fallada-reg dades
                                estres-hidric exces-radiacio temperatura))
   (slot nivell (allowed-symbols baix mitja alt critic))
   (slot font (type SYMBOL)))   ; regla que l'ha detectat (traçabilitat)
@@ -326,6 +356,15 @@
   (slot operador (type SYMBOL))
   (slot angle (type NUMBER))
   (multislot riscos)                      ; riscos presents (tipus-nivell)
+  (slot resultat (allowed-symbols pendent correcte fallada) (default pendent)))
+
+; RESULTAT/HISTORIC | Origen: APLICACIO (reg) | Persistencia: fins al cicle seguent | Modifica: PERCEPCIO
+; Ordre de reg pendent de comprovar: al cicle seguent la humitat ha d'haver pujat (iteracio 35).
+(deftemplate reg-pendent
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot dosi (type NUMBER))                   ; % de l'aigua disponible
+  (slot humitat-abans (type NUMBER))
   (slot resultat (allowed-symbols pendent correcte fallada) (default pendent)))
 
 ;  REG (v1_9) ------------------------------------------------------------------
@@ -578,6 +617,7 @@
   (conflicte (objectiu-1 Obj_Seguretat) (objectiu-2 Obj_Produccio_Energia))
   (conflicte (objectiu-1 Obj_Produccio_Energia) (objectiu-2 Obj_Minimitzar_Moviment))
   ; (reg-config) tambe ve de l'ontologia de reg (Config_Reg_Defecte).
+  (dades-config)
 
   ; quin risc activa quin objectiu (Risc_Dades no n'activa cap: obre un impasse)
   (activa (tipus-risc estres-hidric) (objectiu Obj_Produccio_Cultiu))
@@ -1134,6 +1174,143 @@
   (assert (traca (pas ?c) (fase percepcio)
                  (missatge (str-cat ?s ": lectura absent, risc de dades " ?n)))))
 
+;; --- PERCEPCIO: lectures no fiables i historial (iteracio 35) ------------------
+;; Tres camins porten a "lectura que no es fa servir": el sensor diu que esta avariat
+;; (percep-sensor-no-valid), el valor es fisicament impossible (percep-lectura-incoherent) o
+;; no ha arribat. Si falta i el sensor tenia una lectura valida fa poc, es fa servir aquella
+;; (percep-ultima-lectura, historial); si no, percep-lectura-absent crea el risc de dades.
+
+; Rang fisic de cada sensor. Fora d'aquest rang el valor es un error del sensor, no una
+; mesura: radiacio 0-1400 W/m2 (constant solar 1367), temperatura de l'aire -30..55 C
+; (record de Catalunya 45,1 C, 2023), del cultiu -30..70 C, humitat 0-105 % de l'aigua
+; disponible, vent 0-75 m/s (ratxes rècord a Catalunya ~60 m/s), pluja 0-200 mm/h.
+(deffunction lectura-plausible (?tp ?v)
+  (switch ?tp
+    (case radiacio then (and (>= ?v 0) (<= ?v 1400)))
+    (case temperatura-aire then (and (>= ?v -30) (<= ?v 55)))
+    (case temperatura-cultiu then (and (>= ?v -30) (<= ?v 70)))
+    (case humitat-sol then (and (>= ?v 0) (<= ?v 105)))
+    (case vent then (and (>= ?v 0) (<= ?v 75)))
+    (case pluja then (and (>= ?v 0) (<= ?v 200)))
+    (default TRUE)))
+
+(deffunction edat-maxima-lectura (?tp)
+  (bind ?r 0)
+  (do-for-fact ((?k dades-config)) TRUE
+    (bind ?r (if (eq ?tp humitat-sol) then ?k:edat-maxima-humitat else ?k:edat-maxima-altres)))
+  ?r)
+
+; Torna a escriure l'observacio amb un slot canviat (CLIPS no deixa fer modify amb un nom de
+; slot variable). Aixi una sola regla serveix per a tots els sensors.
+(deffunction obs-substitueix (?o ?tp ?val)
+  (bind ?txt (str-cat "(observacio (sector " (fact-slot-value ?o sector) ") (cicle "
+                      (fact-slot-value ?o cicle) ")"))
+  (foreach ?sl (create$ radiacio temperatura-aire temperatura-cultiu humitat-sol vent pluja)
+    (bind ?txt (str-cat ?txt " (" ?sl " " (if (eq ?sl ?tp) then ?val else (fact-slot-value ?o ?sl)) ")")))
+  (retract ?o)
+  (assert-string (str-cat ?txt ")")))
+
+; El sensor diu que esta avariat (diagnostic propi) pero envia un valor: no es fa servir.
+(defrule percep-sensor-no-valid
+  (declare (auto-focus TRUE) (salience 30))
+  (fase (nom percepcio))
+  (cicle (numero ?c))
+  ?o <- (observacio (sector ?s) (cicle ?c))
+  (estat-sensor (sector ?s) (tipus ?tp) (operatiu no))
+  (test (numberp (fact-slot-value ?o ?tp)))
+  (not (lectura-estimada (sector ?s) (cicle ?c) (tipus ?tp)))   ; el valor ja es l'estimat
+  =>
+  (printout t "[PERCEPCIO] " ?s ": el sensor de " ?tp " diu que esta avariat; la lectura ("
+              (fact-slot-value ?o ?tp) ") no es fa servir." crlf)
+  (assert (traca (pas ?c) (fase percepcio)
+                 (missatge (str-cat ?s ": sensor de " ?tp " avariat, lectura descartada"))))
+  (obs-substitueix ?o ?tp absent))
+
+; Valor impossible: error del sensor (pic, desconnexio). Es descarta i el sensor queda marcat.
+(defrule percep-lectura-incoherent
+  (declare (auto-focus TRUE) (salience 20))
+  (fase (nom percepcio))
+  (cicle (numero ?c))
+  ?o <- (observacio (sector ?s) (cicle ?c))
+  ?e <- (estat-sensor (sector ?s) (tipus ?tp))
+  (test (and (numberp (fact-slot-value ?o ?tp))
+             (not (lectura-plausible ?tp (fact-slot-value ?o ?tp)))))
+  (not (lectura-estimada (sector ?s) (cicle ?c) (tipus ?tp)))
+  =>
+  (bind ?v (fact-slot-value ?o ?tp))
+  (printout t "[PERCEPCIO] " ?s ": lectura de " ?tp " impossible (" ?v "). Es descarta." crlf)
+  (assert (lectura-incoherent (sector ?s) (cicle ?c) (tipus ?tp) (valor ?v)))
+  (modify ?e (qualitat incoherent))
+  (assert (traca (pas ?c) (fase percepcio)
+                 (missatge (str-cat ?s ": lectura de " ?tp " impossible (" ?v "), descartada"))))
+  (obs-substitueix ?o ?tp absent))
+
+; Historial: si falta una lectura que canvia a poc a poc i n'hi ha una de valida prou
+; recent, es fa servir aquella i queda anotat (lectura-estimada). El vent no: sense lectura
+; de vent no es pot garantir la seguretat (impasse de dades). La pluja tampoc: la d'una hora
+; no diu res de la seguent.
+(defrule percep-ultima-lectura
+  (declare (auto-focus TRUE) (salience 10))
+  (fase (nom percepcio))
+  (cicle (numero ?c))
+  ?o <- (observacio (sector ?s) (cicle ?c))
+  (estat-sensor (sector ?s) (tipus ?tp&~vent&~pluja) (ultim-valor ?uv&:(numberp ?uv))
+                (cicle-ultim-valor ?cu))
+  (test (eq (fact-slot-value ?o ?tp) absent))
+  (test (<= (- ?c ?cu) (edat-maxima-lectura ?tp)))
+  =>
+  (bind ?edat (- ?c ?cu))
+  (printout t "[PERCEPCIO] " ?s ": falta la lectura de " ?tp "; es fa servir la de fa " ?edat
+              " cicle(s): " ?uv "." crlf)
+  (assert (lectura-estimada (sector ?s) (cicle ?c) (tipus ?tp) (valor ?uv) (edat ?edat)))
+  (assert (traca (pas ?c) (fase percepcio)
+                 (missatge (str-cat ?s ": " ?tp " estimada amb l'ultima lectura (" ?uv ", fa " ?edat " cicles)"))))
+  (obs-substitueix ?o ?tp ?uv))
+
+; Desa l'ultima lectura valida de cada sensor (per al cicle seguent).
+(defrule percep-recorda-lectura
+  (declare (auto-focus TRUE) (salience -5))
+  (fase (nom percepcio))
+  (cicle (numero ?c))
+  ?o <- (observacio (sector ?s) (cicle ?c))
+  ?e <- (estat-sensor (sector ?s) (tipus ?tp) (operatiu si) (cicle-ultim-valor ?cu&:(< ?cu ?c)))
+  (test (numberp (fact-slot-value ?o ?tp)))
+  (not (lectura-estimada (sector ?s) (cicle ?c) (tipus ?tp)))
+  =>
+  (modify ?e (ultim-valor (fact-slot-value ?o ?tp)) (cicle-ultim-valor ?c)))
+
+; Efecte del reg del cicle anterior: la humitat ha d'haver pujat almenys la meitat de la dosi
+; (la resta pot ser l'evapotranspiracio d'una hora i la percolacio). Nomes amb una lectura
+; real (no estimada).
+(defrule percep-reg-correcte
+  (declare (auto-focus TRUE))
+  (fase (nom percepcio))
+  (cicle (numero ?c))
+  ?r <- (reg-pendent (sector ?s) (cicle =(- ?c 1)) (dosi ?d) (humitat-abans ?h0) (resultat pendent))
+  (observacio (sector ?s) (cicle ?c) (humitat-sol ?h&:(numberp ?h)))
+  (not (lectura-estimada (sector ?s) (cicle ?c) (tipus humitat-sol)))
+  (test (>= (- ?h ?h0) (* 0.5 ?d)))
+  =>
+  (modify ?r (resultat correcte))
+  (assert (traca (pas ?c) (fase percepcio)
+                 (missatge (str-cat ?s ": efecte del reg confirmat, humitat de " ?h0 " a " ?h "%")))))
+
+(defrule percep-fallada-reg
+  (declare (auto-focus TRUE))
+  (fase (nom percepcio))
+  (cicle (numero ?c))
+  ?r <- (reg-pendent (sector ?s) (cicle =(- ?c 1)) (dosi ?d) (humitat-abans ?h0) (resultat pendent))
+  (observacio (sector ?s) (cicle ?c) (humitat-sol ?h&:(numberp ?h)))
+  (not (lectura-estimada (sector ?s) (cicle ?c) (tipus humitat-sol)))
+  (test (< (- ?h ?h0) (* 0.5 ?d)))
+  =>
+  (printout t "[PERCEPCIO] " ?s ": es va ordenar regar +" ?d "% pero la humitat ha passat de " ?h0
+              " a " ?h "%. Fallada del reg." crlf)
+  (modify ?r (resultat fallada))
+  (assert (risc (sector ?s) (cicle ?c) (tipus fallada-reg) (nivell alt) (font P8-fallada-reg)))
+  (assert (traca (pas ?c) (fase percepcio)
+                 (missatge (str-cat ?s ": el reg no ha fet pujar la humitat (" ?h0 " -> " ?h "%), fallada del reg")))))
+
 (defrule percep-sense-observacio
   (declare (auto-focus TRUE))
   (fase (nom percepcio))
@@ -1156,7 +1333,9 @@
   (panell (sector ?s) (tolerancia-angle ?tol))
   (not (panell (sector ?s) (angle ?x&:(> (abs (- ?x ?a)) ?tol))))
   =>
-  (modify ?e (resultat correcte)))
+  (modify ?e (resultat correcte))
+  (assert (traca (pas ?c) (fase percepcio)
+                 (missatge (str-cat ?s ": efecte confirmat, el panell es a " ?a " graus (" ?op ")")))))
 
 (defrule percep-fallada-actuador
   (declare (auto-focus TRUE))
@@ -1675,6 +1854,10 @@
 ; funcionar be en aquella situacio, negativa si va anar malament. El pes depen de
 ; la semblança entre la situacio recordada i l'actual. Es un criteri tou: no
 ; pot superar una restriccio dura (rebuig) ni una preferencia requerida.
+; Amb risc mecanic (vent d'avis o critic) la memoria no puntua: els pesos de seguretat es
+; van calcular sense memoria, i ±2 de memoria mes l'estabilitat podien fer guanyar la
+; produccio a la seguretat amb vent alt (E19, iteracio 31: 6 de 682 cicles a Cantallops).
+; Aixi la prioritat de la seguretat no depen de quant pesi la memoria.
 (defrule avalua-memoria
   (declare (auto-focus TRUE))
   (fase (nom avaluacio))
@@ -1684,6 +1867,7 @@
                   (memoria-id ?m) (normalitzada ?n&:(>= ?n ?ll)))
   (epmem-episodi (id ?m) (cicle ?mc) (valoracio ?v&bona|dolenta))
   (operador (sector ?s) (cicle ?c) (nom ?op) (estat proposat))
+  (not (risc (sector ?s) (cicle ?c) (tipus mecanic)))   ; amb vent, la memoria no opina (iteracio 34)
   (not (preferencia (op ?op) (sector ?s) (cicle ?c) (font AV10-memoria)))
   =>
   (bind ?val (/ (round (* 100 ?pes ?n)) 100))
@@ -1710,6 +1894,7 @@
   (smem-situacio (sector ?s) (cicle ?c) (clau $?cl))
   (smem-resum (sector ?s) (operador ?op) (situacio $?cl)
               (bona ?b) (neutra ?nt) (dolenta ?d) (n ?n&:(>= ?n ?mn)))
+  (not (risc (sector ?s) (cicle ?c) (tipus mecanic)))   ; amb vent, la memoria no opina (iteracio 34)
   (not (preferencia (op ?op) (sector ?s) (cicle ?c) (font AV11-memoria-semantica)))
   =>
   (bind ?val (/ (round (* 100 ?pes (/ (- ?b ?d) (+ ?n ?k)))) 100))
@@ -2800,6 +2985,10 @@
     (printout t "[APLICACIO] " ?s ": ORDRE DE REG " ?op " -> +" ?d "% de l'aigua disponible." crlf))
   (modify ?o (estat aplicat))
   (assert (ordre-reg (sector ?s) (cicle ?c) (accio ?op) (dosi ?d) (motiu ?m)))
+  ; al cicle seguent es comprova que la humitat ha pujat (percep-reg-correcte / percep-fallada-reg)
+  (if (neq ?op no-regar) then
+    (do-for-fact ((?ob observacio)) (and (eq ?ob:sector ?s) (eq ?ob:cicle ?c) (numberp ?ob:humitat-sol))
+      (assert (reg-pendent (sector ?s) (cicle ?c) (dosi ?d) (humitat-abans ?ob:humitat-sol)))))
   (assert (traca (pas ?c) (fase aplicacio)
                  (missatge (str-cat ?s ": reg " ?op " " ?d "%")))))
 
@@ -2918,6 +3107,16 @@
   (printout t "[MONITORATGE] " ?s ": l'actuador no ha respost. Cal revisio de manteniment." crlf)
   (assert (traca (pas ?c) (fase monitoratge)
                  (missatge (str-cat ?s ": actuador sense resposta, avis de manteniment")))))
+
+(defrule avisa-fallada-reg
+  (declare (auto-focus TRUE))
+  (fase (nom monitoratge))
+  (cicle (numero ?c))
+  (risc (sector ?s) (cicle ?c) (tipus fallada-reg))
+  =>
+  (printout t "[MONITORATGE] " ?s ": el reg no ha arribat al sol. Cal revisar la valvula o el degoteig." crlf)
+  (assert (traca (pas ?c) (fase monitoratge)
+                 (missatge (str-cat ?s ": reg sense efecte, avis de manteniment")))))
 
 ; Tanca el cicle: els objectius es tornen a calcular el cicle seguent.
 ; Nota de persistencia: els fets temporals del cicle es conserven de moment per

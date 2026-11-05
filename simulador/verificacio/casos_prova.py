@@ -23,7 +23,7 @@ import sys
 
 ARREL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ARREL)
-from clips_bridge import SECTORS, SENSORS, ControladorCLIPS  # noqa: E402
+from clips_bridge import LIMIT_REGLES, SECTORS, SENSORS, ControladorCLIPS  # noqa: E402
 
 S1, S2, S3 = SECTORS    # tomaquet, enciam, vinya
 CULTIU = {S1: "tomàquet", S2: "enciam", S3: "vinya"}
@@ -38,14 +38,15 @@ PRED = {"radiacio": 300.0, "temperatura": 20.0, "vent": 3.0, "pluja": 0.0}
 ENERGIA = {"produccio": 15.0, "demanda": 12.0}
 
 
-def cicle(obs=None, pred=None, energia=None, falla=(), hora=12, **esperat):
+def cicle(obs=None, pred=None, energia=None, falla=(), hora=12, avariat=None, **esperat):
     """obs/pred/energia: {sector: {camp: valor}} que sobreescriuen la base.
     falla: panells que NO es mouen despres d'aquest cicle (fallada d'actuador).
+    avariat: {sector: {sensors}} que es diagnostiquen avariats (envien valor, pero operatiu = no).
     hora: hora local del cicle (v1_9: el reg te en compte les hores fresques).
     esperat: {sector: {accio, accio_no, riscos{tipus: nivell|None}, impas, chunk, candidat, rebutjat,
                        reg, dosi, reg_rebutjat}}"""
     return {"obs": obs or {}, "pred": pred or {}, "energia": energia or {}, "falla": set(falla), "hora": hora,
-            "esperat": esperat}
+            "avariat": avariat or {}, "esperat": esperat}
 
 
 CASOS = [
@@ -188,6 +189,42 @@ CASOS = [
                                                                 "riscos": {"estres-hidric": "mitja"}}}),
          cicle(hora=13, obs={S3: {"humitat-sol": 54.9}}, **{S3: {"reg": "regar-parcial"}}),
      ]},
+    # ------------------------------------------------------------------ iteracio 35: dades i efecte de les accions
+    {"id": "CP15", "titol": "Sensor d'humitat que deixa de respondre (historial)", "cobertura": "dades absents + historial",
+     "objectiu": "L'enciam té un 80 % d'aigua i el sensor d'humitat deixa de respondre. La humitat canvia a poc a "
+                 "poc: durant 3 cicles el sistema ha de fer servir l'última lectura (sense risc de dades) i, al "
+                 "quart cicle sense lectura, ja no s'hi pot fiar (risc de dades alt). El vent sí que arriba: no hi "
+                 "ha impasse de seguretat.",
+     "cicles": [
+         cicle(obs={S2: {"humitat-sol": 80.0}}, **{S2: {"riscos": {"dades": None}}}),
+         cicle(obs={S2: {"humitat-sol": ABS}}, **{S2: {"riscos": {"dades": None}}}),
+         cicle(obs={S2: {"humitat-sol": ABS}}, **{S2: {"riscos": {"dades": None}}}),
+         cicle(obs={S2: {"humitat-sol": ABS}}, **{S2: {"riscos": {"dades": None}}}),
+         cicle(obs={S2: {"humitat-sol": ABS}}, **{S2: {"riscos": {"dades": "alt"}, "impas": None}}),
+     ]},
+    {"id": "CP16", "titol": "Lectura impossible i sensor avariat", "cobertura": "dades incoherents + fallades",
+     "objectiu": "Al cicle 2, el sensor de temperatura del tomàquet envia el codi d'error -9999 i el sensor "
+                 "d'humitat diu que està avariat però envia un 20 % (que seria estrès crític). Totes dues lectures "
+                 "s'han de descartar i substituir per les del cicle anterior: ni risc de dades ni estrès hídric. "
+                 "Al cicle 3, el vent envia -9999: el vent no es pot estimar, i s'ha de tractar com si faltés "
+                 "(risc de dades crític i impasse).",
+     "cicles": [
+         cicle(**{S1: {"riscos": {"dades": None}}}),
+         cicle(obs={S1: {"temperatura-cultiu": -9999.0, "humitat-sol": 20.0}}, avariat={S1: {"humitat-sol"}},
+               **{S1: {"riscos": {"dades": None, "estres-hidric": None, "temperatura": None}}}),
+         cicle(obs={S1: {"vent": -9999.0}}, **{S1: {"riscos": {"dades": "critic"}, "impas": "dades-insuficients"}}),
+     ]},
+    {"id": "CP17", "titol": "Reg que no arriba al sòl", "cobertura": "fallades (reg) + efecte observat", "reg": True,
+     "objectiu": "A les 7 h l'enciam és al 65 % i es rega fins a capacitat de camp (+35 %). A les 8 h la humitat "
+                 "continua al 64 %: el reg no ha arribat (vàlvula o degoteig). El sistema ho ha de detectar "
+                 "(risc de fallada del reg) i, com que el cultiu encara té estrès, tornar-ho a provar. A les 9 h "
+                 "la humitat ja és al 99 %: el reg ha funcionat i no hi ha fallada.",
+     "cicles": [
+         cicle(hora=7, obs={S2: {"humitat-sol": 65.0}}, **{S2: {"reg": "regar-complet", "dosi": 35.0}}),
+         cicle(hora=8, obs={S2: {"humitat-sol": 64.0}}, **{S2: {"riscos": {"fallada-reg": "alt"},
+                                                                "reg": "regar-complet"}}),
+         cicle(hora=9, obs={S2: {"humitat-sol": 99.0}}, **{S2: {"riscos": {"fallada-reg": None}, "reg": "no-regar"}}),
+     ]},
 ]
 
 
@@ -214,11 +251,13 @@ def executa_cas(clp, cas):
             o = {kk: (None if v == ABS else v) for kk, v in obs[s].items()}
             p = {kk: (None if v == ABS else v) for kk, v in pred[s].items()}
             for tp in SENSORS:
-                c.escriu_sensor(s, tp, True, "valida" if o.get(tp) is not None else "absent", n)
+                c.escriu_sensor(s, tp, tp not in cy["avariat"].get(s, ()),
+                                "valida" if o.get(tp) is not None else "absent", n)
             c.afegeix_entrades(n, s, o, p, ene[s])
         c.escriu_moment(n, cy["hora"])
         r = c.executa_cicle()
         traca.append((k, r.sortida))
+        cicle_ko = r.fase_final != "espera" or r.regles_disparades >= LIMIT_REGLES
         for s, esp in cy["esperat"].items():
             accio = r.ordres[s][0][0] if r.ordres.get(s) else None
             angle = r.ordres[s][0][1] if r.ordres.get(s) else None
@@ -227,6 +266,8 @@ def executa_cas(clp, cas):
             chunk = any(f.startswith("chunk-") for f, _, _ in r.fonts_pref.get(s, set()))
             cand = set(r.candidats.get(s, {}))
             disc = []
+            if cicle_ko:   # sense aixo, un bucle de regles podria passar com a "cap risc"
+                disc.append(f"el cicle no ha acabat (fase {r.fase_final}, {r.regles_disparades} regles)")
             if "accio" in esp and accio != esp["accio"]:
                 disc.append(f"acció esperada {esp['accio']}, obtinguda {accio}")
             if "accio_no" in esp and accio == esp["accio_no"]:

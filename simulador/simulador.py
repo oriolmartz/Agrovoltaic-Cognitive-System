@@ -93,6 +93,9 @@ def coneixement_domini(clp: str, ontologia: str | None) -> dict:
     return {"llindars": c.llindars(), "panells": c.panells()}
 
 
+# Codi d'error que envien molts registradors quan el sensor falla (fora de qualsevol rang fisic).
+VALOR_ERROR_SENSOR = -9999.0
+
 # ============================================================================ controladors
 
 @dataclass
@@ -105,6 +108,7 @@ class Entrada:
     sensors: dict       # sector -> {sensor: True si la lectura ha arribat}
     hora: int = 12      # hora local del cicle
     cultius: dict | None = None   # sector -> (fase, sensibilitat) si hi ha calendari de cultiu
+    avariats: dict | None = None  # sector -> sensors que es diagnostiquen avariats (pero envien valor)
 
 
 class ControladorSOAR:
@@ -142,7 +146,8 @@ class ControladorSOAR:
         for s in SECTORS:
             for tp in SENSORS:
                 ok = e.sensors[s][tp]
-                c.escriu_sensor(s, tp, operatiu=True, qualitat="valida" if ok else "absent", c=n)
+                avariat = bool(e.avariats) and tp in e.avariats.get(s, ())
+                c.escriu_sensor(s, tp, operatiu=not avariat, qualitat="valida" if ok else "absent", c=n)
             c.afegeix_entrades(n, s, e.obs[s], e.pred.get(s), e.energia[s])
         c.escriu_moment(n, e.hora)
         if e.cultius:
@@ -427,6 +432,9 @@ class Simulacio:
             if mode == "soar" and decisio is not None and decisio[s].get("reg"):
                 acc, dosi = decisio[s]["reg"]
                 if acc != "no-regar":
+                    if self._valvula_fallada(s):        # l'ordre s'envia pero l'aigua no arriba
+                        self._acc[s]["reg_fallat"] = True
+                        continue
                     net = dosi / 100.0 * self.taw[s]
             elif mode == "finca" and t.hour == reg["hora"] and self._aigua_pct(s) < reg["llindar_pct"]:
                 net = self.taw[s] * reg["fins_pct"] / 100 - self.aigua_mm[s]
@@ -457,19 +465,48 @@ class Simulacio:
         sc = self.cfg["sensors"]
         ok = {tp: bool(self.rng.random() >= sc["p_absent"].get(tp, 0.0)) for tp in SENSORS}
         for f in sc["forcats"]:
-            if f.get("sector", s) == s and f["des_de_cicle"] <= self.cicle <= f.get("fins_a_cicle", f["des_de_cicle"]):
+            if f.get("mode", "absent") == "absent" and f.get("sector", s) == s and \
+                    f["des_de_cicle"] <= self.cicle <= f.get("fins_a_cicle", f["des_de_cicle"]):
                 ok[f["sensor"]] = False
         return ok
+
+    def _sensors_erronis(self, s) -> tuple[set, set]:
+        """Lectures impossibles (pic o codi d'error del registrador) i sensors que es diagnostiquen
+        avariats pero envien un valor (iteracio 35). Nomes es fa servir l'atzar si hi ha
+        probabilitats configurades, per no canviar la sequencia aleatoria de la resta."""
+        sc = self.cfg["sensors"]
+        inc, ava = set(), set()
+        for clau, conj in (("p_incoherent", inc), ("p_avariat", ava)):
+            for tp, pr in sc.get(clau, {}).items():
+                if pr > 0 and self.rng.random() < pr:
+                    conj.add(tp)
+        for f in sc["forcats"]:
+            if f.get("sector", s) == s and f["des_de_cicle"] <= self.cicle <= f.get("fins_a_cicle", f["des_de_cicle"]):
+                if f.get("mode") == "incoherent":
+                    inc.add(f["sensor"])
+                elif f.get("mode") == "avariat":
+                    ava.add(f["sensor"])
+        return inc, ava
+
+    def _valvula_fallada(self, s) -> bool:
+        a = self.cfg["actuadors"]
+        for f in a.get("fallades_reg", []):
+            if f.get("sector", s) == s and f["des_de_cicle"] <= self.cicle <= f.get("fins_a_cicle", 10**9):
+                return True
+        pr = a.get("p_fallada_reg", 0.0)
+        return pr > 0 and self.rng.random() < pr
 
     def _entrada(self, t, fila) -> Entrada:
         sn = self.cfg["soroll"]
         prev = self.ultima
         opt_ara = fisica.angle_seguiment(*fisica.sol_interval(self.lloc.lat, self.lloc.lon, t.to_pydatetime()))
-        obs, pred, ene, sens = {}, {}, {}, {}
+        obs, pred, ene, sens, avariats = {}, {}, {}, {}, {}
         for s in SECTORS:
             sc = self.cfg["sectors"][s]
             ok = self._sensors(s)
             sens[s] = ok
+            inc, ava = self._sensors_erronis(s)
+            avariats[s] = ava
             ps = prev["sectors"][s] if prev else None
             pf = prev["fila"] if prev else fila
             o = {
@@ -481,6 +518,9 @@ class Simulacio:
                 "pluja": pf["pluja"],
             }
             obs[s] = {k: (round(v, 2) if ok[k] else None) for k, v in o.items()}
+            for k in inc:
+                if obs[s].get(k) is not None:
+                    obs[s][k] = VALOR_ERROR_SENSOR
             if self.rng.random() < self.cfg["sensors"]["p_previsio_absent"]:
                 pred[s] = None
             else:
@@ -506,7 +546,7 @@ class Simulacio:
             for s in SECTORS:
                 e = self.fenologia(s, t)
                 cult[s] = (e.fase, e.sensibilitat)
-        return Entrada(self.cicle, obs, pred, ene, panells, sens, hora=t.hour, cultius=cult)
+        return Entrada(self.cicle, obs, pred, ene, panells, sens, hora=t.hour, cultius=cult, avariats=avariats)
 
     # ------------------------------------------------------------------ actuadors
     def _panell_avariat(self, pid):
@@ -616,6 +656,8 @@ class Simulacio:
             acc = self._acc[s]
             self._acc[s] = {"net": 0.0, "brut": 0.0, "kwh": 0.0, "perc": 0.0}
             reg = d.get("reg")
+            erronis = {"incoherents": ",".join(k for k, v in ent.obs[s].items() if v == VALOR_ERROR_SENSOR),
+                       "avariats": ",".join(sorted((ent.avariats or {}).get(s, ())))}
             files.append({
                 "etiqueta": etiqueta, "controlador": ctrl.nom, "llavor": self.llavor, "lloc": self.cfg["lloc"],
                 "dia": dia, "hora": t.hour, "cicle": ent.cicle, "sector": s, "cultiu": ll["cultiu"],
@@ -625,6 +667,8 @@ class Simulacio:
                 "ghi": fila["ghi"], "temp_aire": fila["temp"], "vent_real": fila["vent"],
                 "vent_obs": ent.obs[s]["vent"], "vent_prev": (ent.pred.get(s) or {}).get("vent"),
                 "sensors_absents": ",".join(k for k, v in ent.sensors[s].items() if not v),
+                "sensors_incoherents": erronis["incoherents"], "sensors_avariats": erronis["avariats"],
+                "reg_fallat": bool(acc.get("reg_fallat", False)),
                 "P_kw": fs["P_kw"], "P_opt_kw": fs["P_opt_kw"], "demanda_kw": ent.energia[s]["demanda"],
                 "rad_cultiu": fs["rad_cultiu"], "t_cultiu": fs["t_cultiu"], "aigua_pct": fs["aigua_pct"],
                 # l'estres nomes compta quan hi ha cultiu a la parcel·la (calendari de cultiu)

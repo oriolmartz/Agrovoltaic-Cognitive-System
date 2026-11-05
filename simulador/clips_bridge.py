@@ -37,8 +37,11 @@ FETS_DE_CICLE = ("observacio", "prediccio", "energia", "risc", "operador", "pref
                  "episodi", "rl-traca", "smem-situacio",
                  # v1_9: decisio de reg
                  "moment", "necessitat-reg", "operador-reg", "preferencia-reg", "reg-seleccionat",
-                 "ordre-reg", "explicacio-reg")
+                 "ordre-reg", "explicacio-reg",
+                 # iteracio 35: lectures no fiables i comprovacio del reg
+                 "lectura-estimada", "lectura-incoherent", "reg-pendent")
 MARGE_NETEJA = 3
+LIMIT_REGLES = 100000   # si s'hi arriba, el cicle no ha acabat (bucle de regles)
 SORTIDA_SILENCIADA = False   # paralel.py ho posa a True als processos fills
 TIPUS_IMPAS = {"resoldre-dades": "dades-insuficients", "resoldre-empat": "empat",
                "resoldre-sense-candidat": "sense-canvi"}
@@ -385,7 +388,7 @@ class ControladorCLIPS:
                 f.retract()
             self.env.assert_string("(fase (nom percepcio))")
         self.primer = False
-        n = self.env.run(100000)   # limit de seguretat contra bucles infinits
+        n = self.env.run(LIMIT_REGLES)   # limit de seguretat contra bucles infinits
         self.env.eval("(set-current-module DOMINI)")
         txt = self.cap.buida()
         res = self._llegeix(c)

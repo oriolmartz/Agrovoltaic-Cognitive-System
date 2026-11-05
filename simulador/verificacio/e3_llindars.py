@@ -32,7 +32,7 @@ import pandas as pd
 
 ARREL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ARREL)
-from clips_bridge import SECTORS, SENSORS, ControladorCLIPS  # noqa: E402
+from clips_bridge import LIMIT_REGLES, SECTORS, SENSORS, ControladorCLIPS  # noqa: E402
 
 S1, S2, S3 = SECTORS          # tomaquet, enciam, vinya
 
@@ -47,11 +47,13 @@ PRED_BASE = {"radiacio": 100.0, "temperatura": 20.0, "vent": 3.0, "pluja": 0.0}
 ABS = "absent"   # marca d'una lectura que no arriba
 
 
-def cas(id, descripcio, sector, obs=None, pred=None, panell=None, hora=12, cultiu=None, **esperat):
+def cas(id, descripcio, sector, obs=None, pred=None, panell=None, hora=12, cultiu=None, memoria=None, **esperat):
     """esperat: risc_<tipus>=nivell|None, accio=, accio_no=, candidat=, no_candidat=, rebutjat=,
-    reg=, reg_no=, dosi= (v1_9). cultiu=(fase, sensibilitat): fase fenologica del sector."""
+    reg=, reg_no=, dosi= (v1_9), font=, font_no= (font d'una preferencia del sector).
+    cultiu=(fase, sensibilitat): fase fenologica del sector.
+    memoria=(operador, valoracio): un record de la memoria episodica, identic a la situacio actual."""
     return {"id": id, "descripcio": descripcio, "sector": sector, "obs": obs or {}, "pred": pred or {},
-            "panell": panell or {}, "hora": hora, "cultiu": cultiu, "esperat": esperat}
+            "panell": panell or {}, "hora": hora, "cultiu": cultiu, "memoria": memoria, "esperat": esperat}
 
 
 CASOS = [
@@ -190,11 +192,17 @@ CASOS = [
         {"humitat-sol": 66.0}, cultiu=("floracio", "alt"), hora=7, reg_no="no-regar"),
     cas("F08", "vinya en fructificacio (baixa) amb 66 % a les 7 h: reg deficitari, no s'anticipa", S3,
         {"humitat-sol": 66.0}, cultiu=("fructificacio", "baix"), hora=7, reg="no-regar"),
+
+    # ------------------------------------------------------------------ memoria contra seguretat (iteracio 34)
+    cas("M01", "sense vent, un record bo de mantenir-posicio: la memoria puntua", S1, {"vent": 3.0},
+        memoria=("mantenir-posicio", "bona"), font="AV10-memoria", accio="mantenir-posicio"),
+    cas("M02", "vent d'avis (13 m/s) i el mateix record: la memoria no puntua i guanya la seguretat", S1,
+        {"vent": 13.0}, memoria=("mantenir-posicio", "bona"), font_no="AV10-memoria", accio="posicio-seguretat"),
 ]
 
 
 def executa_cas(clp: str, c: dict) -> dict:
-    ctrl = ControladorCLIPS(clp, reforc=False, chunking=False, epmem=False)
+    ctrl = ControladorCLIPS(clp, reforc=False, chunking=False, epmem=bool(c.get("memoria")))
     for pid, p in ctrl.panells().items():
         extra = c["panell"] if p["sector"] == c["sector"] else {}
         estat_panell = {"angle": 30.0, "angle-optim-produccio": 30.0}
@@ -217,6 +225,12 @@ def executa_cas(clp: str, c: dict) -> dict:
             del ctrl
             return None                  # versio sense fase fenologica: el cas no s'aplica
         ctrl.escriu_cultiu(c["sector"], *c["cultiu"])
+    if c.get("memoria"):
+        op, val = c["memoria"]
+        ctrl.injecta(f"(epmem-episodi (id 999) (cicle 0) (sector {c['sector']}) (operador {op}) (angle 30)"
+                     f" (resultat correcte) (valoracio {val}))")
+        ctrl.injecta(f"(epmem-resultat (consulta prova) (sector {c['sector']}) (cicle 1) (etiqueta {op}) (exit si)"
+                     f" (memoria-id 999) (normalitzada 1.0))")
     r = ctrl.executa_cicle()
     s = c["sector"]
     riscos = dict(r.riscos.get(s, []))
@@ -228,6 +242,8 @@ def executa_cas(clp: str, c: dict) -> dict:
         del ctrl
         return None                      # versio sense reg: el cas no s'aplica
     fallades = []
+    if r.fase_final != "espera" or r.regles_disparades >= LIMIT_REGLES:
+        fallades.append(f"el cicle no ha acabat (fase {r.fase_final}, {r.regles_disparades} regles)")
     for k, v in c["esperat"].items():
         if k.startswith("risc_"):
             tipus = k[5:].replace("_", "-")
@@ -247,10 +263,14 @@ def executa_cas(clp: str, c: dict) -> dict:
             fallades.append(f"reg: esperat {v}, obtingut {reg}")
         elif k == "reg_no" and reg == v:
             fallades.append(f"reg: NO havia de ser {v}")
+        elif k == "font" and v not in {f for f, _, _ in r.fonts_pref.get(s, set())}:
+            fallades.append(f"havia d'haver-hi una preferencia de {v}")
+        elif k == "font_no" and v in {f for f, _, _ in r.fonts_pref.get(s, set())}:
+            fallades.append(f"NO havia d'haver-hi cap preferencia de {v}")
         elif k == "dosi" and (dosi is None or abs(dosi - v) > 1e-6):
             fallades.append(f"dosi: esperada {v} %, obtinguda {dosi}")
-    positiu = any(k in ("accio", "candidat", "rebutjat", "reg", "dosi") or (k.startswith("risc_") and v) for k, v in c["esperat"].items())
-    negatiu = any(k in ("accio_no", "no_candidat", "reg_no") or (k.startswith("risc_") and not v) for k, v in c["esperat"].items())
+    positiu = any(k in ("accio", "candidat", "rebutjat", "reg", "dosi", "font") or (k.startswith("risc_") and v) for k, v in c["esperat"].items())
+    negatiu = any(k in ("accio_no", "no_candidat", "reg_no", "font_no") or (k.startswith("risc_") and not v) for k, v in c["esperat"].items())
     del ctrl
     return {"id": c["id"], "descripcio": c["descripcio"], "sector": s,
             "tipus": "+/-" if positiu and negatiu else ("+" if positiu else "-"),

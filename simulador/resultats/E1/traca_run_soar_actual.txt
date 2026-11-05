@@ -1,4 +1,4 @@
-+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%$+!!!!!!!!!!!!!!!!!!!!!!!!!!*******$+!!!!!!!!!!!!!!!!!!!!***********************!***********************+$!!!!!!!!!!**+**********+::::::!!!!!!!!!!!!!!!!!!!!!!+$!!****!++****+**********
++%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%$+!!!!!!!!!!!!!!!!!!!!!!!!!!*******$+!!!!!!!!!!!!!!!!!!!!*!!!****************************!***********************+$!!!!!!!!!!**+**********+::::::!!!!!!!!!!!!!!!!!!!!!!+$!!****!++****+***********
 $
 
 === INICI ===
@@ -159,7 +159,6 @@ $
 [AVALUACIO] Sector_3: mantenir-posicio +2 (es el que es va fer el cicle anterior).
 [AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
 [AVALUACIO] Sector_1: mantenir-posicio +2 (es el que es va fer el cicle anterior).
-[AVALUACIO] Sector_1: mantenir-posicio 1.5 (memoria: a l'episodi #4, cicle 2, va funcionar be, similitud 0.75).
 [AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #5, cicle 2, va funcionar be, similitud 1.0).
 [AVALUACIO] Sector_3: mantenir-posicio 2.0 (memoria: a l'episodi #6, cicle 2, va funcionar be, similitud 1.0).
 [AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).

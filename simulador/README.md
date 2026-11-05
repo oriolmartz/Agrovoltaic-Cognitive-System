@@ -263,13 +263,20 @@ cada cas.
 | **Millor / pitjor** | +100 / −100 | **Cap regla genera aquestes preferències**: és codi mort, heretat de les preferències de Soar | — |
 | Pes de la **memòria** | ±2 | No entrava en el càlcul de les prioritats | 0 o 1 → menys exposició al vent (com seguretat 7) |
 
-**El que no funciona del tot: la memòria i l'estabilitat poden superar la seguretat.** La preferència
-de memòria (fins a ±2) es va afegir després dels pesos. En el pitjor cas resta 2 a `posicio-seguretat`
-i en suma 2 a `mantenir-posicio`, i aleshores 10 − 2 < 6 + 1 + 2 + 2. Amb els 95 dies de Cantallops
-passa en **6 de 682 cicles amb vent alt** (0,9 %): el panell es queda orientat a producció amb vent de
-12–16 m/s. Amb el vent crític no pot passar. Hi ha dues solucions, amb el mateix efecte en dies reals:
-- pujar la seguretat a 7, que és el mínim que ho garanteix també amb memòria;
-- limitar la memòria perquè no pugui puntuar contra la seguretat.
+**El que no funcionava: la memòria i l'estabilitat podien superar la seguretat (corregit a la iteració 34).**
+La preferència de memòria (fins a ±2) es va afegir després dels pesos. En el pitjor cas restava 2 a
+`posicio-seguretat` i en sumava 2 a `mantenir-posicio`, i aleshores 10 − 2 < 6 + 1 + 2 + 2. Amb els 95 dies
+de Cantallops passava en **6 de 557 cicles amb vent alt** (1,1 %; a Ribera, 0 de 125): el panell es quedava
+orientat a producció amb vent de 12–16 m/s. Amb el vent crític no podia passar (és una restricció dura).
+Hi havia dues solucions: pujar la seguretat a 7, o que la memòria no pugui puntuar contra la seguretat.
+**L'equip va triar la segona:** amb risc mecànic (vent d'avís o crític), la memòria episòdica i la
+semàntica no puntuen. Així la prioritat de la seguretat no depèn de quant pesi la memòria, i si algun dia
+se li dona més pes no cal tornar a calcular res.
+- **Analíticament:** amb seguretat 5, el marge mínim de la seguretat sobre l'energia passa de −3 a +1
+  també amb memòria (`E19_llindar_seguretat.csv`).
+- **En dies reals:** els mateixos 95 dies de Cantallops, **0 de 557** cicles de vent alt orientats a producció.
+- **Casos de prova:** M01 (sense vent la memòria puntua) i M02 (amb vent de 13 m/s, el mateix record no
+  puntua i guanya la seguretat) a E3.
 
 Hi ha 81 cicles més on guanya l'ombra o mantenir-se per davant de la seguretat, però és inofensiu: l'angle d'ombra i el de seguretat són tots dos 0°.
 
@@ -413,6 +420,24 @@ de Sió, cada mes amb els dies seguits × 4 llavors = 24 blocs; Friedman i Wilco
 - **El reg refreda:** amb el balanç d'energia, un cultiu ben regat i a l'ombra pot quedar per sota de la temperatura de l'aire (el tomàquet el 20/7/2023: 32 °C amb 35 °C d'aire). Amb el sòl sec, l'enciam i el tomàquet estan uns 7,5 °C més calents al migdia que regats; la vinya, 1,6 °C.
 - **Calendari de cultiu:** fora de temporada no hi ha cultiu i no es compta estrès (abans l'enciam patia calor al juliol encara que no n'hi hagués de plantat). La fase fenològica arriba al CLIPS, que tracta com a alt un risc mitjà de calor o de radiació en les fases sensibles (tomàquet i vinya en floració, enciam formant el cabdell). Casos de prova F01–F08 a E3.
 - **Sensibilitat (E12):** les dues peces del model que no surten de FAO-56 (el panell tapa el cel de nit i la correcció d'estabilitat) es poden apagar a E12.
+
+**E22 – robustesa de la percepció** (iteració 35):
+
+*A. Sensors* (30 dies de Ribera × 2 llavors; un 20 % de lectures d'humitat i de temperatura del cultiu que no arriben, un 3 % de lectures impossibles (−9999) a tots els sensors, un 2 % de sensors que es diagnostiquen avariats però envien valor):
+
+| Per dia (3 sectors) | Sense errors | Errors, sense historial | **Errors, amb historial** |
+|---|---|---|---|
+| Cicles amb risc de dades | 0 | 21,1 | **5,6 (−73 %)** |
+| Violacions de seguretat | 0 | 0 | 0 |
+| Impasses | 0,03 | 0,78 | 0,82 |
+| Estrès per calor i hídric (h) | 16,9 / 0 | 17,0 / 0 | 16,9 / 0 |
+
+- Totes les lectures impossibles es descarten, i cap no arriba a l'elaboració. L'historial substitueix les que falten si són recents: la humitat fins a 3 cicles, i la temperatura i la radiació 1 cicle.
+- Els impasses i les peticions de dades que queden són de vent, que a propòsit no s'estima mai. Per això no baixen.
+
+*B. Reg* (juny, juliol i agost de 2023, dies seguits; la vàlvula falla el 30 % de les vegades):
+- El sistema detecta **24 de 24** regs fallats al cicle següent, i té **0 falses alarmes** en 52 regs que sí que van arribar.
+- Com que el cultiu continua amb estrès, ho torna a provar: l'estrès hídric només passa de 0,7 a 1,3 h/mes, amb la mateixa aigua.
 
 **E20 – memòria semàntica** (iteració 29; Ribera de Sió, tot el 2023, dies seguits; 2 execucions × 12 mesos = 24 blocs; versió amb la iteració 30):
 

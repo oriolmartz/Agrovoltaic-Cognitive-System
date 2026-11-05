@@ -896,8 +896,83 @@ def E21(n_dies=48, llavors=(0,)):
     return r
 
 
+ERRORS_SENSORS_E22 = {
+    "sensors": {"p_absent": {"humitat-sol": 0.2, "temperatura-cultiu": 0.2, "radiacio": 0.1},
+                "p_incoherent": {tp: 0.03 for tp in ("humitat-sol", "temperatura-cultiu", "radiacio",
+                                                     "temperatura-aire", "vent")},
+                "p_avariat": {"humitat-sol": 0.02, "temperatura-cultiu": 0.02}},
+}
+
+
+def E22(n_dies=30, llavors=(0, 1)):
+    """Robustesa de la percepcio (iteracio 35).
+
+    A. Sensors: lectures absents, impossibles (-9999) i sensors que es diagnostiquen avariats.
+       Amb l'historial (ultima lectura valida) i sense. 30 dies independents de Ribera.
+       Pregunta: l'historial redueix els cicles amb risc de dades sense perdre seguretat ni
+       proteccio del cultiu?
+    B. Reg: la valvula falla el 30 % de les vegades (l'ordre s'envia pero l'aigua no arriba).
+       Juny, juliol i agost de 2023, dies seguits (cal regar sovint). Pregunta: el sistema detecta
+       les fallades (sensibilitat i falses alarmes) i el cultiu ho nota?"""
+    d = carpeta("E22")
+    os.makedirs(d, exist_ok=True)
+    # ---------------------------------------------------------------- A. sensors
+    clp = os.path.join(S.ARREL, "clips_core", "soar.clp")
+    text = open(clp, encoding="utf-8").read()
+    vell = "  (dades-config)\n"
+    assert vell in text, "no es troba (dades-config) al soar.clp"
+    sense = os.path.join(d, "soar_sense_historial.clp")
+    open(sense, "w", encoding="utf-8").write(
+        text.replace(vell, "  (dades-config (edat-maxima-humitat 0) (edat-maxima-altres 0))\n"))
+    cfg = S.carrega_config({})
+    dies = S.selecciona_dies(cfg, n_dies, llavor=22)
+    configs = {"sense_errors": {}, "errors": ERRORS_SENSORS_E22,
+               "errors_sense_historial": S._fusiona(ERRORS_SENSORS_E22, {"clp": sense})}
+    df = executa(configs, dies, llavors, experiment=NOM_EXP[0])
+    df["cicles_risc_dades"] = df["riscos"].fillna("").str.contains("dades=")
+    df["sollicitar_dades"] = df["accio"].eq("sollicitar-dades")
+    extra = (df.groupby(["etiqueta", "llavor", "dia"])[["cicles_risc_dades", "sollicitar_dades"]].sum()
+               .groupby("etiqueta").mean().round(2))
+    r = analitza(df, ["impasses", "violacions", "exposicions", "h_estres_aigua", "h_estres_calor",
+                      "energia_kwh", "invariants_ko"], "E22_sensors")
+    extra.to_csv(os.path.join(d, "E22_sensors_dades_per_dia.csv"))
+    print(extra.to_string())
+    # ---------------------------------------------------------------- B. reg
+    mesos = {m: S.selecciona_dies({**S.carrega_config({}), "dies": {"des_de": f"2023-{m}-01", "fins_a": f"2023-{m}-31"}})
+             for m in ("06", "07", "08")}
+    cfg_reg = {"valvula_ok": {}, "valvula_30": {"actuadors": {"p_fallada_reg": 0.3}}}
+    dr = executa_blocs(cfg_reg, mesos, llavors, experiment="E22")
+    pb = per_bloc(dr)
+    mets = ["h_estres_aigua", "aigua_reg_m3", "regs", "h_estres_calor"]
+    t = st.taula_parelles([st.compara_multiples(pb, m, blocs=("bloc", "llavor")) for m in mets])
+    t.to_csv(os.path.join(d, "E22_reg_tests.csv"), index=False)
+    resum_blocs(pb, mets).to_csv(os.path.join(d, "E22_reg_resum.csv"))
+    # deteccio: la fallada del cicle c s'ha de detectar al cicle c+1 (mateix dia i sector)
+    files = []
+    for et, g in dr.groupby("etiqueta"):
+        g = g.sort_values(["llavor", "bloc", "dia", "sector", "cicle"])
+        seg = g.groupby(["llavor", "bloc", "dia", "sector"])["riscos"].shift(-1)
+        hi_ha_seg = seg.notna()
+        detectat = seg.fillna("").str.contains("fallada-reg")
+        real = g["reg_fallat"].astype(bool)
+        regat = g["reg_accio"].isin(["regar-parcial", "regar-complet"]) & ~real
+        files.append({"config": et, "regs_fallats": int((real & hi_ha_seg).sum()),
+                      "detectats": int((real & hi_ha_seg & detectat).sum()),
+                      "regs_correctes": int((regat & hi_ha_seg).sum()),
+                      "falses_alarmes": int((regat & hi_ha_seg & detectat).sum())})
+    det = pd.DataFrame(files)
+    det["sensibilitat_pct"] = (100 * det["detectats"] / det["regs_fallats"].where(det["regs_fallats"] > 0)).round(1)
+    det["falses_alarmes_pct"] = (100 * det["falses_alarmes"] / det["regs_correctes"].where(det["regs_correctes"] > 0)).round(1)
+    det.to_csv(os.path.join(d, "E22_reg_deteccio.csv"), index=False)
+    print(resum_blocs(pb, mets).to_string())
+    print(det.to_string(index=False))
+    r["deteccio_reg"] = det
+    return r
+
+
 EXPERIMENTS = {"E4": E4, "E5": E5, "E6": E6, "E7": E7, "E8": E8, "E9": E9, "E10": E10, "E11": E11,
-               "E12": E12, "E13": E13, "E14": E14, "E15": E15, "E16": E16, "E20": E20, "E21": E21}
+               "E12": E12, "E13": E13, "E14": E14, "E15": E15, "E16": E16, "E20": E20, "E21": E21,
+               "E22": E22}
 
 
 def main():

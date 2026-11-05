@@ -89,7 +89,6 @@
 [AVALUACIO] Sector_3: mantenir-posicio +2 (es el que es va fer el cicle anterior).
 [AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
 [AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
-[AVALUACIO] Sector_1: posicio-seguretat 1.5 (memoria: a l'episodi #1, cicle 1, va funcionar be, similitud 0.75).
 [AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #2, cicle 1, va funcionar be, similitud 1.0).
 [AVALUACIO] Sector_3: mantenir-posicio 2.0 (memoria: a l'episodi #3, cicle 1, va funcionar be, similitud 1.0).
 [AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
@@ -116,7 +115,7 @@
 [EXPLICACIO] Sector_1, cicle 2
    Accio:      posicio-seguretat a 0.0 graus
    Riscos:     mecanic=critic
-   Candidats:  posicio-seguretat(3.5)
+   Candidats:  posicio-seguretat(2)
    Descartats: mantenir-posicio orientar-produccio
    Criteri:    unica opcio que compleix les restriccions dures
 

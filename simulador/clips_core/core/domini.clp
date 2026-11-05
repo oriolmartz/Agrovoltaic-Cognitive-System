@@ -148,7 +148,37 @@
   (slot tipus (allowed-symbols humitat-sol pluja radiacio temperatura-aire temperatura-cultiu vent))
   (slot operatiu (allowed-symbols si no))
   (slot qualitat (allowed-symbols valida absent incoherent))
-  (slot cicle-ultima-lectura (type INTEGER)))
+  (slot cicle-ultima-lectura (type INTEGER))
+  ; ultima lectura valida (la desa el CLIPS a la percepcio; iteracio 35): historial per a una
+  ; lectura que falta
+  (slot ultim-valor (type NUMBER SYMBOL) (allowed-symbols cap) (default cap))
+  (slot cicle-ultim-valor (type INTEGER) (default 0)))
+
+; CONFIG | Origen: disseny (iteracio 35) | Persistencia: estatica | Modifica: ningu
+; Quants cicles es pot fer servir l'ultima lectura d'un sensor que falta. La humitat del sol
+; canvia a poc a poc (el balanc hidric en mou com a molt un parell de punts per hora), la
+; temperatura i la radiacio canvien d'una hora a l'altra i el vent no es substitueix mai
+; (seguretat: sense lectura de vent hi ha l'impasse de dades).
+(deftemplate dades-config
+  (slot edat-maxima-humitat (type INTEGER) (default 3))
+  (slot edat-maxima-altres (type INTEGER) (default 1)))
+
+; DERIVAT | Origen: PERCEPCIO | Persistencia: 1 cicle | Modifica: DELIBERACIO
+; Lectura que falta i que s'ha substituit per l'ultima valida (traçabilitat).
+(deftemplate lectura-estimada
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot tipus (type SYMBOL))
+  (slot valor (type NUMBER))
+  (slot edat (type INTEGER)))                 ; cicles des de la lectura
+
+; DERIVAT | Origen: PERCEPCIO | Persistencia: 1 cicle | Modifica: DELIBERACIO
+; Lectura descartada per impossible (fora del rang fisic del sensor).
+(deftemplate lectura-incoherent
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot tipus (type SYMBOL))
+  (slot valor (type NUMBER)))
 
 ; FETS DERIVATS (elaboració)
 
@@ -157,7 +187,7 @@
 (deftemplate risc
   (slot sector (type SYMBOL))
   (slot cicle (type INTEGER))
-  (slot tipus (allowed-symbols mecanic fallada-actuador dades
+  (slot tipus (allowed-symbols mecanic fallada-actuador fallada-reg dades
                                estres-hidric exces-radiacio temperatura))
   (slot nivell (allowed-symbols baix mitja alt critic))
   (slot font (type SYMBOL)))   ; regla que l'ha detectat (traçabilitat)
@@ -326,6 +356,15 @@
   (slot operador (type SYMBOL))
   (slot angle (type NUMBER))
   (multislot riscos)                      ; riscos presents (tipus-nivell)
+  (slot resultat (allowed-symbols pendent correcte fallada) (default pendent)))
+
+; RESULTAT/HISTORIC | Origen: APLICACIO (reg) | Persistencia: fins al cicle seguent | Modifica: PERCEPCIO
+; Ordre de reg pendent de comprovar: al cicle seguent la humitat ha d'haver pujat (iteracio 35).
+(deftemplate reg-pendent
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot dosi (type NUMBER))                   ; % de l'aigua disponible
+  (slot humitat-abans (type NUMBER))
   (slot resultat (allowed-symbols pendent correcte fallada) (default pendent)))
 
 ;  REG (v1_9) ------------------------------------------------------------------
@@ -578,6 +617,7 @@
   (conflicte (objectiu-1 Obj_Seguretat) (objectiu-2 Obj_Produccio_Energia))
   (conflicte (objectiu-1 Obj_Produccio_Energia) (objectiu-2 Obj_Minimitzar_Moviment))
   ; (reg-config) tambe ve de l'ontologia de reg (Config_Reg_Defecte).
+  (dades-config)
 
   ; quin risc activa quin objectiu (Risc_Dades no n'activa cap: obre un impasse)
   (activa (tipus-risc estres-hidric) (objectiu Obj_Produccio_Cultiu))

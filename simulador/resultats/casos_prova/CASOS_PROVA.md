@@ -18,8 +18,11 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 | CP12 | Reg a primera hora | protecció del cultiu (reg) | 2 | ✅ correcte |
 | CP13 | No es rega perquè plourà | conflicte cultiu contra estalvi d'aigua (reg) | 1 | ✅ correcte |
 | CP14 | Reg deficitari de la vinya al llindar | límits (reg) | 3 | ✅ correcte |
+| CP15 | Sensor d'humitat que deixa de respondre (historial) | dades absents + historial | 5 | ✅ correcte |
+| CP16 | Lectura impossible i sensor avariat | dades incoherents + fallades | 3 | ✅ correcte |
+| CP17 | Reg que no arriba al sòl | fallades (reg) + efecte observat | 3 | ✅ correcte |
 
-**14 de 14 casos correctes.** Hi ha un cas més amb dades reals de dies que no es van fer servir durant el desenvolupament: és `escenaris/cas_no_vist_tramuntana.json` (vegeu el README).
+**17 de 17 casos correctes.** Hi ha un cas més amb dades reals de dies que no es van fer servir durant el desenvolupament: és `escenaris/cas_no_vist_tramuntana.json` (vegeu el README).
 
 ## CP01 – Operació normal
 
@@ -186,7 +189,7 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 **Explicació que dona el sistema** (fet `explicacio`):
 
 - Cicle 1, Sector_1: posicio-seguretat a 0.0 graus. Riscos: mecanic=alt. Candidats: mantenir-posicio(4) posicio-seguretat(10). Descartats: cap. Criteri: maxima valoracio (10 punts).
-- Cicle 2, Sector_1: posicio-seguretat a 0.0 graus. Riscos: mecanic=critic. Candidats: posicio-seguretat(3.5). Descartats: mantenir-posicio orientar-produccio. Criteri: unica opcio que compleix les restriccions dures.
+- Cicle 2, Sector_1: posicio-seguretat a 0.0 graus. Riscos: mecanic=critic. Candidats: posicio-seguretat(2). Descartats: mantenir-posicio orientar-produccio. Criteri: unica opcio que compleix les restriccions dures.
 
 <details><summary>Traça rellevant del CLIPS</summary>
 
@@ -218,7 +221,6 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 [AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
 [AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
 [AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
-[AVALUACIO] Sector_1: posicio-seguretat 1.5 (memoria: a l'episodi #1, cicle 1, va funcionar be, similitud 0.75).
 [AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
 [SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
 [SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
@@ -497,9 +499,9 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 **Explicació que dona el sistema** (fet `explicacio`):
 
 - Cicle 1, Sector_1: posicio-seguretat a 0.0 graus. Riscos: mecanic=alt. Candidats: mantenir-posicio(4) posicio-seguretat(10). Descartats: cap. Criteri: maxima valoracio (10 punts).
-- Cicle 2, Sector_1: posicio-seguretat a 0.0 graus. Riscos: mecanic=critic. Candidats: posicio-seguretat(3.5). Descartats: mantenir-posicio orientar-produccio. Criteri: unica opcio que compleix les restriccions dures.
-- Cicle 3, Sector_1: posicio-seguretat a 0.0 graus. Riscos: mecanic=critic. Candidats: posicio-seguretat(4.0). Descartats: mantenir-posicio orientar-produccio. Criteri: unica opcio que compleix les restriccions dures.
-- Cicle 4, Sector_1: posicio-seguretat a 0.0 graus. Riscos: mecanic=critic. Candidats: posicio-seguretat(4.0). Descartats: mantenir-posicio orientar-produccio. Criteri: unica opcio que compleix les restriccions dures.
+- Cicle 2, Sector_1: posicio-seguretat a 0.0 graus. Riscos: mecanic=critic. Candidats: posicio-seguretat(2). Descartats: mantenir-posicio orientar-produccio. Criteri: unica opcio que compleix les restriccions dures.
+- Cicle 3, Sector_1: posicio-seguretat a 0.0 graus. Riscos: mecanic=critic. Candidats: posicio-seguretat(2). Descartats: mantenir-posicio orientar-produccio. Criteri: unica opcio que compleix les restriccions dures.
+- Cicle 4, Sector_1: posicio-seguretat a 0.0 graus. Riscos: mecanic=critic. Candidats: posicio-seguretat(2). Descartats: mantenir-posicio orientar-produccio. Criteri: unica opcio que compleix les restriccions dures.
 - Cicle 5, Sector_1: orientar-produccio a 30.0 graus. Riscos: cap. Candidats: mantenir-posicio(1) orientar-produccio(3). Descartats: cap. Criteri: maxima valoracio (3 punts).
 
 <details><summary>Traça rellevant del CLIPS</summary>
@@ -532,7 +534,6 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 [AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
 [AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
 [AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
-[AVALUACIO] Sector_1: posicio-seguretat 1.5 (memoria: a l'episodi #1, cicle 1, va funcionar be, similitud 0.75).
 [AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
 [SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
 [SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
@@ -557,7 +558,6 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 [AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
 [AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
 [AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
-[AVALUACIO] Sector_1: posicio-seguretat 2.0 (memoria: a l'episodi #4, cicle 2, va funcionar be, similitud 1.0).
 [AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
 [SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
 [SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
@@ -582,7 +582,6 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 [AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
 [AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
 [AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
-[AVALUACIO] Sector_1: posicio-seguretat 2.0 (memoria: a l'episodi #7, cicle 3, va funcionar be, similitud 1.0).
 [AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
 [SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
 [SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
@@ -902,7 +901,7 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 |---|---|---|---|---|---|
 | 1 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 55.0 / 400.0 (7 h) | reg = no-regar; risc estres-hidric = cap | mantenir-posicio (30.0°); reg no-regar | ✅ |
 | 2 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 54.9 / 400.0 (7 h) | reg = regar-parcial; dosi = 22.6; risc estres-hidric = mitja | mantenir-posicio (30.0°); riscos: estres-hidric=mitja; reg regar-parcial (+22.6 %) | ✅ |
-| 3 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 54.9 / 400.0 (13 h) | reg = regar-parcial | mantenir-posicio (30.0°); riscos: estres-hidric=mitja; reg regar-parcial (+22.6 %) | ✅ |
+| 3 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 54.9 / 400.0 (13 h) | reg = regar-parcial | mantenir-posicio (30.0°); riscos: estres-hidric=mitja, fallada-reg=alt; reg regar-parcial (+22.6 %) | ✅ |
 
 **Explicació que dona el sistema** (fet `explicacio`):
 
@@ -910,7 +909,7 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
   - Reg: no-regar (+0%). Necessitat: anticipada (esgotat 45.0%). Candidats: no-regar(1). Descartats: cap. Criteri: maxima valoracio (1 punts).
 - Cicle 2, Sector_3: mantenir-posicio a 30.0 graus. Riscos: estres-hidric=mitja. Candidats: mantenir-posicio(4.5) orientar-ombra(3). Descartats: cap. Criteri: maxima valoracio (4.5 punts).
   - Reg: regar-parcial (+22.6%). Necessitat: mitja (esgotat 45.1%). Candidats: no-regar(1) regar-complet(7) regar-parcial(9). Descartats: cap. Criteri: maxima valoracio (9 punts).
-- Cicle 3, Sector_3: mantenir-posicio a 30.0 graus. Riscos: estres-hidric=mitja. Candidats: mantenir-posicio(8.0) orientar-ombra(3). Descartats: cap. Criteri: maxima valoracio (8.0 punts).
+- Cicle 3, Sector_3: mantenir-posicio a 30.0 graus. Riscos: fallada-reg=alt estres-hidric=mitja. Candidats: mantenir-posicio(7.6) orientar-ombra(3). Descartats: cap. Criteri: maxima valoracio (7.6 punts).
   - Reg: regar-parcial (+22.6%). Necessitat: mitja (esgotat 45.1%). Candidats: no-regar(1) regar-complet(6) regar-parcial(8). Descartats: cap. Criteri: maxima valoracio (8 punts).
 
 <details><summary>Traça rellevant del CLIPS</summary>
@@ -959,6 +958,7 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 [EXPLICACIO REG] Sector_3, cicle 2
 [EPMEM] NOU EPISODI #6: Sector_3, cicle 2, mantenir-posicio.
 --- cicle 3 ---
+[PERCEPCIO] Sector_3: es va ordenar regar +22.6% pero la humitat ha passat de 54.9 a 54.9%. Fallada del reg.
 [ELABORACIO] Sector_3: queda un 54.9% d'aigua disponible (vinya tolera esgotar fins al 45.0%). Estres hidric mitja.
 [ELABORACIO] El risc estres-hidric de Sector_3 activa l'objectiu Obj_Produccio_Cultiu.
 [ELABORACIO] Sector_3: s'ha gastat el 45.1% de l'aigua disponible (vinya tolera 45.0%). Necessitat de reg mitja.
@@ -970,7 +970,7 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 [AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
 [AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
 [AVALUACIO] Sector_3: mantenir-posicio +2 (es el que es va fer el cicle anterior).
-[AVALUACIO] Sector_3: mantenir-posicio 2.0 (memoria: a l'episodi #6, cicle 2, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: mantenir-posicio 1.6 (memoria: a l'episodi #6, cicle 2, va funcionar be, similitud 0.8).
 [AVALUACIO] Sector_3: regar-parcial +6 (cultiu, necessitat de reg mitja).
 [AVALUACIO] Sector_3: regar-complet +6 (cultiu, necessitat de reg mitja).
 [AVALUACIO] Sector_3: regar-parcial +2 (vinya, sensibilitat baix).
@@ -978,7 +978,7 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 [REFORC] Sector_3: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.98, 5 rajoles actualitzades.
 [REFORC] Sector_2: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.54, 4 rajoles actualitzades.
 [REFORC] Sector_1: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.49, 4 rajoles actualitzades.
-[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (7.6 punts).
 [SELECCIO] Sector_3: reg regar-parcial. Criteri: maxima valoracio (8 punts).
 [SELECCIO -> APLICACIO]
 [APLICACIO] Sector_3: ORDRE mantenir-posicio -> 30.0 graus.
@@ -986,6 +986,300 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 [EXPLICACIO] Sector_3, cicle 3
 [EXPLICACIO REG] Sector_3, cicle 3
 [EPMEM] NOU EPISODI #9: Sector_3, cicle 3, mantenir-posicio.
+[MONITORATGE] Sector_3: el reg no ha arribat al sol. Cal revisar la valvula o el degoteig.
+```
+
+</details>
+
+## CP15 – Sensor d'humitat que deixa de respondre (historial)
+
+**Cobertura:** dades absents + historial. **Objectiu i resultat esperat:** L'enciam té un 80 % d'aigua i el sensor d'humitat deixa de respondre. La humitat canvia a poc a poc: durant 3 cicles el sistema ha de fer servir l'última lectura (sense risc de dades) i, al quart cicle sense lectura, ja no s'hi pot fiar (risc de dades alt). El vent sí que arriba: no hi ha impasse de seguretat.
+
+| Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
+|---|---|---|---|---|---|
+| 1 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / 80.0 / 150.0 | risc dades = cap | mantenir-posicio (30.0°) | ✅ |
+| 2 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / absent / 150.0 | risc dades = cap | mantenir-posicio (30.0°) | ✅ |
+| 3 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / absent / 150.0 | risc dades = cap | mantenir-posicio (30.0°) | ✅ |
+| 4 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / absent / 150.0 | risc dades = cap | mantenir-posicio (30.0°) | ✅ |
+| 5 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / absent / 150.0 | risc dades = alt; impasse = cap | mantenir-posicio (30.0°); riscos: dades=alt | ✅ |
+
+**Explicació que dona el sistema** (fet `explicacio`):
+
+- Cicle 1, Sector_2: mantenir-posicio a 30.0 graus. Riscos: cap. Candidats: mantenir-posicio(4). Descartats: cap. Criteri: maxima valoracio (4 punts).
+- Cicle 2, Sector_2: mantenir-posicio a 30.0 graus. Riscos: cap. Candidats: mantenir-posicio(8.0). Descartats: cap. Criteri: maxima valoracio (8.0 punts).
+- Cicle 3, Sector_2: mantenir-posicio a 30.0 graus. Riscos: cap. Candidats: mantenir-posicio(8.0). Descartats: cap. Criteri: maxima valoracio (8.0 punts).
+- Cicle 4, Sector_2: mantenir-posicio a 30.0 graus. Riscos: cap. Candidats: mantenir-posicio(8.0). Descartats: cap. Criteri: maxima valoracio (8.0 punts).
+- Cicle 5, Sector_2: mantenir-posicio a 30.0 graus. Riscos: dades=alt. Candidats: mantenir-posicio(7.5) sollicitar-dades(0). Descartats: cap. Criteri: maxima valoracio (7.5 punts).
+
+<details><summary>Traça rellevant del CLIPS</summary>
+
+```
+--- cicle 1 ---
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 30.0 graus.
+[EXPLICACIO] Sector_2, cicle 1
+[EPMEM] NOU EPISODI #2: Sector_2, cicle 1, mantenir-posicio.
+--- cicle 2 ---
+[PERCEPCIO] Sector_2: falta la lectura de humitat-sol; es fa servir la de fa 1 cicle(s): 80.0.
+[EPMEM] Sector_2: l'episodi #2 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #2, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[REFORC] Sector_3: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 1.0, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 0.85, 4 rajoles actualitzades.
+[REFORC] Sector_1: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 0.72, 4 rajoles actualitzades.
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 30.0 graus.
+[EXPLICACIO] Sector_2, cicle 2
+[EPMEM] NOU EPISODI #5: Sector_2, cicle 2, mantenir-posicio.
+--- cicle 3 ---
+[PERCEPCIO] Sector_2: falta la lectura de humitat-sol; es fa servir la de fa 2 cicle(s): 80.0.
+[EPMEM] Sector_2: l'episodi #5 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #5, cicle 2, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[REFORC] Sector_3: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.46, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.42, 4 rajoles actualitzades.
+[REFORC] Sector_1: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.37, 4 rajoles actualitzades.
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 30.0 graus.
+[EXPLICACIO] Sector_2, cicle 3
+[EPMEM] NOU EPISODI #8: Sector_2, cicle 3, mantenir-posicio.
+--- cicle 4 ---
+[PERCEPCIO] Sector_2: falta la lectura de humitat-sol; es fa servir la de fa 3 cicle(s): 80.0.
+[EPMEM] Sector_2: l'episodi #8 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #8, cicle 3, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[REFORC] Sector_3: mantenir-posicio del cicle 3 -> recompensa 1.0 (bona), error 0.21, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 3 -> recompensa 1.0 (bona), error 0.2, 4 rajoles actualitzades.
+[REFORC] Sector_1: mantenir-posicio del cicle 3 -> recompensa 1.0 (bona), error 0.2, 4 rajoles actualitzades.
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 30.0 graus.
+[EXPLICACIO] Sector_2, cicle 4
+[EPMEM] NOU EPISODI #11: Sector_2, cicle 4, mantenir-posicio.
+--- cicle 5 ---
+[PERCEPCIO] Sector_2: falten lectures (vent=3.0, temp-cultiu=16.0, humitat=absent, radiacio=150.0). Risc de dades alt.
+[EPMEM] Sector_2: l'episodi #11 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_2: sollicitar-dades (no es mou el panell).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio 1.5 (memoria: a l'episodi #11, cicle 4, va funcionar be, similitud 0.75).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[REFORC] Sector_3: mantenir-posicio del cicle 4 -> recompensa 1.0 (bona), error 0.08, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 4 -> recompensa 1.0 (bona), error 0.1, 4 rajoles actualitzades.
+[REFORC] Sector_1: mantenir-posicio del cicle 4 -> recompensa 1.0 (bona), error 0.11, 4 rajoles actualitzades.
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (7.5 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 30.0 graus.
+[EXPLICACIO] Sector_2, cicle 5
+[EPMEM] NOU EPISODI #14: Sector_2, cicle 5, mantenir-posicio.
+[MONITORATGE] Sector_2: cal demanar al simulador les lectures que falten (risc de dades alt).
+```
+
+</details>
+
+## CP16 – Lectura impossible i sensor avariat
+
+**Cobertura:** dades incoherents + fallades. **Objectiu i resultat esperat:** Al cicle 2, el sensor de temperatura del tomàquet envia el codi d'error -9999 i el sensor d'humitat diu que està avariat però envia un 20 % (que seria estrès crític). Totes dues lectures s'han de descartar i substituir per les del cicle anterior: ni risc de dades ni estrès hídric. Al cicle 3, el vent envia -9999: el vent no es pot estimar, i s'ha de tractar com si faltés (risc de dades crític i impasse).
+
+| Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
+|---|---|---|---|---|---|
+| 1 | Sector_1 (tomàquet) | 3.0 / 3.0 / 22.0 / 90.0 / 300.0 | risc dades = cap | mantenir-posicio (30.0°) | ✅ |
+| 2 | Sector_1 (tomàquet) | 3.0 / 3.0 / -9999.0 / 20.0 / 300.0 | risc dades = cap; risc estres-hidric = cap; risc temperatura = cap | mantenir-posicio (30.0°) | ✅ |
+| 3 | Sector_1 (tomàquet) | -9999.0 / 3.0 / 22.0 / 90.0 / 300.0 | risc dades = critic; impasse = dades-insuficients | sollicitar-dades (30.0°); riscos: dades=critic; impasse dades-insuficients | ✅ |
+
+**Explicació que dona el sistema** (fet `explicacio`):
+
+- Cicle 1, Sector_1: mantenir-posicio a 30.0 graus. Riscos: cap. Candidats: mantenir-posicio(4). Descartats: cap. Criteri: maxima valoracio (4 punts).
+- Cicle 2, Sector_1: mantenir-posicio a 30.0 graus. Riscos: cap. Candidats: mantenir-posicio(8.0). Descartats: cap. Criteri: maxima valoracio (8.0 punts).
+- Cicle 3, Sector_1: sollicitar-dades a 30.0 graus. Riscos: dades=critic. Candidats: mantenir-posicio(7.5) sollicitar-dades(1000). Descartats: cap. Criteri: preferencia requerida (IMPAS-dades).
+
+<details><summary>Traça rellevant del CLIPS</summary>
+
+```
+--- cicle 1 ---
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_1: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_1: ORDRE mantenir-posicio -> 30.0 graus.
+[EXPLICACIO] Sector_1, cicle 1
+[EPMEM] NOU EPISODI #1: Sector_1, cicle 1, mantenir-posicio.
+--- cicle 2 ---
+[PERCEPCIO] Sector_1: el sensor de humitat-sol diu que esta avariat; la lectura (20.0) no es fa servir.
+[PERCEPCIO] Sector_1: lectura de temperatura-cultiu impossible (-9999.0). Es descarta.
+[PERCEPCIO] Sector_1: falta la lectura de temperatura-cultiu; es fa servir la de fa 1 cicle(s): 22.0.
+[PERCEPCIO] Sector_1: falta la lectura de humitat-sol; es fa servir la de fa 1 cicle(s): 90.0.
+[EPMEM] Sector_1: l'episodi #1 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: mantenir-posicio 2.0 (memoria: a l'episodi #1, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_1: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[REFORC] Sector_3: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 1.0, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 0.85, 4 rajoles actualitzades.
+[REFORC] Sector_1: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 0.72, 4 rajoles actualitzades.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_1: ORDRE mantenir-posicio -> 30.0 graus.
+[EXPLICACIO] Sector_1, cicle 2
+[EPMEM] NOU EPISODI #4: Sector_1, cicle 2, mantenir-posicio.
+--- cicle 3 ---
+[PERCEPCIO] Sector_1: lectura de vent impossible (-9999.0). Es descarta.
+[PERCEPCIO] Sector_1: falten lectures (vent=absent, temp-cultiu=22.0, humitat=90.0, radiacio=300.0). Risc de dades critic.
+[EPMEM] Sector_1: l'episodi #4 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: sollicitar-dades (no es mou el panell).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: mantenir-posicio 1.5 (memoria: a l'episodi #4, cicle 2, va funcionar be, similitud 0.75).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[REFORC] Sector_3: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.46, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.42, 4 rajoles actualitzades.
+[REFORC] Sector_1: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.37, 4 rajoles actualitzades.
+[SELECCIO] Sector_1: IMPAS DE DADES INSUFICIENTS. Sense lectura fiable de vent no es pot saber si moure el panell es segur.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> IMPAS]
+[IMPAS] Sector_1: subobjectiu resoldre-dades. Falta la lectura de vent i ni la previsio ni l'historial indiquen vent fort. Es demanen dades i es mante la posicio.
+[CHUNKING] Nova regla chunk-1: sense lectura de vent i res no indica vent fort, sollicitar-dades requerida i panell en hold.
+[IMPAS -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona sollicitar-dades. Criteri: preferencia requerida (IMPAS-dades).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_1: ORDRE sollicitar-dades -> 30.0 graus.
+[EXPLICACIO] Sector_1, cicle 3
+   Criteri:    preferencia requerida (IMPAS-dades)
+[EPMEM] NOU EPISODI #9: Sector_1, cicle 3, sollicitar-dades.
+[MONITORATGE] Sector_1: cal demanar al simulador les lectures que falten (risc de dades critic).
+```
+
+</details>
+
+## CP17 – Reg que no arriba al sòl
+
+**Cobertura:** fallades (reg) + efecte observat. **Objectiu i resultat esperat:** A les 7 h l'enciam és al 65 % i es rega fins a capacitat de camp (+35 %). A les 8 h la humitat continua al 64 %: el reg no ha arribat (vàlvula o degoteig). El sistema ho ha de detectar (risc de fallada del reg) i, com que el cultiu encara té estrès, tornar-ho a provar. A les 9 h la humitat ja és al 99 %: el reg ha funcionat i no hi ha fallada.
+
+| Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
+|---|---|---|---|---|---|
+| 1 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / 65.0 / 150.0 (7 h) | reg = regar-complet; dosi = 35.0 | mantenir-posicio (30.0°); riscos: estres-hidric=mitja; reg regar-complet (+35.0 %) | ✅ |
+| 2 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / 64.0 / 150.0 (8 h) | risc fallada-reg = alt; reg = regar-complet | mantenir-posicio (30.0°); riscos: estres-hidric=mitja, fallada-reg=alt; reg regar-complet (+36.0 %) | ✅ |
+| 3 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / 99.0 / 150.0 (9 h) | risc fallada-reg = cap; reg = no-regar | mantenir-posicio (30.0°); reg no-regar | ✅ |
+
+**Explicació que dona el sistema** (fet `explicacio`):
+
+- Cicle 1, Sector_2: mantenir-posicio a 30.0 graus. Riscos: estres-hidric=mitja. Candidats: mantenir-posicio(4) orientar-ombra(3). Descartats: cap. Criteri: maxima valoracio (4 punts).
+  - Reg: regar-complet (+35.0%). Necessitat: mitja (esgotat 35.0%). Candidats: no-regar(1) regar-complet(9) regar-parcial(7). Descartats: cap. Criteri: maxima valoracio (9 punts).
+- Cicle 2, Sector_2: mantenir-posicio a 30.0 graus. Riscos: fallada-reg=alt estres-hidric=mitja. Candidats: mantenir-posicio(7.6) orientar-ombra(3). Descartats: cap. Criteri: maxima valoracio (7.6 punts).
+  - Reg: regar-complet (+36.0%). Necessitat: mitja (esgotat 36.0%). Candidats: no-regar(1) regar-complet(9) regar-parcial(7). Descartats: cap. Criteri: maxima valoracio (9 punts).
+- Cicle 3, Sector_2: mantenir-posicio a 30.0 graus. Riscos: cap. Candidats: mantenir-posicio(8.0). Descartats: cap. Criteri: maxima valoracio (8.0 punts).
+  - Reg: no-regar (+0%). Necessitat: cap. Candidats: no-regar(1). Descartats: cap. Criteri: maxima valoracio (1 punts).
+
+<details><summary>Traça rellevant del CLIPS</summary>
+
+```
+--- cicle 1 ---
+[ELABORACIO] Sector_2: queda un 65.0% d'aigua disponible (enciam tolera esgotar fins al 30.0%). Estres hidric mitja.
+[ELABORACIO] El risc estres-hidric de Sector_2 activa l'objectiu Obj_Produccio_Cultiu.
+[ELABORACIO] Sector_2: s'ha gastat el 35.0% de l'aigua disponible (enciam tolera 30.0%). Necessitat de reg mitja.
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_2: regar-complet (+35.0% de l'aigua disponible) i regar-parcial (+20.0%), hi ha estres hidric.
+[AVALUACIO] Sector_2: orientar-ombra +3 (cultiu, risc estres-hidric mitja).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: regar-parcial +6 (cultiu, necessitat de reg mitja).
+[AVALUACIO] Sector_2: regar-complet +6 (cultiu, necessitat de reg mitja).
+[AVALUACIO] Sector_2: regar-complet +2 (enciam, sensibilitat alt).
+[AVALUACIO] Sector_2: regar-parcial +1 (hora fresca).
+[AVALUACIO] Sector_2: regar-complet +1 (hora fresca).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+[SELECCIO] Sector_2: reg regar-complet. Criteri: maxima valoracio (9 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 30.0 graus.
+[APLICACIO] Sector_2: ORDRE DE REG regar-complet -> +35.0% de l'aigua disponible.
+[EXPLICACIO] Sector_2, cicle 1
+[EXPLICACIO REG] Sector_2, cicle 1
+[EPMEM] NOU EPISODI #2: Sector_2, cicle 1, mantenir-posicio.
+--- cicle 2 ---
+[PERCEPCIO] Sector_2: es va ordenar regar +35.0% pero la humitat ha passat de 65.0 a 64.0%. Fallada del reg.
+[ELABORACIO] Sector_2: queda un 64.0% d'aigua disponible (enciam tolera esgotar fins al 30.0%). Estres hidric mitja.
+[ELABORACIO] El risc estres-hidric de Sector_2 activa l'objectiu Obj_Produccio_Cultiu.
+[ELABORACIO] Sector_2: s'ha gastat el 36.0% de l'aigua disponible (enciam tolera 30.0%). Necessitat de reg mitja.
+[EPMEM] Sector_2: l'episodi #2 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 1 -> 1).
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_2: regar-complet (+36.0% de l'aigua disponible) i regar-parcial (+21.0%), hi ha estres hidric.
+[AVALUACIO] Sector_2: orientar-ombra +3 (cultiu, risc estres-hidric mitja).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio 1.6 (memoria: a l'episodi #2, cicle 1, va funcionar be, similitud 0.8).
+[AVALUACIO] Sector_2: regar-parcial +6 (cultiu, necessitat de reg mitja).
+[AVALUACIO] Sector_2: regar-complet +6 (cultiu, necessitat de reg mitja).
+[AVALUACIO] Sector_2: regar-complet +2 (enciam, sensibilitat alt).
+[AVALUACIO] Sector_2: regar-parcial +1 (hora fresca).
+[AVALUACIO] Sector_2: regar-complet +1 (hora fresca).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[REFORC] Sector_3: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 1.0, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 0.85, 5 rajoles actualitzades.
+[REFORC] Sector_1: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 0.75, 4 rajoles actualitzades.
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (7.6 punts).
+[SELECCIO] Sector_2: reg regar-complet. Criteri: maxima valoracio (9 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 30.0 graus.
+[APLICACIO] Sector_2: ORDRE DE REG regar-complet -> +36.0% de l'aigua disponible.
+[EXPLICACIO] Sector_2, cicle 2
+[EXPLICACIO REG] Sector_2, cicle 2
+[EPMEM] NOU EPISODI #5: Sector_2, cicle 2, mantenir-posicio.
+[MONITORATGE] Sector_2: el reg no ha arribat al sol. Cal revisar la valvula o el degoteig.
+--- cicle 3 ---
+[EPMEM] Sector_2: l'episodi #5 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 1 -> 0).
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #5, cicle 2, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[REFORC] Sector_3: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.49, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.41, 6 rajoles actualitzades.
+[REFORC] Sector_1: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.41, 4 rajoles actualitzades.
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 30.0 graus.
+[EXPLICACIO] Sector_2, cicle 3
+[EPMEM] NOU EPISODI #8: Sector_2, cicle 3, mantenir-posicio.
 ```
 
 </details>

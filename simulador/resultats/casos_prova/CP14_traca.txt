@@ -152,6 +152,7 @@
 ######################################################################
 # CP14 - cicle 3
 ######################################################################
+[PERCEPCIO] Sector_3: es va ordenar regar +22.6% pero la humitat ha passat de 54.9 a 54.9%. Fallada del reg.
 [PERCEPCIO -> ELABORACIO]
 [ELABORACIO] Sector_3: queda un 54.9% d'aigua disponible (vinya tolera esgotar fins al 45.0%). Estres hidric mitja.
 [ELABORACIO] El risc estres-hidric de Sector_3 activa l'objectiu Obj_Produccio_Cultiu.
@@ -178,7 +179,7 @@
 [AVALUACIO] Sector_1: mantenir-posicio +2 (es el que es va fer el cicle anterior).
 [AVALUACIO] Sector_1: mantenir-posicio 2.0 (memoria: a l'episodi #4, cicle 2, va funcionar be, similitud 1.0).
 [AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #5, cicle 2, va funcionar be, similitud 1.0).
-[AVALUACIO] Sector_3: mantenir-posicio 2.0 (memoria: a l'episodi #6, cicle 2, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: mantenir-posicio 1.6 (memoria: a l'episodi #6, cicle 2, va funcionar be, similitud 0.8).
 [AVALUACIO] Sector_3: regar-parcial +6 (cultiu, necessitat de reg mitja).
 [AVALUACIO] Sector_3: regar-complet +6 (cultiu, necessitat de reg mitja).
 [AVALUACIO] Sector_3: regar-parcial +2 (vinya, sensibilitat baix).
@@ -191,7 +192,7 @@
 [REFORC] Sector_2: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.54, 4 rajoles actualitzades.
 [REFORC] Sector_1: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.49, 4 rajoles actualitzades.
 [SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
-[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (7.6 punts).
 [SELECCIO] Sector_3: reg regar-parcial. Criteri: maxima valoracio (8 punts).
 [SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
 [SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
@@ -218,10 +219,10 @@
 
 [EXPLICACIO] Sector_3, cicle 3
    Accio:      mantenir-posicio a 30.0 graus
-   Riscos:     estres-hidric=mitja
-   Candidats:  mantenir-posicio(8.0) orientar-ombra(3)
+   Riscos:     fallada-reg=alt estres-hidric=mitja
+   Candidats:  mantenir-posicio(7.6) orientar-ombra(3)
    Descartats: cap
-   Criteri:    maxima valoracio (8.0 punts)
+   Criteri:    maxima valoracio (7.6 punts)
 
 [EXPLICACIO REG] Sector_3, cicle 3
    Accio:      regar-parcial (+22.6% de l'aigua disponible)
@@ -234,5 +235,6 @@
 [EPMEM] NOU EPISODI #7: Sector_1, cicle 3, mantenir-posicio.
 [EPMEM] NOU EPISODI #8: Sector_2, cicle 3, mantenir-posicio.
 [EPMEM] NOU EPISODI #9: Sector_3, cicle 3, mantenir-posicio.
+[MONITORATGE] Sector_3: el reg no ha arribat al sol. Cal revisar la valvula o el degoteig.
 [FI DEL CICLE 3] Ordres enviades. Esperant les dades del cicle 4.
 

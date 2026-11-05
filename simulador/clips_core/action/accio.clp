@@ -41,6 +41,10 @@
     (printout t "[APLICACIO] " ?s ": ORDRE DE REG " ?op " -> +" ?d "% de l'aigua disponible." crlf))
   (modify ?o (estat aplicat))
   (assert (ordre-reg (sector ?s) (cicle ?c) (accio ?op) (dosi ?d) (motiu ?m)))
+  ; al cicle seguent es comprova que la humitat ha pujat (percep-reg-correcte / percep-fallada-reg)
+  (if (neq ?op no-regar) then
+    (do-for-fact ((?ob observacio)) (and (eq ?ob:sector ?s) (eq ?ob:cicle ?c) (numberp ?ob:humitat-sol))
+      (assert (reg-pendent (sector ?s) (cicle ?c) (dosi ?d) (humitat-abans ?ob:humitat-sol)))))
   (assert (traca (pas ?c) (fase aplicacio)
                  (missatge (str-cat ?s ": reg " ?op " " ?d "%")))))
 
@@ -159,6 +163,16 @@
   (printout t "[MONITORATGE] " ?s ": l'actuador no ha respost. Cal revisio de manteniment." crlf)
   (assert (traca (pas ?c) (fase monitoratge)
                  (missatge (str-cat ?s ": actuador sense resposta, avis de manteniment")))))
+
+(defrule avisa-fallada-reg
+  (declare (auto-focus TRUE))
+  (fase (nom monitoratge))
+  (cicle (numero ?c))
+  (risc (sector ?s) (cicle ?c) (tipus fallada-reg))
+  =>
+  (printout t "[MONITORATGE] " ?s ": el reg no ha arribat al sol. Cal revisar la valvula o el degoteig." crlf)
+  (assert (traca (pas ?c) (fase monitoratge)
+                 (missatge (str-cat ?s ": reg sense efecte, avis de manteniment")))))
 
 ; Tanca el cicle: els objectius es tornen a calcular el cicle seguent.
 ; Nota de persistencia: els fets temporals del cicle es conserven de moment per

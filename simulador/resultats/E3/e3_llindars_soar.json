@@ -1,7 +1,7 @@
 {
   "versio": "soar",
-  "casos": 83,
-  "pass": 83,
+  "casos": 85,
+  "pass": 85,
   "fail": 0,
   "fallades": []
 }
