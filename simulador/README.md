@@ -249,6 +249,7 @@ cada cas.
 `puntuacio` es van triar a mà. E19 els justifica de dues maneres:
 - **Analíticament**, amb les desigualtats que han de complir perquè la suma de preferències respecti les prioritats. Es calculen en totes les situacions possibles: vent, tres riscos del cultiu, cobertura de la demanda, panell a l'òptim i operador anterior.
 - **Empíricament**, amb 25 variants del `.clp` sobre els mateixos dies reals: 20 de Ribera i 20 de vent de Cantallops, amb memòria.
+- **A la graella de situacions d'E2** (5.670 decisions per variant, sense memòria): cap variant de pesos o nivells provoca violacions. Seguretat 3 i "tots els pesos a 1" canvien el 20 % de les decisions; la resta, menys del 4 %. Moviment 0 o energia 4 fan aparèixer més impasses d'empat (898 i 858, contra 810).
 
 | Element | Valor | Justificació | Què passa si es canvia (dies reals) |
 |---|---|---|---|
@@ -257,7 +258,7 @@ cada cas.
 | Pes d'**estabilitat** | 2 | Ha de ser més petit que un nivell d'un objectiu principal (3·1). Així repetir l'operador només desfà quasi-empats i no capgira mai una diferència real | 0–1 → més canvis d'operador; 3 → 1,5 impasses/dia; 4 → −5 % d'energia (s'enganxa a l'operador anterior) |
 | Pes de **moviment** | 1 | Més petit que l'estabilitat i que un nivell: només desempata entre quedar-se i moure's | 2 → 1,45 impasses/dia (empata amb l'estabilitat) |
 | **Nivells** | 0, 1, 2, 3 | Ordinals, de l'escala de quatre nivells del domini (baix, mitjà, alt, crític). Lineals per simplicitat | 0-1-2-4, 0-1-3-6, 0-1-4-9 i 0-2-3-4 → 98–100 % de decisions iguals, cap violació. **Les conclusions no depenen de l'escala** |
-| **Requerida** | +1000 | Ha de superar qualsevol suma de preferències numèriques: com a màxim 31 (ombra amb 3 riscos crítics + estabilitat + memòria) contra un mínim de −2 a l'operador requerit. N'hi ha prou amb més de 33; 1000 dona un marge de 30 vegades | De 0 a 100, cap canvi en dies reals; vegeu la graella |
+| **Requerida** | +1000 | Ha de superar qualsevol suma de preferències numèriques: com a màxim 31 (ombra amb 3 riscos crítics + estabilitat + memòria) contra un mínim de −2 a l'operador requerit. N'hi ha prou amb més de 33; 1000 dona un marge de 30 vegades | De 0 a 100, cap canvi en dies reals. A la graella (situacions límit), **0 → 23 violacions i 10 → 3; 34 i 100 → cap**, tal com prediu la fita de 33 |
 | **Millor / pitjor** | +100 / −100 | **Cap regla genera aquestes preferències**: és codi mort, heretat de les preferències de Soar | — |
 | Pes de la **memòria** | ±2 | No entrava en el càlcul de les prioritats | 0 o 1 → menys exposició al vent (com seguretat 7) |
 

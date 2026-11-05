@@ -1,0 +1,7 @@
+{
+  "max_puntuacio_numerica": 31.0,
+  "min_operador_requerit": -2.0,
+  "requerida_minima_necessaria": 33.0,
+  "requerida": 1000,
+  "factor_de_seguretat": 30.3
+}

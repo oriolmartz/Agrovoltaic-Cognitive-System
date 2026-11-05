@@ -1,0 +1,132 @@
+{
+  "base": {},
+  "pes_seguretat_3": {
+    "pesos": {
+      "seguretat": 3
+    }
+  },
+  "pes_seguretat_4": {
+    "pesos": {
+      "seguretat": 4
+    }
+  },
+  "pes_seguretat_7": {
+    "pesos": {
+      "seguretat": 7
+    }
+  },
+  "pes_seguretat_10": {
+    "pesos": {
+      "seguretat": 10
+    }
+  },
+  "pes_cultiu_2": {
+    "pesos": {
+      "cultiu": 2
+    }
+  },
+  "pes_cultiu_4": {
+    "pesos": {
+      "cultiu": 4
+    }
+  },
+  "pes_energia_2": {
+    "pesos": {
+      "energia": 2
+    }
+  },
+  "pes_energia_4": {
+    "pesos": {
+      "energia": 4
+    }
+  },
+  "pes_estabilitat_0": {
+    "pesos": {
+      "estabilitat": 0
+    }
+  },
+  "pes_estabilitat_1": {
+    "pesos": {
+      "estabilitat": 1
+    }
+  },
+  "pes_estabilitat_3": {
+    "pesos": {
+      "estabilitat": 3
+    }
+  },
+  "pes_estabilitat_4": {
+    "pesos": {
+      "estabilitat": 4
+    }
+  },
+  "pes_moviment_0": {
+    "pesos": {
+      "moviment": 0
+    }
+  },
+  "pes_moviment_2": {
+    "pesos": {
+      "moviment": 2
+    }
+  },
+  "pesos_tots_1": {
+    "pesos": {
+      "seguretat": 1,
+      "cultiu": 1,
+      "energia": 1,
+      "estabilitat": 1,
+      "moviment": 1
+    }
+  },
+  "nivells_0124": {
+    "nivells": {
+      "baix": 0,
+      "mitja": 1,
+      "alt": 2,
+      "critic": 4
+    }
+  },
+  "nivells_0149": {
+    "nivells": {
+      "baix": 0,
+      "mitja": 1,
+      "alt": 4,
+      "critic": 9
+    }
+  },
+  "nivells_0234": {
+    "nivells": {
+      "baix": 0,
+      "mitja": 2,
+      "alt": 3,
+      "critic": 4
+    }
+  },
+  "nivells_0136": {
+    "nivells": {
+      "baix": 0,
+      "mitja": 1,
+      "alt": 3,
+      "critic": 6
+    }
+  },
+  "requerida_0": {
+    "requerida": 0
+  },
+  "requerida_10": {
+    "requerida": 10
+  },
+  "requerida_34": {
+    "requerida": 34
+  },
+  "requerida_100": {
+    "requerida": 100
+  },
+  "pes_memoria_0": {
+    "pes_memoria": 0
+  },
+  "pes_memoria_1": {
+    "pes_memoria": 1
+  }
+}
