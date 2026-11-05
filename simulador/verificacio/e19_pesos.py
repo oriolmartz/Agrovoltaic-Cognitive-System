@@ -150,7 +150,11 @@ def escriu_variant(nom, canvis) -> str:
 # --------------------------------------------------------------------------- B. graella
 
 def _graella(arg):
+    """Una variant a la graella. Es desa a resultats/E19/graella/<variant>.csv: si s'interromp, es continua."""
     nom, clp = arg
+    fet = os.path.join(DIR, "graella", f"{nom}.csv.gz")
+    if os.path.isfile(fet):
+        return pd.read_csv(fet).to_dict("records")
     import e2_graella as E
     E._init(clp)
     casos = [dict(zip(E.GRAELLA_RAPIDA, vals)) for vals in itertools.product(*E.GRAELLA_RAPIDA.values())]
@@ -159,6 +163,9 @@ def _graella(arg):
         for f in E._un_cas(cas):
             f.pop("regles", None)
             files.append({"variant": nom, **f})
+    os.makedirs(os.path.dirname(fet), exist_ok=True)
+    pd.DataFrame(files).to_csv(fet + ".tmp", index=False, compression="gzip")
+    os.replace(fet + ".tmp", fet)
     return files
 
 
