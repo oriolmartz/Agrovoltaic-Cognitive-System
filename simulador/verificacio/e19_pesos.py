@@ -51,8 +51,10 @@ NOM_OBJ = {0: "seguretat", 1: "cultiu", 2: "energia"}
 
 def puntuacions(w, L, vent, riscos, cob, optim, prev):
     """Puntuacio numerica de cada operador proposat, tal com la calculen les regles AV3-AV8."""
-    ops = {"orientar-produccio": w["energia"] * L[cob],
-           "mantenir-posicio": (w["energia"] * L[cob] if optim else 0) + w["moviment"]}
+    # des de l'iteracio 30, orientar-produccio nomes es proposa si el panell no es a l'angle optim
+    ops = {"mantenir-posicio": (w["energia"] * L[cob] if optim else 0) + w["moviment"]}
+    if not optim:
+        ops["orientar-produccio"] = w["energia"] * L[cob]
     if any(n != "baix" for n in riscos):
         ops["orientar-ombra"] = sum(w["cultiu"] * L[n] for n in riscos if n != "baix")
     if vent == "alt":
