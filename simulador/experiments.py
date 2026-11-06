@@ -202,6 +202,14 @@ def _sector_gcr(g):
     return {"sectors": {s: {"gcr": g} for s in ("Sector_1", "Sector_2", "Sector_3")}}
 
 
+def _valor(v):
+    """Valor d'una variacio: numero si ho es, si no el text (p. ex. True/False)."""
+    try:
+        return float(v)
+    except ValueError:
+        return v
+
+
 VARIACIONS_MODEL = {
     # parametre: (valors, com es posa a l'escenari). El valor del mig es el de config.json.
     "gcr": ([0.2, 0.4, 0.6], _sector_gcr),
@@ -240,7 +248,7 @@ def _sensibilitat(variacions, lloc, metriques, n_dies, llavors, nom, filtre=None
         for m in metriques:
             a, b = ample[(m, "soar")], ample[(m, "seguidor")]
             r = st.compara_aparellat(a, b, "soar", "seguidor", m)
-            files.append({"parametre": par, "valor": float(val), "metrica": m, "n": r["n"],
+            files.append({"parametre": par, "valor": _valor(val), "metrica": m, "n": r["n"],
                           "soar": round(r["mitjana_A"], 2), "seguidor": round(r["mitjana_B"], 2),
                           "soar-seguidor": round(r["dif_mitjana"], 2), "IC95": r["IC95_dif"],
                           "p": r["p_wilcoxon"], "efecte": round(r["efecte_rb"], 2)})
