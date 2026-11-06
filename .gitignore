@@ -51,3 +51,8 @@ simulador/clips_core/topologia_rdf.clp
 
 # E16: resultats parcials de les execucions llargues (es regeneren amb experiments.py E16 --part k)
 simulador/resultats/E16/parts/
+
+# E20: resultats parcials de les execucions llargues (es regeneren amb experiments.py E20 --part k)
+simulador/resultats/E20/parts/
+# Simulacions de demostracio (es regeneren executant el simulador)
+simulador/resultats/simulacions/
