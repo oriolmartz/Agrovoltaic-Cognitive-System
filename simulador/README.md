@@ -477,8 +477,26 @@ Amb el calendari de cultiu (bloc 1), fora de temporada no es rega, i per això t
 - **Sí que fa dues coses útils:** gairebé elimina els impasses (de 1,25 a 0,12 al mes, p = 0,036), perquè el petit valor del resum desempata, i a mesura que hi ha resums amb n ≥ 3 deixa de consultar la memòria episòdica: al desembre, 0 decisions amb episòdica.
 - **La finestra controla el creixement:** amb la finestra, a la memòria de treball hi ha sempre 294 episodis, en lloc dels 15.288 de final d'any, i dona els mateixos resultats que sense finestra (energia +0,4 kWh, p = 1).
 - **Consistència (Rashid):** 0 problemes a K1–K6 en 2.912 fotos.
-- **Temps per cicle:** vegeu la mesura neta a sota (un sol procés). A E20 i E16 les execucions compartien els dos processadors, i per això els ms absoluts tenen soroll.
+- **Temps per cicle:** vegeu la mesura neta a l'apartat següent (un sol procés). A E20 i E16 les execucions compartien els dos processadors, i per això els ms absoluts tenen soroll.
 - **Conclusió:** la memòria semàntica resol el problema d'escalabilitat de l'episòdica, però a costa de treure-li quasi tot l'efecte sobre les decisions. Si es volgués que el resum pesés més, caldria un pes més gran o una fórmula que no es dilueixi amb n, per exemple (bona − dolenta)/n sense el +2. Però llavors s'hauria de tornar a comprovar el límit amb la seguretat (iteració 31).
+
+### Temps per cicle (mesura neta)
+
+`python verificacio/temps_cicle.py`: un sol procés, sense res més en marxa, 364 dies seguits del 2023 (Ribera de Sió), amb cada configuració d'E20. El temps de CLIPS és el de `executa_cicle` (regles + lectura dels resultats). El temps de paret inclou també la simulació física i el pont Python-CLIPS. Resultats a `resultats/temps_cicle/`.
+
+| | sense memòria | episòdica | semàntica | semàntica amb finestra |
+|---|---|---|---|---|
+| ms CLIPS per cicle, 1a setmana | 4,0 | 6,0 | 5,2 | 5,0 |
+| ms CLIPS per cicle, última setmana | 274 | 495 | 369 | 335 |
+| Creixement (ms per cicle i dia) | 0,60 | 1,53 | 1,22 | 1,07 |
+| Segons de paret per dia (mitjana) | 3,6 | 10,1 | 8,5 | 6,8 |
+| Minuts de paret, 1 any | 22 | 61 | 52 | 41 |
+| Episodis a la MT al final | 0 | 15.288 | 15.288 | 294 |
+
+- **Extrapolació:** el cost per cicle creix de manera aproximadament lineal amb els dies, de manera que el temps total creix amb el quadrat de la durada. Si el creixement es manté, 2 anys costarien unes 4 vegades el temps d'1 any i 3 anys unes 9 vegades. Per exemple, sense memòria serien ~1,5 h i ~3,3 h, i amb l'episòdica ~4 h i ~9 h. És una estimació, no una mesura.
+- **Per què creix, fins i tot sense memòria:** no és per fets acumulats. La memòria de treball es manté entre 300 i 460 fets i el nombre d'objectes de Python és constant. Si es desa l'estat del dia 60 i es carrega en un entorn CLIPS nou, el cicle passa de 17,5 ms a 4,5 ms amb exactament els mateixos fets. Per tant, és un llast intern de l'entorn CLIPS/clipspy que creix amb els cicles, no de les regles del sistema.
+- **Com es podria evitar:** recrear l'entorn periòdicament amb el mateix mecanisme de punt de control d'E16, que ja es comprova que dona resultats idèntics (`verificacio/prova_punt_control.py`). No s'ha aplicat.
+- **Diferència entre memòries:** la diferència real entre configuracions és el que hi ha per sobre d'aquest creixement de base. L'episòdica és la més cara, perquè té 15.288 episodis a la memòria de treball. La finestra n'hi deixa 294 i és la més barata de les tres amb memòria.
 
 **E24 – escalabilitat de la memòria episòdica** (índex per operador contra cerca exhaustiva):
 
@@ -507,4 +525,4 @@ Amb el calendari de cultiu (bloc 1), fora de temporada no es rega, i per això t
 - **Memòria episòdica:** l'índex per operador (iteració 36) dona un 17 % amb 15.000 episodis. Un índex invertit per tret, com el de Soar, donaria més, però canviaria quins episodis es recuperen en cas d'empat; amb la finestra de la memòria semàntica no cal.
 - **Assignació de crèdit de la memòria:** el temps canvia els riscos d'una hora a l'altra, i el resultat d'un episodi en depèn tant com de l'operador. Per això el 57 % dels resums semàntics barregen casos bons i dolents i la memòria hi té poc efecte. Caldria comparar amb el que hauria passat amb un altre operador (contrafactual), cosa que la memòria episòdica no sap fer.
 - **E12, part de pesos i `alfa`:** són dins del CLIPS i no es poden variar des del simulador sense tocar el `.clp`.
-- **Cost de tornar-ho a executar tot:** amb 2 processadors, unes 20 hores (E16 i E20 són simulacions d'1 i 2 anys seguits que no es poden repartir). Una memòria cau de resultats per versió del `.clp` i un mode ràpid de proves ho reduirien.
+- **Cost de tornar-ho a executar tot:** amb 2 processadors, unes 20 hores (E16 i E20 són simulacions d'1 i 2 anys seguits que no es poden repartir). Una memòria cau de resultats per versió del `.clp` i un mode ràpid de proves ho reduirien, i també recrear l'entorn CLIPS periòdicament (vegeu la mesura de temps).
