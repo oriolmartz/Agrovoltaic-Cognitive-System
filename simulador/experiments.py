@@ -7,6 +7,7 @@ del controlador.
 
     python experiments.py E7 --dies 48
     python experiments.py E4
+    python experiments.py E23 --dies 60 --llavors 5
     python experiments.py llista
 """
 
@@ -859,6 +860,233 @@ def E20(n_execucions=2, part=None, minuts_tram=None):
     return {"resum": resum, "tests": t, "evolucio": evol}
 
 
+# ============================================================================ E23: oblit episodic
+
+FRACCIONS_OBLIT = (0.75, 0.50, 0.25)
+BRAÇOS_OBLIT = {
+    "B_finestra": "window",
+    "C_aleatori": "random",
+    "D_antiguitat": "oldest",
+    "E_activacio_episodi": "episode_activation",
+    "F_activacio_grup": "group_activation",
+    "G_grup_sense_proteccions": "group_unprotected",
+}
+
+
+def _feines_e23(n_execucions=1, n_dies=None, llavors=None, arxivar=True):
+    lloc = "ribera_2022_2023"
+    base = {"lloc": lloc, "mode_dies": "sequencial",
+            "dies": {"des_de": "2023-01-01", "fins_a": "2023-12-31"}}
+    dies = S.selecciona_dies(S.carrega_config(base))
+    if n_dies is not None:
+        dies = dies[:max(1, min(int(n_dies), len(dies)))]
+    llavors = tuple(llavors) if llavors is not None else tuple(range(n_execucions))
+    cfg_base = S.carrega_config(base)
+    h0, h1 = cfg_base["hores"]
+    dates = set(dies)
+    meteo = dades.carrega(lloc)
+    mask = meteo.index.strftime("%Y-%m-%d").isin(dates) & (meteo.index.hour >= h0) & (meteo.index.hour <= h1)
+    episodis_base = int(mask.sum()) * len(S.SECTORS)
+    if episodis_base < 1:
+        raise ValueError("No hi ha cicles disponibles per a l'experiment E23")
+
+    feines = []
+    for ll in llavors:
+        etiqueta = "A_sense_oblit"
+        oblit = {"mode": "none", "capacitat_max": episodis_base + 1,
+                 "capacitat_objectiu": episodis_base, "llavor": ll}
+        esc = S._fusiona(base, {"controlador": {"epmem": True, "smem": True, "smem_finestra": 0,
+                                                "oblit": oblit}})
+        feines.append((etiqueta, _amb_traca(S.carrega_config(esc), "E23"), dies, ll))
+        for fraccio in FRACCIONS_OBLIT:
+            capacitat = max(1, int(episodis_base * fraccio))
+            objectiu = max(0, int(capacitat * 0.8))
+            for etiqueta_arm, mode in BRAÇOS_OBLIT.items():
+                etiqueta = f"{etiqueta_arm}_{int(fraccio * 100)}"
+                base_oblit = {"mode": mode, "capacitat_max": capacitat,
+                              "capacitat_objectiu": objectiu, "d": 0.5,
+                              "gracia_cicles": 98, "k_representatius": 3,
+                              "finestra_cicles": 7 * 14, "llavor": ll,
+                              "arxiu": (os.path.join(carpeta("E23"), "arxiu",
+                                                    f"{etiqueta}_llavor{ll}_dies{n_dies or 'any'}.facts")
+                                        if arxivar else "")}
+                esc = S._fusiona(base, {"controlador": {"epmem": True, "smem": True,
+                                                         "smem_finestra": 0, "oblit": base_oblit}})
+                feines.append((etiqueta, _amb_traca(S.carrega_config(esc), "E23"), dies, ll))
+    return feines
+
+
+def _treball_e23(arg):
+    nom, cfg, dies, llavor = arg
+    sim = S.Simulacio(cfg, llavor)
+    df = sim.executa(dies, etiqueta=nom)
+    fotos = [{"etiqueta": nom, "llavor": llavor, "dia": f["dia"], "cicle": f["cicle"],
+              "n_epmem": f.get("n_epmem", 0), "n_smem": f.get("n_smem", 0),
+              **{k: v for k, v in f.items() if k.startswith("epmem_")}}
+             for f in sim.fotos]
+    return df, pd.DataFrame(fotos)
+
+
+def _grafica_oblit(resum: pd.DataFrame, desti: str):
+    dades_plot = resum.dropna(subset=["epmem_final", "fidelitat_pct"])
+    w, h = 900, 520
+    x0, y0, pw, ph = 90, 45, 750, 390
+    xmax = max(1.0, float(dades_plot["epmem_final"].max()))
+    xmin = 0.0
+    ymin, ymax = 0.0, 100.0
+    def x(v):
+        return x0 + (v - xmin) / max(1, xmax - xmin) * pw
+    def y(v):
+        return y0 + ph - (v - ymin) / (ymax - ymin) * ph
+    colors = ("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2")
+    linies = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">',
+              '<rect width="100%" height="100%" fill="white"/>',
+              f'<text x="{w/2}" y="24" text-anchor="middle" font-family="sans-serif" font-size="18">Cost de memòria vs fidelitat de decisió</text>']
+    for v in range(0, 101, 20):
+        linies.append(f'<line x1="{x0}" y1="{y(v)}" x2="{x0+pw}" y2="{y(v)}" stroke="#ddd"/>')
+        linies.append(f'<text x="{x0-10}" y="{y(v)+4}" text-anchor="end" font-family="sans-serif" font-size="12">{v}</text>')
+    linies += [f'<line x1="{x0}" y1="{y0}" x2="{x0}" y2="{y0+ph}" stroke="#333"/>',
+               f'<line x1="{x0}" y1="{y0+ph}" x2="{x0+pw}" y2="{y0+ph}" stroke="#333"/>',
+               f'<text x="{x0+pw/2}" y="{h-18}" text-anchor="middle" font-family="sans-serif">Episodis EpMem al final (menys és millor)</text>',
+               f'<text transform="translate(20 {y0+ph/2}) rotate(-90)" text-anchor="middle" font-family="sans-serif">Decisions iguals a A (%)</text>']
+    labels = []
+    for i, (_, r) in enumerate(dades_plot.iterrows()):
+        color = colors[i % len(colors)]
+        px, py = x(r["epmem_final"]), y(r["fidelitat_pct"])
+        nom = str(r["config"])
+        linies.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="5" fill="{color}"><title>{nom}: {r["epmem_final"]:.0f} episodis, {r["fidelitat_pct"]:.2f}%</title></circle>')
+        labels.append(f'<text x="{x0+10}" y="{y0+14+i*18}" fill="{color}" font-family="sans-serif" font-size="12">{nom}</text>')
+    linies.extend(labels)
+    linies.append("</svg>")
+    with open(desti, "w", encoding="utf-8") as f:
+        f.write("\n".join(linies))
+
+
+def E23(n_execucions=1, n_dies=None, llavors=None, part=None, arxivar=True):
+    """Compara oblit episòdic A-G, amb tres capacitats, amb dades seqüencials de Ribera 2023."""
+    feines = _feines_e23(n_execucions, n_dies, llavors, arxivar)
+    dparts = os.path.join(carpeta("E23"), "parts")
+    os.makedirs(dparts, exist_ok=True)
+    suffix = f"_dies{n_dies or 'any'}" + ("" if arxivar else "_sense_arxiu")
+    fitxer = lambda f: os.path.join(dparts, f"{f[0]}_exec{f[3]}{suffix}")
+    pendents = [i for i, f in enumerate(feines) if not os.path.isfile(fitxer(f) + ".csv.gz")]
+    if part is not None:
+        if part < 0 or part >= len(feines):
+            raise ValueError(f"--part ha de ser entre 0 i {len(feines) - 1}")
+        pendents = [part] if part in pendents else []
+    if pendents:
+        sortides = paralel.mapa(_treball_e23, [feines[i] for i in pendents], PROCESSOS[0],
+                                titol="E23 simulacions", cada=1, mida=1, espera_maxima=24 * 3600)
+        for i, (df_i, fotos_i) in zip(pendents, sortides):
+            df_i.to_csv(fitxer(feines[i]) + ".csv.gz", index=False)
+            fotos_i.to_csv(fitxer(feines[i]) + "_fotos.csv", index=False)
+    if part is not None:
+        return {"resum": pd.DataFrame({"part": [part], "feina": [feines[part][0]]}),
+                "tests": pd.DataFrame()}
+    if any(not os.path.isfile(fitxer(f) + ".csv.gz") for f in feines):
+        return {"resum": pd.DataFrame({"pendents": [1]}), "tests": pd.DataFrame()}
+
+    df = pd.concat([pd.read_csv(fitxer(f) + ".csv.gz") for f in feines], ignore_index=True)
+    fotos = pd.concat([pd.read_csv(fitxer(f) + "_fotos.csv") for f in feines], ignore_index=True)
+    df["dia"] = df["dia"].astype(str)
+    fotos["dia"] = fotos["dia"].astype(str)
+    d = carpeta("E23")
+    df.to_csv(os.path.join(d, "E23_horari.csv.gz"), index=False)
+    fotos.to_csv(os.path.join(d, "E23_memoria.csv"), index=False)
+    if "epmem_escanejats_total" in fotos:
+        fotos = fotos.sort_values(["etiqueta", "llavor", "dia"])
+        for c in ("epmem_escanejats_total", "epmem_oblidats"):
+            if c in fotos:
+                fotos[c + "_dia"] = fotos.groupby(["etiqueta", "llavor"])[c].diff().fillna(fotos[c])
+    pdia = M.per_dia(df)
+    pdia["config"] = pdia["etiqueta"]
+    ref_clau = ["llavor", "dia", "hora", "sector"]
+    ref = df[df["etiqueta"] == "A_sense_oblit"].set_index(ref_clau)["accio"]
+    fidelity = []
+    for nom, g in df.groupby("etiqueta"):
+        x = g.set_index(ref_clau)[["accio", "angle_ordre"]].join(ref.rename("accio_ref"), how="inner")
+        fidelity.append({"config": nom,
+                         "fidelitat_pct": 100 * (x["accio"] == x["accio_ref"]).mean(),
+                         "decisions_comparades": len(x)})
+    fidelity = pd.DataFrame(fidelity)
+    mem = (fotos.sort_values(["etiqueta", "llavor", "dia"])
+           .groupby(["etiqueta", "llavor"], sort=False).tail(1)
+           .groupby("etiqueta").agg(epmem_final=("n_epmem", "mean"), smem_final=("n_smem", "mean"),
+                                     oblidats_total=("epmem_oblidats", "mean"),
+                                     episodis_escanejats=("epmem_escanejats", "mean"),
+                                     consultes=("epmem_consultes", "mean"),
+                                     consultes_encertades=("epmem_consultes_encertades", "mean"),
+                                     similitud=("epmem_similitud_mitjana", "mean")).reset_index(names="config"))
+    daily = (df[df["sector"] == S.SECTORS[0]].groupby(["etiqueta", "llavor", "dia"], sort=False)
+             .agg(epmem_escanejats=("epmem_escanejats", "sum"),
+                  episodis_oblidats=("epmem_oblidats", "sum"),
+                  consultes=("epmem_consultes", "sum"),
+                  consultes_encertades=("epmem_consultes_encertades", "sum"),
+                  similitud_sum=("epmem_similitud_mitjana", "sum"),
+                  ms_cicle=("ms", "median")).reset_index())
+    metriques = (daily.groupby("etiqueta").agg(escanejats_dia=("epmem_escanejats", "mean"),
+                                               oblidats_dia=("episodis_oblidats", "mean"),
+                                               encerts_total=("consultes_encertades", "sum"),
+                                               consultes_total=("consultes", "sum"),
+                                               ms_cicle_mediana=("ms_cicle", "median")).reset_index()
+                 .rename(columns={"etiqueta": "config"}))
+    metriques["taxa_encert_pct"] = 100 * metriques["encerts_total"] / metriques["consultes_total"].where(
+        metriques["consultes_total"] > 0)
+    resum_dia = (pdia.groupby("config").agg(energia_kwh=("energia_kwh", "mean"),
+                                             estres_radiacio_h=("h_estres_rad", "mean"),
+                                             estres_calor_h=("h_estres_calor", "mean"),
+                                             estres_aigua_h=("h_estres_aigua", "mean"),
+                                             violacions=("violacions", "sum"),
+                                             impasses=("impasses", "mean"),
+                                             decisions_memoria=("decisions_memoria", "sum"),
+                                             decisions_smem=("decisions_smem", "sum")).reset_index())
+    resum = (resum_dia.merge(fidelity, on="config", how="left")
+             .merge(mem, on="config", how="left").merge(metriques, on="config", how="left"))
+    fidelitat_dia = []
+    for nom, g in df.groupby("etiqueta"):
+        x = g.set_index(ref_clau)["accio"].to_frame().join(ref.rename("accio_ref"), how="inner").reset_index()
+        x["igual"] = x["accio"] == x["accio_ref"]
+        x = x.groupby(["llavor", "dia"])["igual"].mean().mul(100).rename("fidelitat_pct").reset_index()
+        x["config"] = nom
+        fidelitat_dia.append(x)
+    fidelitat_dia = pd.concat(fidelitat_dia, ignore_index=True)
+    comparacions = (pdia[["config", "llavor", "dia", "energia_kwh", "h_estres_rad",
+                           "h_estres_calor", "violacions", "impasses"]]
+                    .merge(daily, left_on=["config", "llavor", "dia"],
+                           right_on=["etiqueta", "llavor", "dia"], how="left")
+                    .merge(fidelitat_dia, on=["config", "llavor", "dia"], how="left"))
+    comparacions["epmem_escanejats"] = comparacions["epmem_escanejats"].fillna(0)
+    files_tests = []
+    for metrica in ("energia_kwh", "h_estres_rad", "h_estres_calor", "violacions",
+                    "impasses", "epmem_escanejats", "fidelitat_pct"):
+        ample = comparacions.pivot_table(index=["dia", "llavor"], columns="config",
+                                         values=metrica, aggfunc="mean").dropna()
+        if "A_sense_oblit" not in ample:
+            continue
+        files_met = [st.compara_aparellat(ample["A_sense_oblit"], ample[nom],
+                                          "A_sense_oblit", nom, metrica)
+                     for nom in ample.columns if nom != "A_sense_oblit"]
+        p_ajustats = st.holm([f["p_wilcoxon"] for f in files_met])
+        for f, p_ajustat in zip(files_met, p_ajustats):
+            files_tests.append({"metrica": f["metrica"], "A": f["A"], "B": f["B"], "n": f["n"],
+                                "mitjana A": round(f["mitjana_A"], 3),
+                                "mitjana B": round(f["mitjana_B"], 3),
+                                "A-B": round(f["dif_mitjana"], 3), "IC95": f["IC95_dif"],
+                                "p": f["p_wilcoxon"], "p (Holm)": f"{p_ajustat:.3g}",
+                                "efecte": f"{f['efecte_rb']:+.2f} ({f['magnitud']})"})
+    tests = pd.DataFrame(files_tests)
+    resum.to_csv(os.path.join(d, "E23_comparativa.csv"), index=False)
+    pdia.to_csv(os.path.join(d, "E23_per_dia.csv"), index=False)
+    fotos.to_csv(os.path.join(d, "E23_evolucio.csv"), index=False)
+    tests.to_csv(os.path.join(d, "E23_tests.csv"), index=False)
+    df.loc[df["epmem_ids_oblidats"].fillna("") != "",
+           ["etiqueta", "llavor", "dia", "hora", "cicle", "epmem_ids_oblidats"]].to_csv(
+               os.path.join(d, "E23_oblit_auditoria.csv"), index=False)
+    _grafica_oblit(resum, os.path.join(d, "E23_compromis.svg"))
+    print(resum.round(2).to_string(index=False))
+    return {"resum": resum.set_index("config").T, "tests": tests}
+
+
 MODEL_V19 = {"model": {"temperatura": "simple", "fenologia": False}}
 MODEL_NOU = {"model": {"temperatura": "balanc", "fenologia": True}}
 
@@ -1077,18 +1305,20 @@ def E24(n_dies=60, llavors=(0, 1, 2), mides=(1000, 5000, 15000, 30000), n_consul
 
 EXPERIMENTS = {"E4": E4, "E5": E5, "E6": E6, "E7": E7, "E8": E8, "E9": E9, "E10": E10, "E11": E11,
                "E12": E12, "E13": E13, "E14": E14, "E15": E15, "E16": E16, "E20": E20, "E21": E21,
-               "E22": E22, "E24": E24}
+               "E22": E22, "E23": E23, "E24": E24}
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("experiment", choices=list(EXPERIMENTS) + ["llista"])
-    ap.add_argument("--dies", type=int, default=None, help="nombre de dies (a E8, E9, E10 i E13: d'execucions)")
+    ap.add_argument("--dies", type=int, default=None,
+                    help="nombre de dies (a E23: dies simulats; a E8/E9/E10/E13/E16/E20: repeticions)")
     ap.add_argument("--llavors", type=int, default=None, help="nombre de llavors (0..n-1)")
     ap.add_argument("--processos", type=int, default=None, help="processos en paral·lel (per defecte, tots els nuclis)")
-    ap.add_argument("--part", type=int, default=None, help="E16, E20: executa nomes la feina k (0..3n-1)")
+    ap.add_argument("--part", type=int, default=None, help="E16/E20/E23: executa nomes la feina k")
     ap.add_argument("--minuts-tram", type=float, default=None,
                     help="E16: passats aquests minuts desa un punt de control i s'atura (es continua tornant-ho a cridar)")
+    ap.add_argument("--sense-arxiu", action="store_true", help="E23: elimina episodis sense arxivar-los")
     ap.add_argument("--traca", action="store_true",
                     help="desa la traca del CLIPS de cada dia (com run_soar) a resultats/<E>/traca/")
     a = ap.parse_args()
@@ -1097,12 +1327,16 @@ def main():
             print(f"{k}: {f.__doc__.strip().splitlines()[0]}")
         return
     kw = {}
-    if a.dies is not None:
-        kw["n_dies" if a.experiment not in ("E8", "E9", "E10", "E13", "E16", "E20") else "n_execucions"] = a.dies
+    if a.dies is not None and a.experiment == "E23":
+        kw["n_dies"] = a.dies
+    elif a.dies is not None:
+        kw["n_dies" if a.experiment not in ("E8", "E9", "E10", "E13", "E16", "E20", "E23") else "n_execucions"] = a.dies
     if a.llavors is not None:
         kw["llavors"] = tuple(range(a.llavors))
     if a.part is not None:
         kw["part"] = a.part
+    if a.experiment == "E23" and a.sense_arxiu:
+        kw["arxivar"] = False
     if a.minuts_tram is not None:
         kw["minuts_tram"] = a.minuts_tram
     if a.processos:

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+<rect width="100%" height="100%" fill="white"/>
+<text x="450.0" y="24" text-anchor="middle" font-family="sans-serif" font-size="18">Cost de memòria vs fidelitat de decisió</text>
+<line x1="90" y1="435.0" x2="840" y2="435.0" stroke="#ddd"/>
+<text x="80" y="439.0" text-anchor="end" font-family="sans-serif" font-size="12">0</text>
+<line x1="90" y1="357.0" x2="840" y2="357.0" stroke="#ddd"/>
+<text x="80" y="361.0" text-anchor="end" font-family="sans-serif" font-size="12">20</text>
+<line x1="90" y1="279.0" x2="840" y2="279.0" stroke="#ddd"/>
+<text x="80" y="283.0" text-anchor="end" font-family="sans-serif" font-size="12">40</text>
+<line x1="90" y1="201.0" x2="840" y2="201.0" stroke="#ddd"/>
+<text x="80" y="205.0" text-anchor="end" font-family="sans-serif" font-size="12">60</text>
+<line x1="90" y1="123.0" x2="840" y2="123.0" stroke="#ddd"/>
+<text x="80" y="127.0" text-anchor="end" font-family="sans-serif" font-size="12">80</text>
+<line x1="90" y1="45.0" x2="840" y2="45.0" stroke="#ddd"/>
+<text x="80" y="49.0" text-anchor="end" font-family="sans-serif" font-size="12">100</text>
+<line x1="90" y1="45" x2="90" y2="435" stroke="#333"/>
+<line x1="90" y1="435" x2="840" y2="435" stroke="#333"/>
+<text x="465.0" y="502" text-anchor="middle" font-family="sans-serif">Episodis EpMem al final (menys és millor)</text>
+<text transform="translate(20 240.0) rotate(-90)" text-anchor="middle" font-family="sans-serif">Decisions iguals a A (%)</text>
+<circle cx="840.0" cy="45.0" r="5" fill="#1f77b4"><title>A_sense_oblit: 5040 episodis, 100.00%</title></circle>
+<circle cx="240.0" cy="45.0" r="5" fill="#ff7f0e"><title>B_finestra_25: 1008 episodis, 100.00%</title></circle>
+<circle cx="390.0" cy="45.0" r="5" fill="#2ca02c"><title>B_finestra_50: 2016 episodis, 100.00%</title></circle>
+<circle cx="540.0" cy="45.0" r="5" fill="#d62728"><title>B_finestra_75: 3024 episodis, 100.00%</title></circle>
+<circle cx="270.8" cy="45.0" r="5" fill="#9467bd"><title>C_aleatori_25: 1215 episodis, 100.00%</title></circle>
+<circle cx="462.8" cy="45.0" r="5" fill="#8c564b"><title>C_aleatori_50: 2505 episodis, 100.00%</title></circle>
+<circle cx="614.1" cy="45.0" r="5" fill="#e377c2"><title>C_aleatori_75: 3522 episodis, 100.00%</title></circle>
+<circle cx="270.8" cy="45.0" r="5" fill="#1f77b4"><title>D_antiguitat_25: 1215 episodis, 100.00%</title></circle>
+<circle cx="462.8" cy="45.0" r="5" fill="#ff7f0e"><title>D_antiguitat_50: 2505 episodis, 100.00%</title></circle>
+<circle cx="614.1" cy="45.0" r="5" fill="#2ca02c"><title>D_antiguitat_75: 3522 episodis, 100.00%</title></circle>
+<circle cx="270.8" cy="45.0" r="5" fill="#d62728"><title>E_activacio_episodi_25: 1215 episodis, 100.00%</title></circle>
+<circle cx="462.8" cy="45.0" r="5" fill="#9467bd"><title>E_activacio_episodi_50: 2505 episodis, 100.00%</title></circle>
+<circle cx="614.1" cy="45.0" r="5" fill="#8c564b"><title>E_activacio_episodi_75: 3522 episodis, 100.00%</title></circle>
+<circle cx="270.8" cy="45.0" r="5" fill="#e377c2"><title>F_activacio_grup_25: 1215 episodis, 100.00%</title></circle>
+<circle cx="462.8" cy="45.0" r="5" fill="#1f77b4"><title>F_activacio_grup_50: 2505 episodis, 100.00%</title></circle>
+<circle cx="614.1" cy="45.0" r="5" fill="#ff7f0e"><title>F_activacio_grup_75: 3522 episodis, 100.00%</title></circle>
+<circle cx="270.8" cy="45.0" r="5" fill="#2ca02c"><title>G_grup_sense_proteccions_25: 1215 episodis, 100.00%</title></circle>
+<circle cx="462.8" cy="45.0" r="5" fill="#d62728"><title>G_grup_sense_proteccions_50: 2505 episodis, 100.00%</title></circle>
+<circle cx="614.1" cy="45.0" r="5" fill="#9467bd"><title>G_grup_sense_proteccions_75: 3522 episodis, 100.00%</title></circle>
+<text x="100" y="59" fill="#1f77b4" font-family="sans-serif" font-size="12">A_sense_oblit</text>
+<text x="100" y="77" fill="#ff7f0e" font-family="sans-serif" font-size="12">B_finestra_25</text>
+<text x="100" y="95" fill="#2ca02c" font-family="sans-serif" font-size="12">B_finestra_50</text>
+<text x="100" y="113" fill="#d62728" font-family="sans-serif" font-size="12">B_finestra_75</text>
+<text x="100" y="131" fill="#9467bd" font-family="sans-serif" font-size="12">C_aleatori_25</text>
+<text x="100" y="149" fill="#8c564b" font-family="sans-serif" font-size="12">C_aleatori_50</text>
+<text x="100" y="167" fill="#e377c2" font-family="sans-serif" font-size="12">C_aleatori_75</text>
+<text x="100" y="185" fill="#1f77b4" font-family="sans-serif" font-size="12">D_antiguitat_25</text>
+<text x="100" y="203" fill="#ff7f0e" font-family="sans-serif" font-size="12">D_antiguitat_50</text>
+<text x="100" y="221" fill="#2ca02c" font-family="sans-serif" font-size="12">D_antiguitat_75</text>
+<text x="100" y="239" fill="#d62728" font-family="sans-serif" font-size="12">E_activacio_episodi_25</text>
+<text x="100" y="257" fill="#9467bd" font-family="sans-serif" font-size="12">E_activacio_episodi_50</text>
+<text x="100" y="275" fill="#8c564b" font-family="sans-serif" font-size="12">E_activacio_episodi_75</text>
+<text x="100" y="293" fill="#e377c2" font-family="sans-serif" font-size="12">F_activacio_grup_25</text>
+<text x="100" y="311" fill="#1f77b4" font-family="sans-serif" font-size="12">F_activacio_grup_50</text>
+<text x="100" y="329" fill="#ff7f0e" font-family="sans-serif" font-size="12">F_activacio_grup_75</text>
+<text x="100" y="347" fill="#2ca02c" font-family="sans-serif" font-size="12">G_grup_sense_proteccions_25</text>
+<text x="100" y="365" fill="#d62728" font-family="sans-serif" font-size="12">G_grup_sense_proteccions_50</text>
+<text x="100" y="383" fill="#9467bd" font-family="sans-serif" font-size="12">G_grup_sense_proteccions_75</text>
+</svg>

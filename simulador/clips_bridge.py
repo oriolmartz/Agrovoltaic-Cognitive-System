@@ -23,6 +23,7 @@ from dataclasses import dataclass, field
 import clips
 
 from ontology_loader import ONTOLOGIA_MODEL_DEFECTE, carrega_model, injecta_model
+from memoria_oblit import GestorOblit
 
 # La topologia no es duplica en Python: es deriva de l'ontologia de model.
 _MODEL_DEFECTE = carrega_model(ONTOLOGIA_MODEL_DEFECTE)
@@ -101,6 +102,7 @@ class ResultatCicle:
     regles: list = field(default_factory=list)        # noms de regles disparades (si watch)
     sortida: str = ""
     fase_final: str = ""
+    oblit: dict = field(default_factory=dict)
 
 
 class ControladorCLIPS:
@@ -111,7 +113,7 @@ class ControladorCLIPS:
                  chunking: bool | None = None, epmem: bool | None = None,
                  smem: bool | None = None, smem_finestra: int = 0, smem_arxiu: str = "",
                  estrategia: str | None = None, vigila_regles: bool = False,
-                 conserva_sortida: bool = False, neteja: bool = True):
+                 conserva_sortida: bool = False, neteja: bool = True, oblit: dict | None = None):
         self.fitxer = os.path.abspath(fitxer_clp)
         # Per compatibilitat, el CLP actiu usa automàticament l'ontologia de model.
         # Les snapshots historiques no la reben: així E1 continua reproduint-les tal com eren.
@@ -127,6 +129,7 @@ class ControladorCLIPS:
         self.conserva_sortida = conserva_sortida
         self.neteja = neteja
         self._chunks_coneguts: set[str] = set()
+        self.oblit = GestorOblit(oblit) if oblit is not None else None
 
         dir_abans = os.getcwd()
         os.chdir(os.path.dirname(self.fitxer))   # el .clp pot carregar fitxers relatius
@@ -392,12 +395,16 @@ class ControladorCLIPS:
         self.env.eval("(set-current-module DOMINI)")
         txt = self.cap.buida()
         res = self._llegeix(c)
+        if self.oblit is not None:
+            res.oblit = self.oblit.aplica(self._fets, self.env, c, res)
+            res.n_epmem = res.oblit["n_epmem"]
+            res.n_smem = res.oblit["n_smem"]
         res.regles_disparades = n
         res.fase_final = self.fase()
         if self.vigila_regles:
             res.regles = re.findall(r"FIRE\s+\d+\s+([^:\s]+(?:::[^:\s]+)?):", txt)
         if self.conserva_sortida:
-            res.sortida = txt
+            res.sortida = txt + res.oblit.get("registre", "")
         if self.neteja:
             self._neteja(c)
         return res
@@ -491,6 +498,7 @@ class ControladorCLIPS:
             glob.append((str(nom), "sym" if isinstance(v, clips.Symbol) else type(v).__name__, str(v)))
         return {"fets": fets, "regles": regles, "globals": glob, "primer": self.primer,
                 "chunks_coneguts": sorted(self._chunks_coneguts), "mecanismes": dict(self.mecanismes),
+                "oblit": self.oblit.estat() if self.oblit is not None else None,
                 "modul": str(self.env.eval("(get-current-module)")),
                 "focus": [str(m) for m in self.env.eval("(get-focus-stack)")]}
 
@@ -515,6 +523,8 @@ class ControladorCLIPS:
         self.primer = est["primer"]
         self._chunks_coneguts = set(est["chunks_coneguts"])
         self.mecanismes = dict(est["mecanismes"])
+        if self.oblit is not None and est.get("oblit") is not None:
+            self.oblit.restaura(est["oblit"])
         # en restaurar, les regles auto-focus apilen moduls al focus: es deixa com estava
         self.env.eval("(clear-focus-stack)")
         for m in reversed(est["focus"]):
@@ -536,5 +546,6 @@ class ControladorCLIPS:
         ep = self.compta("epmem-episodi")
         regles_chunk = [str(r) for r in self.env.eval("(get-defrule-list DELIBERACIO)")
                         if str(r).startswith("chunk-")]
+        foto = self.oblit.foto() if self.oblit is not None else {}
         return {"chunks": chunks, "rl": q, "n_epmem": ep, "n_smem": self.compta("smem-resum"),
-                "regles_chunk": regles_chunk}
+                "regles_chunk": regles_chunk, **foto}
