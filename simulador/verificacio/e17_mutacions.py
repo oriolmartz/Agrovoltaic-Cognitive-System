@@ -14,9 +14,10 @@ Mutants, sobre clips_core/soar.clp (el .clp canonic NO es toca; els mutants van 
   - treure la salience -10 de les transicions de fase.
 
 Proves que es passen a cada mutant (les mateixes de la regressio):
-  P1 clips_core/run_proves.clp (79 proves, CLIPS pur)
-  P2 E3, 75 casos als llindars
-  P3 els 14 casos de prova (un mutant el mata si canvia quins casos fallen respecte de l'original)
+  P1 clips_core/run_proves.clp (proves en CLIPS pur)
+  P2 E3, els casos als llindars (85 a la iteracio 36)
+  P3 els casos de prova documentats (18 a la iteracio 36; un mutant el mata si canvia quins
+     casos fallen respecte de l'original)
 
     python verificacio/e17_mutacions.py [--processos N] [--nomes-llindars]
 """
@@ -211,7 +212,15 @@ def main():
         llista = [m for m in llista if m["tipus"] != "regla esborrada"]
     # cada mutant es desa en acabar (resultats/E17/fets/): si l'execucio s'interromp, es continua
     fets = os.path.join(DIR, "fets")
+    # els resultats desats nomes valen per al mateix soar.clp: si ha canviat, es tornen a fer
+    import hashlib
+    sha = hashlib.sha256(text.encode("utf-8")).hexdigest()
+    marca = os.path.join(fets, "soar.sha256")
+    if os.path.isdir(fets) and (not os.path.isfile(marca) or open(marca).read().strip() != sha):
+        print("El soar.clp ha canviat des de l'ultima execucio: es descarten els mutants desats.")
+        shutil.rmtree(fets)
     os.makedirs(fets, exist_ok=True)
+    open(marca, "w").write(sha)
     fet = lambda m: os.path.join(fets, f"{m['id']}.pkl")
     pendents = [m for m in llista if not os.path.isfile(fet(m))]
     print(f"{len(llista) - len(pendents)} mutants ja fets, {len(pendents)} pendents")

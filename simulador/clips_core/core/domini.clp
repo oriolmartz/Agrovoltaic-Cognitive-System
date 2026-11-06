@@ -247,9 +247,11 @@
   (slot op (type SYMBOL))                 ; nom de l'operador
   (slot sector (type SYMBOL))
   (slot cicle (type INTEGER))
-  (slot tipus (allowed-symbols acceptable rebuig prohibida requerida millor pitjor
-                               millor-que pitjor-que indiferent numerica rl))
-  (slot op2 (type SYMBOL) (default cap))  ; només per a millor-que / pitjor-que / indiferent
+  ; Tipus de preferencia de Soar que es fan servir: acceptable, reject (rebuig), require
+  ; (requerida), better (millor-que), numeric (numerica) i rl (Q apresa). No s'usen best/worst,
+  ; worse ni indifferent (iteracio 36).
+  (slot tipus (allowed-symbols acceptable rebuig requerida millor-que numerica rl))
+  (slot op2 (type SYMBOL) (default cap))  ; només per a millor-que
   (slot valor (type NUMBER) (default 0))
   (slot font (type SYMBOL)))              ; regla que l'ha generada
 
@@ -264,7 +266,8 @@
 ; CONTROL | Origen: SELECCIO | Persistencia: fins a resoldre'l | Modifica: DECISIO/IMPAS
 ; Impasse: el coneixement immediat no permet decidir.
 (deftemplate impas
-  (slot tipus (allowed-symbols empat sense-canvi dades-insuficients conflicte restriccio-fallida))
+  ; restriccio-fallida: una restriccio dura no es pot complir (vent critic i panell que no es mou)
+  (slot tipus (allowed-symbols empat sense-canvi dades-insuficients restriccio-fallida))
   (slot sector (type SYMBOL))
   (slot cicle (type INTEGER))
   (multislot operadors)                   ; operadors involucrats
@@ -468,7 +471,8 @@
   (slot pes-memoria (type NUMBER) (default 2))              ; valor maxim de la preferencia de memoria
   (slot llindar-similitud (type NUMBER) (default 0.5))      ; puntuacio normalitzada minima per fer cas d'un record
   (multislot exclusions)                                    ; claus de tret que no s'emmagatzemen
-  (slot fitxer (type STRING) (default "")))                 ; fitxer de persistencia ("" = sense)
+  (slot fitxer (type STRING) (default ""))                  ; fitxer de persistencia ("" = sense)
+  (slot index (allowed-symbols si no) (default si)))        ; index per operador a epmem-cerca (iteracio 36)
 
 ; CONTROL | Origen: MEMORIA | Persistencia: global | Modifica: MEMORIA
 ; Estat intern: id del proxim episodi (present-id de Soar).

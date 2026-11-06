@@ -21,8 +21,10 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 | CP15 | Sensor d'humitat que deixa de respondre (historial) | dades absents + historial | 5 | ✅ correcte |
 | CP16 | Lectura impossible i sensor avariat | dades incoherents + fallades | 3 | ✅ correcte |
 | CP17 | Reg que no arriba al sòl | fallades (reg) + efecte observat | 3 | ✅ correcte |
+| CP18 | Vent crític amb l'actuador avariat (restriccions incompatibles) | seguretat + fallades + impasse | 2 | ✅ correcte |
+| CP19 | La memòria episòdica recorda una situació repetida | historial (memòria) | 4 | ✅ correcte |
 
-**17 de 17 casos correctes.** Hi ha un cas més amb dades reals de dies que no es van fer servir durant el desenvolupament: és `escenaris/cas_no_vist_tramuntana.json` (vegeu el README).
+**19 de 19 casos correctes.** Hi ha un cas més amb dades reals de dies que no es van fer servir durant el desenvolupament: és `escenaris/cas_no_vist_tramuntana.json` (vegeu el README).
 
 ## CP01 – Operació normal
 
@@ -1280,6 +1282,161 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 [APLICACIO] Sector_2: ORDRE mantenir-posicio -> 30.0 graus.
 [EXPLICACIO] Sector_2, cicle 3
 [EPMEM] NOU EPISODI #8: Sector_2, cicle 3, mantenir-posicio.
+```
+
+</details>
+
+## CP18 – Vent crític amb l'actuador avariat (restriccions incompatibles)
+
+**Cobertura:** seguretat + fallades + impasse. **Objectiu i resultat esperat:** El tomàquet és a 30° i arriba una ratxa de 18 m/s: s'ha d'anar a seguretat, però el panell no es mou. Al cicle 2 la seguretat continua sent obligatòria i cap acció no la pot complir: el sistema ha de reconèixer un impasse de restriccions incompatibles (no un 'sense candidat'), tornar a ordenar la posició de seguretat i demanar intervenció humana.
+
+| Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
+|---|---|---|---|---|---|
+| 1 | Sector_1 (tomàquet) | 18.0 / 3.0 / 22.0 / 90.0 / 300.0 | accio = posicio-seguretat; impasse = cap | posicio-seguretat (0.0°); riscos: mecanic=critic | ✅ |
+| 2 | Sector_1 (tomàquet) | 18.0 / 3.0 / 22.0 / 90.0 / 300.0 | accio = posicio-seguretat; impasse = restriccio-fallida; risc mecanic = critic; risc fallada-actuador = alt | posicio-seguretat (0.0°); riscos: fallada-actuador=alt, mecanic=critic; impasse restriccio-fallida | ✅ |
+
+**Explicació que dona el sistema** (fet `explicacio`):
+
+- Cicle 1, Sector_1: posicio-seguretat a 0.0 graus. Riscos: mecanic=critic. Candidats: posicio-seguretat(0). Descartats: mantenir-posicio. Criteri: unica opcio que compleix les restriccions dures.
+- Cicle 2, Sector_1: posicio-seguretat a 0.0 graus. Riscos: fallada-actuador=alt mecanic=critic. Candidats: posicio-seguretat(1002). Descartats: mantenir-posicio. Criteri: preferencia requerida (IMPAS-restriccio).
+
+<details><summary>Traça rellevant del CLIPS</summary>
+
+```
+--- cicle 1 ---
+[ELABORACIO] Sector_1: vent 18.0 m/s (previsio 3.0) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] El risc mecanic de Sector_1 activa l'objectiu Obj_Seguretat.
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[EXPLICACIO] Sector_1, cicle 1
+[EPMEM] NOU EPISODI #1: Sector_1, cicle 1, posicio-seguretat.
+--- cicle 2 ---
+[PERCEPCIO] Sector_1: Panell_1_2 es a 30.0 graus pero se li va ordenar 0.0 (posicio-seguretat). Fallada d'actuacio.
+[ELABORACIO] Sector_1: vent 18.0 m/s (previsio 3.0) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] El risc mecanic de Sector_1 activa l'objectiu Obj_Seguretat.
+[EPMEM] Sector_1: l'episodi #1 (posicio-seguretat) es valora 'dolenta' (resultat fallada, risc 0 -> 0).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_1: IMPAS DE RESTRICCIONS INCOMPATIBLES. Vent critic: Panell_1_2 ha d'anar a 0.0 graus, pero es a 30.0 i l'actuador no respon.
+[SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
+[REFORC] Sector_3: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 1.0, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 0.85, 4 rajoles actualitzades.
+[REFORC] Sector_1: posicio-seguretat del cicle 1 -> recompensa -1.0 (dolenta), error -1.0, 5 rajoles actualitzades.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> IMPAS]
+[IMPAS] Sector_1: ALARMA. La seguretat no es pot garantir amb l'actuador avariat. Es torna a ordenar posicio-seguretat i cal intervencio humana immediata.
+[IMPAS -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: preferencia requerida (IMPAS-restriccio).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[EXPLICACIO] Sector_1, cicle 2
+   Criteri:    preferencia requerida (IMPAS-restriccio)
+[EPMEM] NOU EPISODI #6: Sector_1, cicle 2, posicio-seguretat.
+[MONITORATGE] Sector_1: l'actuador no ha respost. Cal revisio de manteniment.
+```
+
+</details>
+
+## CP19 – La memòria episòdica recorda una situació repetida
+
+**Cobertura:** historial (memòria). **Objectiu i resultat esperat:** Tres cicles iguals a la vinya, sense vent. Al primer no hi ha cap record. Al segon, l'episodi del primer encara no està valorat (es valora quan se'n veu el resultat). Al tercer, el sistema ha de recuperar l'episodi del primer cicle (mateixa situació) i convertir-lo en una preferència de memòria (AV10). Amb una ratxa d'avís (13 m/s), la memòria no ha d'opinar.
+
+| Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
+|---|---|---|---|---|---|
+| 1 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 | font_no = AV10-memoria | mantenir-posicio (30.0°) | ✅ |
+| 2 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 |  | mantenir-posicio (30.0°) | ✅ |
+| 3 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 | font = AV10-memoria | mantenir-posicio (30.0°) | ✅ |
+| 4 | Sector_3 (vinya) | 13.0 / 3.0 / 24.0 / 90.0 / 400.0 | font_no = AV10-memoria; accio = posicio-seguretat | posicio-seguretat (0.0°); riscos: mecanic=alt | ✅ |
+
+**Explicació que dona el sistema** (fet `explicacio`):
+
+- Cicle 1, Sector_3: mantenir-posicio a 30.0 graus. Riscos: cap. Candidats: mantenir-posicio(4). Descartats: cap. Criteri: maxima valoracio (4 punts).
+- Cicle 2, Sector_3: mantenir-posicio a 30.0 graus. Riscos: cap. Candidats: mantenir-posicio(8.0). Descartats: cap. Criteri: maxima valoracio (8.0 punts).
+- Cicle 3, Sector_3: mantenir-posicio a 30.0 graus. Riscos: cap. Candidats: mantenir-posicio(8.0). Descartats: cap. Criteri: maxima valoracio (8.0 punts).
+- Cicle 4, Sector_3: posicio-seguretat a 0.0 graus. Riscos: mecanic=alt. Candidats: mantenir-posicio(6) posicio-seguretat(10). Descartats: cap. Criteri: maxima valoracio (10 punts).
+
+<details><summary>Traça rellevant del CLIPS</summary>
+
+```
+--- cicle 1 ---
+[PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE mantenir-posicio -> 30.0 graus.
+[EXPLICACIO] Sector_3, cicle 1
+[EPMEM] NOU EPISODI #3: Sector_3, cicle 1, mantenir-posicio.
+--- cicle 2 ---
+[EPMEM] Sector_3: l'episodi #3 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: mantenir-posicio 2.0 (memoria: a l'episodi #3, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[REFORC] Sector_3: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 1.0, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 0.85, 4 rajoles actualitzades.
+[REFORC] Sector_1: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 0.72, 4 rajoles actualitzades.
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE mantenir-posicio -> 30.0 graus.
+[EXPLICACIO] Sector_3, cicle 2
+[EPMEM] NOU EPISODI #6: Sector_3, cicle 2, mantenir-posicio.
+--- cicle 3 ---
+[EPMEM] Sector_3: l'episodi #6 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: mantenir-posicio 2.0 (memoria: a l'episodi #6, cicle 2, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[REFORC] Sector_3: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.46, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.42, 4 rajoles actualitzades.
+[REFORC] Sector_1: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.37, 4 rajoles actualitzades.
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE mantenir-posicio -> 30.0 graus.
+[EXPLICACIO] Sector_3, cicle 3
+[EPMEM] NOU EPISODI #9: Sector_3, cicle 3, mantenir-posicio.
+--- cicle 4 ---
+[ELABORACIO] Sector_3: vent 13.0 m/s (previsio 3.0) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] El risc mecanic de Sector_3 activa l'objectiu Obj_Seguretat.
+[EPMEM] Sector_3: l'episodi #9 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_3: posicio-seguretat (0.0 graus).
+[AVALUACIO] Sector_3: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_3: es selecciona posicio-seguretat. Criteri: maxima valoracio (10 punts).
+[REFORC] Sector_3: mantenir-posicio del cicle 3 -> recompensa 1.0 (bona), error 0.21, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 3 -> recompensa 1.0 (bona), error 0.2, 4 rajoles actualitzades.
+[REFORC] Sector_1: mantenir-posicio del cicle 3 -> recompensa 1.0 (bona), error 0.2, 4 rajoles actualitzades.
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE posicio-seguretat -> 0.0 graus.
+[EXPLICACIO] Sector_3, cicle 4
+[EPMEM] NOU EPISODI #10: Sector_3, cicle 4, posicio-seguretat.
 ```
 
 </details>

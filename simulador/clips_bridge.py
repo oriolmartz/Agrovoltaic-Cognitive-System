@@ -44,7 +44,7 @@ MARGE_NETEJA = 3
 LIMIT_REGLES = 100000   # si s'hi arriba, el cicle no ha acabat (bucle de regles)
 SORTIDA_SILENCIADA = False   # paralel.py ho posa a True als processos fills
 TIPUS_IMPAS = {"resoldre-dades": "dades-insuficients", "resoldre-empat": "empat",
-               "resoldre-sense-candidat": "sense-canvi"}
+               "resoldre-sense-candidat": "sense-canvi", "resoldre-restriccio": "restriccio-fallida"}
 
 
 class _Captura(clips.Router):
@@ -429,7 +429,7 @@ class ControladorCLIPS:
                     r.impasses.append((TIPUS_IMPAS.get(str(f["tipus"]), str(f["tipus"])), str(f["sector"])))
             elif t == "preferencia":
                 r.fonts_pref.setdefault(str(f["sector"]), set()).add((str(f["font"]), str(f["tipus"]), str(f["op"])))
-                if str(f["tipus"]) in ("rebuig", "prohibida"):
+                if str(f["tipus"]) == "rebuig":
                     r.rebutjats.setdefault(str(f["sector"]), set()).add(str(f["op"]))
             elif t == "operador":
                 r.candidats.setdefault(str(f["sector"]), {})[str(f["nom"])] = str(f["estat"])
@@ -485,6 +485,8 @@ class ControladorCLIPS:
         assert len(regles) == len(self._fets("fragment-apres")), "no es troben totes les regles apreses"
         glob = []
         for nom in self.env.eval("(get-defglobal-list *)"):
+            if "epmem-idx" in str(nom):          # adreces de fets: l'index es reconstrueix
+                continue
             v = self.env.find_global(str(nom)).value
             glob.append((str(nom), "sym" if isinstance(v, clips.Symbol) else type(v).__name__, str(v)))
         return {"fets": fets, "regles": regles, "globals": glob, "primer": self.primer,
@@ -506,6 +508,10 @@ class ControladorCLIPS:
         conv = {"sym": clips.Symbol, "int": int, "float": float, "str": str}
         for nom, tipus, v in est["globals"]:
             self.env.find_global(nom).value = conv.get(tipus, clips.Symbol)(v)
+        try:                                     # els fets s'han tornat a crear: index invalid
+            self.env.eval("(MEMORIA::epmem-idx-invalida)")
+        except Exception:                        # versions sense index
+            pass
         self.primer = est["primer"]
         self._chunks_coneguts = set(est["chunks_coneguts"])
         self.mecanismes = dict(est["mecanismes"])

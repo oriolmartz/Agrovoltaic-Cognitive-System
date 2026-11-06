@@ -247,9 +247,11 @@
   (slot op (type SYMBOL))                 ; nom de l'operador
   (slot sector (type SYMBOL))
   (slot cicle (type INTEGER))
-  (slot tipus (allowed-symbols acceptable rebuig prohibida requerida millor pitjor
-                               millor-que pitjor-que indiferent numerica rl))
-  (slot op2 (type SYMBOL) (default cap))  ; només per a millor-que / pitjor-que / indiferent
+  ; Tipus de preferencia de Soar que es fan servir: acceptable, reject (rebuig), require
+  ; (requerida), better (millor-que), numeric (numerica) i rl (Q apresa). No s'usen best/worst,
+  ; worse ni indifferent (iteracio 36).
+  (slot tipus (allowed-symbols acceptable rebuig requerida millor-que numerica rl))
+  (slot op2 (type SYMBOL) (default cap))  ; només per a millor-que
   (slot valor (type NUMBER) (default 0))
   (slot font (type SYMBOL)))              ; regla que l'ha generada
 
@@ -264,7 +266,8 @@
 ; CONTROL | Origen: SELECCIO | Persistencia: fins a resoldre'l | Modifica: DECISIO/IMPAS
 ; Impasse: el coneixement immediat no permet decidir.
 (deftemplate impas
-  (slot tipus (allowed-symbols empat sense-canvi dades-insuficients conflicte restriccio-fallida))
+  ; restriccio-fallida: una restriccio dura no es pot complir (vent critic i panell que no es mou)
+  (slot tipus (allowed-symbols empat sense-canvi dades-insuficients restriccio-fallida))
   (slot sector (type SYMBOL))
   (slot cicle (type INTEGER))
   (multislot operadors)                   ; operadors involucrats
@@ -468,7 +471,8 @@
   (slot pes-memoria (type NUMBER) (default 2))              ; valor maxim de la preferencia de memoria
   (slot llindar-similitud (type NUMBER) (default 0.5))      ; puntuacio normalitzada minima per fer cas d'un record
   (multislot exclusions)                                    ; claus de tret que no s'emmagatzemen
-  (slot fitxer (type STRING) (default "")))                 ; fitxer de persistencia ("" = sense)
+  (slot fitxer (type STRING) (default ""))                  ; fitxer de persistencia ("" = sense)
+  (slot index (allowed-symbols si no) (default si)))        ; index per operador a epmem-cerca (iteracio 36)
 
 ; CONTROL | Origen: MEMORIA | Persistencia: global | Modifica: MEMORIA
 ; Estat intern: id del proxim episodi (present-id de Soar).
@@ -772,9 +776,93 @@
     (if (member$ ?t ?trets) then (return TRUE)))
   FALSE)
 
+;; --- index per operador (iteracio 36) -------------------------------------------------
+;; Cada consulta demana els episodis d'un operador concret (requereix operador=X). Sense index,
+;; epmem-cerca recorre TOTS els episodis a cada consulta: el cost creix amb la memoria (E16:
+;; de 211 a 554 ms per cicle en dos anys). Soar ho resol amb un index invertit per tret
+;; (Derbinsky & Laird 2009). Aqui, una llista d'adreces d'episodi per a cada operador: la
+;; consulta nomes mira els del seu operador. El resultat es identic (el desempat es per id).
+;; L'index es reconstrueix sencer quan es retira algun episodi (finestra de la memoria
+;; semantica, fitxer, punt de control); sense finestra no es retira mai cap episodi.
+(defglobal MEMORIA
+  ?*epmem-idx-valid* = FALSE
+  ?*epmem-idx-orientar-produccio* = (create$)
+  ?*epmem-idx-orientar-ombra* = (create$)
+  ?*epmem-idx-posicio-seguretat* = (create$)
+  ?*epmem-idx-mantenir-posicio* = (create$)
+  ?*epmem-idx-sollicitar-dades* = (create$))
+
+(deffunction epmem-idx-invalida () (bind ?*epmem-idx-valid* FALSE) TRUE)
+
+(deffunction epmem-idx-llista (?op)
+  (switch ?op
+    (case orientar-produccio then ?*epmem-idx-orientar-produccio*)
+    (case orientar-ombra then ?*epmem-idx-orientar-ombra*)
+    (case posicio-seguretat then ?*epmem-idx-posicio-seguretat*)
+    (case mantenir-posicio then ?*epmem-idx-mantenir-posicio*)
+    (case sollicitar-dades then ?*epmem-idx-sollicitar-dades*)
+    (default FALSE)))
+
+(deffunction epmem-idx-afegeix (?op ?f)
+  (switch ?op
+    (case orientar-produccio then (bind ?*epmem-idx-orientar-produccio* (create$ ?*epmem-idx-orientar-produccio* ?f)))
+    (case orientar-ombra then (bind ?*epmem-idx-orientar-ombra* (create$ ?*epmem-idx-orientar-ombra* ?f)))
+    (case posicio-seguretat then (bind ?*epmem-idx-posicio-seguretat* (create$ ?*epmem-idx-posicio-seguretat* ?f)))
+    (case mantenir-posicio then (bind ?*epmem-idx-mantenir-posicio* (create$ ?*epmem-idx-mantenir-posicio* ?f)))
+    (case sollicitar-dades then (bind ?*epmem-idx-sollicitar-dades* (create$ ?*epmem-idx-sollicitar-dades* ?f)))
+    (default (epmem-idx-invalida)))
+  TRUE)
+
+(deffunction epmem-idx-reconstrueix ()
+  (bind ?*epmem-idx-orientar-produccio* (create$))
+  (bind ?*epmem-idx-orientar-ombra* (create$))
+  (bind ?*epmem-idx-posicio-seguretat* (create$))
+  (bind ?*epmem-idx-mantenir-posicio* (create$))
+  (bind ?*epmem-idx-sollicitar-dades* (create$))
+  (bind ?*epmem-idx-valid* TRUE)
+  (do-for-all-facts ((?e epmem-episodi)) TRUE (epmem-idx-afegeix ?e:operador ?e))
+  TRUE)
+
+(deffunction epmem-index-actiu ()
+  (bind ?r FALSE)
+  (do-for-fact ((?k epmem-config)) (eq ?k:index si) (bind ?r TRUE))
+  ?r)
+
+; Operador que demana la consulta (requereix operador=X), o FALSE.
+(deffunction epmem-operador-requerit (?requereix)
+  (progn$ (?t ?requereix)
+    (bind ?txt (str-cat ?t))
+    (if (eq (str-index "operador=" ?txt) 1)
+     then (return (sym-cat (sub-string 10 (str-length ?txt) ?txt)))))
+  FALSE)
+
 ; Retorna (id cardinalitat) del millor episodi: maxima cardinalitat de trets del cue
 ; satisfets i, a igualtat, el mes recent (id mes gran). (0 0) si no n'hi ha cap.
+(deffunction epmem-cerca-index (?cue ?requereix ?exclou ?prohibits ?op)
+  (if (not ?*epmem-idx-valid*) then (epmem-idx-reconstrueix))
+  (bind ?millor 0)
+  (bind ?card-millor -1)
+  (bind ?min (if (> (length$ ?cue) 0) then 1 else 0))
+  (progn$ (?e (epmem-idx-llista ?op))
+    (bind ?id (fact-slot-value ?e id))
+    (bind ?tr (fact-slot-value ?e trets))
+    (if (and (not (member$ ?id ?prohibits))
+             (epmem-conte-tots ?requereix ?tr)
+             (not (epmem-conte-algun ?exclou ?tr)))
+     then
+      (bind ?k (epmem-cardinalitat ?cue ?tr))
+      (if (and (>= ?k ?min)
+               (or (> ?k ?card-millor)
+                   (and (= ?k ?card-millor) (> ?id ?millor))))
+       then (bind ?millor ?id)
+            (bind ?card-millor ?k))))
+  (if (= ?millor 0) then (return (create$ 0 0)))
+  (create$ ?millor ?card-millor))
+
 (deffunction epmem-cerca (?cue ?requereix ?exclou ?prohibits)
+  (bind ?op (epmem-operador-requerit ?requereix))
+  (if (and ?op (epmem-index-actiu) (neq (epmem-idx-llista ?op) FALSE))
+   then (return (epmem-cerca-index ?cue ?requereix ?exclou ?prohibits ?op)))
   (bind ?millor 0)
   (bind ?card-millor -1)
   (bind ?min (if (> (length$ ?cue) 0) then 1 else 0))
@@ -866,6 +954,7 @@
   (bind ?m (set-current-module DOMINI))
   (load-facts ?fitxer)
   (set-current-module ?m)
+  (epmem-idx-invalida)
   (bind ?max 0)
   (bind ?n 0)
   (progn$ (?fr (find-all-facts ((?x epmem-episodi)) TRUE))
@@ -901,13 +990,14 @@
   (bind ?mot "")
   (do-for-fact ((?o operador-seleccionat)) (and (eq ?o:sector ?s) (eq ?o:cicle ?c))
     (bind ?mot ?o:motiu))
-  (assert (epmem-episodi (id ?id) (cicle ?c) (sector ?s) (cultiu (epmem-cultiu ?s))
+  (bind ?f (assert (epmem-episodi (id ?id) (cicle ?c) (sector ?s) (cultiu (epmem-cultiu ?s))
                          (operador ?op) (angle ?a)
                          (risc-total (epmem-risc-total ?s ?c))
                          (cobertura (epmem-cobertura ?s ?c))
                          (impas ?imp) (motiu ?mot)
                          (trets (epmem-trets ?s ?c ?op ?imp pendent pendent))
-                         (clau (epmem-clau-situacio ?s ?c))))
+                         (clau (epmem-clau-situacio ?s ?c)))))
+  (if ?*epmem-idx-valid* then (epmem-idx-afegeix ?op ?f))
   (printout t "[EPMEM] NOU EPISODI #" ?id ": " ?s ", cicle " ?c ", " ?op "." crlf)
   (modify ?st (seguent-id (+ ?id 1)) (brut si)))
 
@@ -1070,16 +1160,16 @@
    else baix)))
 
 ; Puntuacio total d'un operador: suma de valoracions numeriques.
-; requerida i millor/pitjor pesen molt mes que qualsevol valoracio.
+; La requerida pesa molt mes que qualsevol suma de valoracions (E19: n'hi ha prou amb > 33).
+; Les preferencies best/worst de Soar no s'usen: +-100 passaria per sobre de tota l'escala de
+; prioritats i podria fer guanyar un operador a la seguretat (iteracio 36).
 (deffunction puntuacio (?s ?op ?c)
   (bind ?total 0)
   (do-for-all-facts ((?p preferencia))
       (and (eq ?p:sector ?s) (eq ?p:op ?op) (eq ?p:cicle ?c))
     (switch ?p:tipus
       (case numerica then (bind ?total (+ ?total ?p:valor)))
-      (case requerida then (bind ?total (+ ?total 1000)))
-      (case millor then (bind ?total (+ ?total 100)))
-      (case pitjor then (bind ?total (- ?total 100)))))
+      (case requerida then (bind ?total (+ ?total 1000)))))
   ?total)
 
 ; Objectiu al qual serveix cada operador.
@@ -2171,6 +2261,30 @@
   (assert (traca (pas ?c) (fase seleccio)
                  (missatge (str-cat ?s ": impasse de dades insuficients")))))
 
+; Restriccions incompatibles: amb vent critic la seguretat obliga a anar a l'angle de seguretat,
+; pero l'actuador no respon (fallada detectada) i el panell no hi es. Cap operador pot complir
+; la restriccio: es un impasse propi, no un simple "sense candidat" (posicio-seguretat es pot
+; proposar i seleccionar, pero no tindra efecte). Va abans de la seleccio normal (salience 10).
+(defrule detecta-impas-restriccio-fallida
+  (declare (auto-focus TRUE) (salience 10))
+  (fase (nom seleccio))
+  (cicle (numero ?c))
+  (risc (sector ?s) (cicle ?c) (tipus mecanic) (nivell critic))
+  (risc (sector ?s) (cicle ?c) (tipus fallada-actuador))
+  (panell (id ?p) (sector ?s) (angle ?a) (angle-seguretat ?as) (tolerancia-angle ?tol))
+  (test (> (abs (- ?a ?as)) ?tol))
+  (not (operador-seleccionat (sector ?s) (cicle ?c)))
+  (not (impas (sector ?s) (cicle ?c)))
+  (not (preferencia (sector ?s) (cicle ?c) (op posicio-seguretat) (tipus requerida)))   ; ja resolt
+  =>
+  (printout t crlf "[SELECCIO] " ?s ": IMPAS DE RESTRICCIONS INCOMPATIBLES. Vent critic: " ?p
+              " ha d'anar a " ?as " graus, pero es a " ?a " i l'actuador no respon." crlf)
+  (assert (impas (tipus restriccio-fallida) (sector ?s) (cicle ?c) (operadors posicio-seguretat)
+                 (rao "vent critic amb l'actuador avariat: la seguretat no es pot garantir")))
+  (assert (subobjectiu (id (sym-cat G- ?s - ?c)) (tipus resoldre-restriccio) (sector ?s) (estat actiu)))
+  (assert (traca (pas ?c) (fase seleccio)
+                 (missatge (str-cat ?s ": impasse de restriccions incompatibles (vent critic i actuador avariat)")))))
+
 (defrule detecta-impas-sense-candidat
   (declare (auto-focus TRUE))
   (fase (nom seleccio))
@@ -2736,6 +2850,7 @@
   ?e <- (epmem-episodi (cicle ?ec&:(<= ?ec (- ?c ?w))) (consolidat si))
   =>
   (if (neq ?fx "") then (smem-escriu-arxiu ?fx ?e))
+  (epmem-idx-invalida)              ; l'index de la memoria episodica es reconstruira
   (retract ?e))
 
 ; Que s'ha consolidat (equivalent a epmem-informe).
@@ -2929,6 +3044,30 @@
                        (font IMPAS-sense-candidat)))
   (assert (traca (pas ?c) (fase impas)
                  (missatge (str-cat ?s ": sense candidats, es mante la posicio i es demana supervisio"))))
+  (modify ?g (estat resolt))
+  (retract ?i))
+
+; Restriccions incompatibles: no hi ha cap accio que garanteixi la seguretat. La deliberacio
+; (1) torna a enviar l'ordre de seguretat, que es l'unica que la pot complir si la fallada es
+; transitoria, i (2) deriva el cas a una persona amb una alarma (aturada d'emergencia o fixar el
+; panell a ma). No es crea cap chunk: es un cas de seguretat que ha de decidir sempre la deliberacio.
+(defrule resol-restriccio-fallida
+  (declare (auto-focus TRUE))
+  (fase (nom impas))
+  ?i <- (impas (tipus restriccio-fallida) (sector ?s) (cicle ?c))
+  ?g <- (subobjectiu (sector ?s) (tipus resoldre-restriccio) (estat actiu))
+  (panell (sector ?s) (angle-seguretat ?as))
+  =>
+  (if (not (any-factp ((?o operador)) (and (eq ?o:sector ?s) (eq ?o:cicle ?c) (eq ?o:nom posicio-seguretat))))
+   then (assert (operador (id (sym-cat ?s -seguretat- ?c)) (cicle ?c) (sector ?s)
+                          (nom posicio-seguretat) (angle-objectiu ?as) (estat proposat))))
+  (assert (preferencia (op posicio-seguretat) (sector ?s) (cicle ?c) (tipus requerida)
+                       (font IMPAS-restriccio)))
+  (printout t "[IMPAS] " ?s ": ALARMA. La seguretat no es pot garantir amb l'actuador avariat. Es torna "
+              "a ordenar posicio-seguretat i cal intervencio humana immediata." crlf)
+  (assert (traca (pas ?c) (fase impas)
+                 (missatge (str-cat ?s ": ALARMA, vent critic amb actuador avariat; posicio-seguretat "
+                                    "requerida i intervencio humana"))))
   (modify ?g (estat resolt))
   (retract ?i))
 

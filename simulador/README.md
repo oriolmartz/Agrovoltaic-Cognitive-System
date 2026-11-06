@@ -212,7 +212,7 @@ amb Ks (iteracions 20–22). E9 i E10 continuen comparant les versions antigues 
 | **E3** llindars (75 casos) | 57/57 de la v1_8 + 18/18 de reg → **75/75** |
 | **E11** agenda (20 dies) | Estratègies `depth`, `breadth`, `lex` i `mea`, especificitat (`simplicity` i `complexity`) i `random` amb 5 llavors: **0 decisions diferents** de 840 (ni del panell ni del reg). **Salience:** si les transicions de fase passen de −10 a 0, amb `depth` el panell canvia el **22,7 %** de les decisions i el reg **no arriba mai a decidir** (0 ordres de reg en 840 cicles: la fase passa abans que es pugui seleccionar). Amb `breadth` no es tanca **cap** cicle. La salience −10 de les transicions és imprescindible |
 | **E13** coneixement après (5 execucions × 20 dies) | 0 problemes a les 9 restriccions (K1–K8), en 100 fotos. En acabar: 2–4 chunks, 73–75 rajoles Q (\|Q\| ≤ 0,68) i 840 episodis (exactament 1 per sector i cicle) |
-| **E17** mutacions (99 mutants) | **80 detectats (80,8 %)**: totes les substitucions d'operador, pes i salience; 9 de 12 llindars; 63 de 79 regles esborrades. La regressió en detecta 57, E3 48 i els casos de prova 55. Els 19 que sobreviuen, a sota |
+| **E17** mutacions (112 mutants, iteració 36) | **80 detectats (71,4 %)**: totes les substitucions d'operador, pes i salience; 9 de 12 llindars; 63 de 92 regles esborrades. **Totes les regles noves dels blocs 1–3 que canvien una decisió moren** (fase fenològica, sensors avariats, lectures impossibles, historial, fallada del reg, memòria limitada amb vent, restriccions incompatibles). El percentatge baixa respecte del 80,8 % de la v1_9 perquè hi ha 13 regles noves de memòria semàntica i de monitoratge que no canvien cap decisió observable. Els 32 que sobreviuen, a sota |
 | **E18** cicle SOAR (280 cicles, 18 amb impasse) | **0 cicles amb l'ordre de fases incorrecte, 0 regles fora de la seva fase, 0 cicles amb més o menys d'una decisió** per sector. Només surten dos recorreguts: el normal (262) i el que passa una vegada per l'impasse (18). **Control negatiu** (transicions a salience 0): detectats 28 de 28 cicles, tots per decisions que falten (C3). L'ordre de fases no es pot trencar perquè cada regla demana el fet `(fase (nom X))`: el que passa és que hi ha regles que ja no arriben a disparar-se. És la resposta a "fer dues accions seguides": el motor no ho permet, i ho comprova cada cicle |
 | **Invariants** | 0 violacions en totes les simulacions, també les del reg (I10–I12) |
 
@@ -225,22 +225,28 @@ Les regles que E2 no dispara mai són de tres menes:
   - `detecta-impas-sense-candidat` i `resol-sense-candidat`, perquè amb vent crític sempre queda `posicio-seguretat`;
   - `avalua-rebuig-fora-de-limits`, perquè l'angle òptim sempre és dins dels límits.
 
-Els **19 mutants d'E17 que sobreviuen** són de tres menes:
-- **Reg** (els llindars d'anticipació, pluja i hora fresca; `avalua-reg-hora-fresca`, `-energia` i `-estalvi`). Els casos CP12–CP14 i E3 comproven el reg, però no just als llindars que muten ni el desempat entre preferències de reg: **falten casos de prova** amb aquests valors.
-- **Regles que no canvien la decisió:** la neteja de consultes i resultats de la memòria (`epmem-neteja-*`), `explica-decisio` i els avisos (`avisa-dades-pendents`, `avisa-fallada-actuador`). Les proves miren la decisió i no el text ni els fets que queden; caldria comprovar també l'explicació.
-- **Regles redundants o inabastables**, les mateixes que E2 no dispara mai (`percep-sensor-no-valid`, `percep-dades-vent-critic`, `detecta-impas-sense-candidat`, `resol-sense-candidat`, `avalua-rebuig-fora-de-limits`) i `percep-sense-observacio`, `elabora-risc-mecanic-per-previsio` i `detecta-oscillacio`, que queden tapades per altres regles que prenen la mateixa decisió. O bé s'hi afegeix un cas que les necessiti o bé es poden treure.
+Els **32 mutants d'E17 que sobreviuen** (iteració 36) són de cinc menes:
+- **Llindars del reg que l'ontologia sobreescriu** (anticipació, pluja i hora fresca: L10–L12). El mutant canvia el valor per defecte de la plantilla, però `reg-config` es carrega de l'ontologia de reg: és un mutant **equivalent**.
+- **Memòria, reforç i memòria semàntica** (neteja de consultes, `avalua-memoria-semantica`, `rl-*`, `desfa-empat-per-reforc`, `smem-*`): les proves s'executen amb la memòria semàntica i el reforç apagats. CP19 prova la memòria episòdica de punta a punta (abans no ho feia cap prova) i ha matat les regles de recuperació.
+- **Regles que només escriuen** (explicació, avisos, `detecta-oscillacio`, `percep-reg-correcte`): les proves miren la decisió, no el text de la traça.
+- **Preferències numèriques petites** (`avalua-energia-mantenir`, `-moviment`, `-estabilitat`): desempaten casos que cap prova no fixa (vegeu la discrepància de CP01).
+- **Camins redundants de seguretat** (`percep-sense-observacio`, `elabora-risc-mecanic-per-previsio`, `avalua-rebuig-fora-de-limits`, `detecta-impas-sense-candidat`, `resol-sense-candidat`): una altra regla pren la mateixa decisió (p. ex., sense lectura de vent, l'impasse de dades també fa servir la previsió). Són redundàncies volgudes en seguretat. **`percep-sensor-no-valid`, que abans sobrevivia, ara mor** (CP16).
 
-### Casos de prova documentats (14 + 1 cas no vist)
+### Casos de prova documentats (19 + 1 cas no vist)
 
 `python verificacio/casos_prova.py` → `resultats/casos_prova/CASOS_PROVA.md`, amb les entrades,
 el resultat esperat (escrit abans), l'obtingut, l'explicació del sistema i la traça rellevant de
 cada cas.
 
-- **13 de 14 correctes.** Els tres de reg (CP12–CP14) passen.
-- **CP01 té una discrepància analitzada:** al segon cicle el sistema repeteix `orientar-produccio`
-  en lloc de `mantenir-posicio`. Ho fa per l'estabilitat i per la memòria episòdica. L'angle és el
-  mateix i el panell no es mou, així que el comportament és correcte, però l'expectativa estava
-  massa especificada.
+- **19 de 19 correctes.** Casos nous: CP15 (sensor d'humitat que deixa de respondre: historial),
+  CP16 (lectura impossible i sensor avariat), CP17 (reg que no arriba al sòl), CP18 (vent crític amb
+  l'actuador avariat: restriccions incompatibles) i CP19 (la memòria episòdica recorda una situació
+  repetida i no opina amb vent).
+- **Els casos fallen si un cicle no acaba** (iteració 35): sense aquesta comprovació, un bucle de
+  regles podia fer passar un cas que esperava "cap risc". Va passar dues vegades (CP16 i CP18) i
+  totes dues es van corregir.
+- **CP01 tenia una discrepància analitzada:** al segon cicle el sistema repetia `orientar-produccio`
+  en lloc de `mantenir-posicio`. Des de la iteració 30, `orientar-produccio` només es proposa fora de l'angle òptim.
 - **Cas no vist (tramuntana del 27/03/2023 a Cantallops):** SOAR, 0 violacions i 2 h d'exposició.
   Seguidor comercial, 5 violacions i 11 h d'exposició.
 
@@ -260,7 +266,7 @@ cada cas.
 | Pes de **moviment** | 1 | Més petit que l'estabilitat i que un nivell: només desempata entre quedar-se i moure's | 2 → 1,45 impasses/dia (empata amb l'estabilitat) |
 | **Nivells** | 0, 1, 2, 3 | Ordinals, de l'escala de quatre nivells del domini (baix, mitjà, alt, crític). Lineals per simplicitat | 0-1-2-4, 0-1-3-6, 0-1-4-9 i 0-2-3-4 → 98–100 % de decisions iguals, cap violació. **Les conclusions no depenen de l'escala** |
 | **Requerida** | +1000 | Ha de superar qualsevol suma de preferències numèriques: com a màxim 31 (ombra amb 3 riscos crítics + estabilitat + memòria) contra un mínim de −2 a l'operador requerit. N'hi ha prou amb més de 33; 1000 dona un marge de 30 vegades | De 0 a 100, cap canvi en dies reals. A la graella (situacions límit), **0 → 23 violacions i 10 → 3; 34 i 100 → cap**, tal com prediu la fita de 33 |
-| **Millor / pitjor** | +100 / −100 | **Cap regla genera aquestes preferències**: és codi mort, heretat de les preferències de Soar | — |
+| **Millor / pitjor** | +100 / −100 | **Cap regla generava aquestes preferències** (codi mort). **Tretes a la iteració 36**: un *best/worst* de ±100 passaria per sobre de tota l'escala de prioritats (com a màxim 31 punts) i podria fer guanyar un operador a la seguretat | — |
 | Pes de la **memòria** | ±2 | No entrava en el càlcul de les prioritats | 0 o 1 → menys exposició al vent (com seguretat 7) |
 
 **El que no funcionava: la memòria i l'estabilitat podien superar la seguretat (corregit a la iteració 34).**
@@ -402,7 +408,7 @@ de Sió, cada mes amb els dies seguits × 4 llavors = 24 blocs; Friedman i Wilco
 - **La memòria canvia el comportament, però no és una millora neta:** amb la memòria dels dos anys es fa més ombra, amb un 4 % menys d'estrès per radiació (−12 h/mes, p = 1e-6) i un 1,9 % menys d'energia (−170 kWh/mes, p = 9e-10). L'estrès per calor i l'aigua no canvien.
 - **L'any anterior només compta al principi:** "memòria només el 2023" comença de zero l'1 de gener i, a partir del març, decideix pràcticament igual que la memòria de dos anys (al novembre i al desembre, idèntic). Al gener i al febrer, sense l'any anterior, la memòria encara no fa res (−3 i +71 kWh respecte de sense memòria, contra −107 i −115 amb els dos anys).
 - **Consistència del coneixement (Rashid):** 0 problemes a K1–K6 en 5.466 fotos (una per dia i execució). En acabar, 1–3 chunks i 61–66 rajoles Q.
-- **Escalabilitat:** el temps per cicle creix amb el nombre d'episodis, de 211 ms al gener a 554 ms a l'agost amb la memòria de dos anys. Ve de `epmem-cerca`, que recorre tots els episodis a cada consulta (cost lineal per cicle, quadràtic en el total). Soar ho resol amb un índex invertit per tret (Derbinsky & Laird 2009); aquí queda com a millora per a una versió següent. Amb 42 cicles al dia continua sent molt per sota de l'hora que hi ha entre cicles.
+- **Escalabilitat:** el temps per cicle creix amb el nombre d'episodis, de 211 ms al gener a 554 ms a l'agost amb la memòria de dos anys. Ve de `epmem-cerca`, que recorre tots els episodis a cada consulta (cost lineal per cicle, quadràtic en el total). Soar ho resol amb un índex invertit per tret (Derbinsky & Laird 2009). **Iteració 36:** índex per operador (cada consulta només mira els episodis del seu operador), amb resultats idèntics (252 de 252 decisions en 6 dies). Amb 14.868 episodis, el cicle passa de 69 a 57 ms (−17 %); cada consulta, de 10 a 3 ms. No dona més perquè els dos operadors més freqüents acumulen la major part dels episodis. Està pensat per a quan el sistema funcioni anys: amb poques setmanes de memòria no es nota (també ho va veure l'equip amb 80 dies). **La solució d'escala de debò és la memòria semàntica amb finestra** (E20): el temps per cicle deixa de créixer. Amb 42 cicles al dia continua sent molt per sota de l'hora que hi ha entre cicles.
 - **Eficiència del simulador (iteració 27):** abans, el pont Python recorria tots els fets del CLIPS a cada consulta, i amb 15.000 episodis un dia trigava 30 s (el 85 % fora del CLIPS). Ara llegeix només la plantilla que necessita: 5 s/dia, amb **resultats idèntics** columna a columna.
 - **Execucions de més de 2 h:** es fan per trams amb punts de control (tot l'estat de la planta i del CLIPS). `verificacio/prova_punt_control.py` comprova que el resultat és idèntic al d'una sola tirada.
 
@@ -467,7 +473,8 @@ de Sió, cada mes amb els dies seguits × 4 llavors = 24 blocs; Friedman i Wilco
   - fer servir l'última lectura si falta el sensor d'humitat (impasse de dades);
   - afegir a E12 els paràmetres de disseny del reg (75 % d'anticipació, dosi parcial, soroll de la previsió de pluja).
 
-- **Resultats d'E17:** afegir casos de prova just als llindars del reg (75 % de p, 10 mm de pluja, 8 h) i que comprovin l'explicació; revisar si les regles redundants o inabastables s'han de treure.
-- **Memòria episòdica:** un índex per tret a `epmem-cerca` perquè el cost no creixi amb el nombre d'episodis (E16).
+- **Resultats d'E17:** casos de prova que comprovin el text de l'explicació, i proves amb el reforç i la memòria semàntica activats.
+- **Memòria episòdica:** l'índex per operador (iteració 36) dona un 17 % amb 15.000 episodis. Un índex invertit per tret, com el de Soar, donaria més, però canviaria quins episodis es recuperen en cas d'empat; amb la finestra de la memòria semàntica no cal.
+- **Assignació de crèdit de la memòria:** el temps canvia els riscos d'una hora a l'altra, i el resultat d'un episodi en depèn tant com de l'operador. Per això el 57 % dels resums semàntics barregen casos bons i dolents i la memòria hi té poc efecte. Caldria comparar amb el que hauria passat amb un altre operador (contrafactual), cosa que la memòria episòdica no sap fer.
 - **E12, part de pesos i `alfa`:** són dins del CLIPS i no es poden variar des del simulador sense tocar el `.clp`.
 - **Tornar-ho a executar tot** amb la versió final del CLIPS: les ordres són a `EXPERIMENTS.md`.

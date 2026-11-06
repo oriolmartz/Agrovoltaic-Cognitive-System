@@ -225,6 +225,30 @@ CASOS = [
                                                                 "reg": "regar-complet"}}),
          cicle(hora=9, obs={S2: {"humitat-sol": 99.0}}, **{S2: {"riscos": {"fallada-reg": None}, "reg": "no-regar"}}),
      ]},
+    {"id": "CP18", "titol": "Vent crític amb l'actuador avariat (restriccions incompatibles)",
+     "cobertura": "seguretat + fallades + impasse",
+     "objectiu": "El tomàquet és a 30° i arriba una ratxa de 18 m/s: s'ha d'anar a seguretat, però el panell no "
+                 "es mou. Al cicle 2 la seguretat continua sent obligatòria i cap acció no la pot complir: el "
+                 "sistema ha de reconèixer un impasse de restriccions incompatibles (no un 'sense candidat'), "
+                 "tornar a ordenar la posició de seguretat i demanar intervenció humana.",
+     "cicles": [
+         cicle(obs={S1: {"vent": 18.0}}, falla={"Panell_1_1", "Panell_1_2"},
+               **{S1: {"accio": "posicio-seguretat", "impas": None}}),
+         cicle(obs={S1: {"vent": 18.0}}, falla={"Panell_1_1", "Panell_1_2"},
+               **{S1: {"accio": "posicio-seguretat", "impas": "restriccio-fallida",
+                       "riscos": {"mecanic": "critic", "fallada-actuador": "alt"}}}),
+     ]},
+    {"id": "CP19", "titol": "La memòria episòdica recorda una situació repetida", "cobertura": "historial (memòria)",
+     "objectiu": "Tres cicles iguals a la vinya, sense vent. Al primer no hi ha cap record. Al segon, l'episodi "
+                 "del primer encara no està valorat (es valora quan se'n veu el resultat). Al tercer, el sistema "
+                 "ha de recuperar l'episodi del primer cicle (mateixa situació) i convertir-lo en una "
+                 "preferència de memòria (AV10). Amb una ratxa d'avís (13 m/s), la memòria no ha d'opinar.",
+     "cicles": [
+         cicle(**{S3: {"font_no": "AV10-memoria"}}),
+         cicle(**{S3: {}}),
+         cicle(**{S3: {"font": "AV10-memoria"}}),
+         cicle(obs={S3: {"vent": 13.0}}, **{S3: {"font_no": "AV10-memoria", "accio": "posicio-seguretat"}}),
+     ]},
 ]
 
 
@@ -288,6 +312,11 @@ def executa_cas(clp, cas):
                 disc.append(f"reg esperat {esp['reg']}, obtingut {reg[0]}")
             if "dosi" in esp and (reg[1] is None or abs(reg[1] - esp["dosi"]) > 1e-6):
                 disc.append(f"dosi esperada {esp['dosi']} %, obtinguda {reg[1]}")
+            fonts = {f for f, _, _ in r.fonts_pref.get(s, set())}
+            if "font" in esp and esp["font"] not in fonts:
+                disc.append(f"havia d'haver-hi una preferència de {esp['font']}")
+            if "font_no" in esp and esp["font_no"] in fonts:
+                disc.append(f"no havia d'haver-hi cap preferència de {esp['font_no']}")
             if "reg_rebutjat" in esp and esp["reg_rebutjat"] not in r.reg_rebutjats.get(s, set()):
                 disc.append(f"{esp['reg_rebutjat']} havia de quedar rebutjat")
             ok_total &= not disc

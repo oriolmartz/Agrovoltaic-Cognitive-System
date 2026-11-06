@@ -180,6 +180,30 @@
   (modify ?g (estat resolt))
   (retract ?i))
 
+; Restriccions incompatibles: no hi ha cap accio que garanteixi la seguretat. La deliberacio
+; (1) torna a enviar l'ordre de seguretat, que es l'unica que la pot complir si la fallada es
+; transitoria, i (2) deriva el cas a una persona amb una alarma (aturada d'emergencia o fixar el
+; panell a ma). No es crea cap chunk: es un cas de seguretat que ha de decidir sempre la deliberacio.
+(defrule resol-restriccio-fallida
+  (declare (auto-focus TRUE))
+  (fase (nom impas))
+  ?i <- (impas (tipus restriccio-fallida) (sector ?s) (cicle ?c))
+  ?g <- (subobjectiu (sector ?s) (tipus resoldre-restriccio) (estat actiu))
+  (panell (sector ?s) (angle-seguretat ?as))
+  =>
+  (if (not (any-factp ((?o operador)) (and (eq ?o:sector ?s) (eq ?o:cicle ?c) (eq ?o:nom posicio-seguretat))))
+   then (assert (operador (id (sym-cat ?s -seguretat- ?c)) (cicle ?c) (sector ?s)
+                          (nom posicio-seguretat) (angle-objectiu ?as) (estat proposat))))
+  (assert (preferencia (op posicio-seguretat) (sector ?s) (cicle ?c) (tipus requerida)
+                       (font IMPAS-restriccio)))
+  (printout t "[IMPAS] " ?s ": ALARMA. La seguretat no es pot garantir amb l'actuador avariat. Es torna "
+              "a ordenar posicio-seguretat i cal intervencio humana immediata." crlf)
+  (assert (traca (pas ?c) (fase impas)
+                 (missatge (str-cat ?s ": ALARMA, vent critic amb actuador avariat; posicio-seguretat "
+                                    "requerida i intervencio humana"))))
+  (modify ?g (estat resolt))
+  (retract ?i))
+
 (defrule impas-a-seleccio
   (declare (salience -10) (auto-focus TRUE))
   ?f <- (fase (nom impas))

@@ -74,16 +74,16 @@
    else baix)))
 
 ; Puntuacio total d'un operador: suma de valoracions numeriques.
-; requerida i millor/pitjor pesen molt mes que qualsevol valoracio.
+; La requerida pesa molt mes que qualsevol suma de valoracions (E19: n'hi ha prou amb > 33).
+; Les preferencies best/worst de Soar no s'usen: +-100 passaria per sobre de tota l'escala de
+; prioritats i podria fer guanyar un operador a la seguretat (iteracio 36).
 (deffunction puntuacio (?s ?op ?c)
   (bind ?total 0)
   (do-for-all-facts ((?p preferencia))
       (and (eq ?p:sector ?s) (eq ?p:op ?op) (eq ?p:cicle ?c))
     (switch ?p:tipus
       (case numerica then (bind ?total (+ ?total ?p:valor)))
-      (case requerida then (bind ?total (+ ?total 1000)))
-      (case millor then (bind ?total (+ ?total 100)))
-      (case pitjor then (bind ?total (- ?total 100)))))
+      (case requerida then (bind ?total (+ ?total 1000)))))
   ?total)
 
 ; Objectiu al qual serveix cada operador.

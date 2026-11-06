@@ -4,7 +4,7 @@ Els numeros que es van triar a ma son:
   pes-objectiu       seguretat 5, cultiu 3, energia 3, estabilitat 2, moviment 1 (estalvi d'aigua 1, reg)
   nivell-a-numero    baix 0, mitja 1, alt 2, critic 3
   estabilitat        +pes d'estabilitat (2) a l'operador del cicle anterior (AV8)
-  puntuacio          requerida +1000, millor +100, pitjor -100
+  puntuacio          requerida +1000 (millor/pitjor +-100: codi mort, tret a la iteracio 36)
 
 Tres parts:
   A. Analitica: per a cada parella d'operadors on un serveix un objectiu de mes prioritat, el marge

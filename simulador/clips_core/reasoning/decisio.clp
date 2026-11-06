@@ -41,6 +41,30 @@
   (assert (traca (pas ?c) (fase seleccio)
                  (missatge (str-cat ?s ": impasse de dades insuficients")))))
 
+; Restriccions incompatibles: amb vent critic la seguretat obliga a anar a l'angle de seguretat,
+; pero l'actuador no respon (fallada detectada) i el panell no hi es. Cap operador pot complir
+; la restriccio: es un impasse propi, no un simple "sense candidat" (posicio-seguretat es pot
+; proposar i seleccionar, pero no tindra efecte). Va abans de la seleccio normal (salience 10).
+(defrule detecta-impas-restriccio-fallida
+  (declare (auto-focus TRUE) (salience 10))
+  (fase (nom seleccio))
+  (cicle (numero ?c))
+  (risc (sector ?s) (cicle ?c) (tipus mecanic) (nivell critic))
+  (risc (sector ?s) (cicle ?c) (tipus fallada-actuador))
+  (panell (id ?p) (sector ?s) (angle ?a) (angle-seguretat ?as) (tolerancia-angle ?tol))
+  (test (> (abs (- ?a ?as)) ?tol))
+  (not (operador-seleccionat (sector ?s) (cicle ?c)))
+  (not (impas (sector ?s) (cicle ?c)))
+  (not (preferencia (sector ?s) (cicle ?c) (op posicio-seguretat) (tipus requerida)))   ; ja resolt
+  =>
+  (printout t crlf "[SELECCIO] " ?s ": IMPAS DE RESTRICCIONS INCOMPATIBLES. Vent critic: " ?p
+              " ha d'anar a " ?as " graus, pero es a " ?a " i l'actuador no respon." crlf)
+  (assert (impas (tipus restriccio-fallida) (sector ?s) (cicle ?c) (operadors posicio-seguretat)
+                 (rao "vent critic amb l'actuador avariat: la seguretat no es pot garantir")))
+  (assert (subobjectiu (id (sym-cat G- ?s - ?c)) (tipus resoldre-restriccio) (sector ?s) (estat actiu)))
+  (assert (traca (pas ?c) (fase seleccio)
+                 (missatge (str-cat ?s ": impasse de restriccions incompatibles (vent critic i actuador avariat)")))))
+
 (defrule detecta-impas-sense-candidat
   (declare (auto-focus TRUE))
   (fase (nom seleccio))

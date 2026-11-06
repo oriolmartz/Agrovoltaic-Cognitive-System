@@ -101,6 +101,7 @@
   ?e <- (epmem-episodi (cicle ?ec&:(<= ?ec (- ?c ?w))) (consolidat si))
   =>
   (if (neq ?fx "") then (smem-escriu-arxiu ?fx ?e))
+  (epmem-idx-invalida)              ; l'index de la memoria episodica es reconstruira
   (retract ?e))
 
 ; Que s'ha consolidat (equivalent a epmem-informe).
