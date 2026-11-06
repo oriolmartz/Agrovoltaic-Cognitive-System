@@ -1,4 +1,7 @@
 parametre,metrica,signe_estable
+estabilitat,energia_kwh,sí
+estabilitat,h_estres_calor,sí
+estabilitat,h_estres_rad,sí
 gcr,energia_kwh,sí
 gcr,h_estres_calor,sí
 gcr,h_estres_rad,sí
@@ -8,3 +11,6 @@ k_rad,h_estres_rad,sí
 k_sec,energia_kwh,sí
 k_sec,h_estres_calor,sí
 k_sec,h_estres_rad,sí
+vista_cel_panell,energia_kwh,sí
+vista_cel_panell,h_estres_calor,sí
+vista_cel_panell,h_estres_rad,sí

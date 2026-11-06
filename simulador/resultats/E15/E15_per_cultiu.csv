@@ -1,7 +1,7 @@
 ,m3,m3,m3,h_estres,h_estres,h_estres,percolacio_mm,percolacio_mm,percolacio_mm
 cultiu,enciam,tomaquet,vinya,enciam,tomaquet,vinya,enciam,tomaquet,vinya
 etiqueta,,,,,,,,,
-reg_cap,0.0,0.0,0.0,337.8,272.2,68.7,3.2,1.1,1.7
-reg_fao,27.1,29.0,12.2,31.0,10.0,2.2,15.8,8.9,2.9
-reg_finca,19.3,23.0,4.1,211.0,127.6,45.4,7.7,1.1,1.7
-reg_soar,29.8,31.7,6.1,0.2,0.0,0.4,19.6,4.7,1.7
+reg_cap,0.0,0.0,0.0,315.5,148.8,48.0,4.2,3.2,2.8
+reg_fao,23.4,21.0,8.2,26.5,7.6,1.7,16.5,13.4,4.1
+reg_finca,16.5,8.7,4.1,194.8,91.8,24.5,10.4,3.2,2.8
+reg_soar,27.2,19.8,4.0,0.0,0.0,0.3,20.7,7.5,2.8

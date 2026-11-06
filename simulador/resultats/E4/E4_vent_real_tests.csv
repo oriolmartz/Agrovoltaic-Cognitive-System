@@ -1,5 +1,5 @@
 metrica,A,B,n,mitjana A,mitjana B,A-B,IC95,p (Holm),efecte,Friedman p
 violacions,seguidor,soar,95,0.67,0.0,0.67,"(0.389, 0.979)",9.1e-05,+0.36 (mitja),-
-exposicions,seguidor,soar,95,5.13,0.24,4.88,"(3.474, 6.484)",3.5e-08,+0.66 (gran),-
-energia_kwh,seguidor,soar,95,277.4,263.8,13.59,"(11.482, 15.762)",1.7e-15,+0.99 (gran),-
-moviment_graus,seguidor,soar,95,549.27,472.01,77.26,"(37.591, 118.45)",0.0028,+0.27 (petit),-
+exposicions,seguidor,soar,95,5.13,0.24,4.88,"(3.463, 6.474)",3.5e-08,+0.66 (gran),-
+energia_kwh,seguidor,soar,95,277.4,264.56,12.84,"(10.839, 14.935)",3.7e-16,+0.99 (gran),-
+moviment_graus,seguidor,soar,95,549.27,478.09,71.17,"(30.572, 113.596)",0.0093,+0.23 (petit),-

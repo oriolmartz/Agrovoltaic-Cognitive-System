@@ -1,5 +1,5 @@
 metrica,A,B,n,mitjana A,mitjana B,A-B,IC95,p (Holm),efecte,Friedman p
-energia_kwh,soar_fallades_5,soar_sense_fallades,120,350.81,351.99,-1.18,"(-1.92, -0.49)",0.00022,-0.46 (mitja),-
+energia_kwh,soar_fallades_5,soar_sense_fallades,120,352.95,356.3,-3.34,"(-4.675, -2.162)",3.7e-09,-0.65 (gran),-
 violacions,soar_fallades_5,soar_sense_fallades,120,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),-
 invariants_ko,soar_fallades_5,soar_sense_fallades,120,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),-
-canvis_operador,soar_fallades_5,soar_sense_fallades,120,9.28,7.89,1.39,"(1.133, 1.667)",1.1e-13,+0.83 (gran),-
+canvis_operador,soar_fallades_5,soar_sense_fallades,120,14.46,13.25,1.21,"(0.925, 1.5)",3.8e-12,+0.72 (gran),-
