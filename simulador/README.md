@@ -45,7 +45,7 @@ python clips_core/build_clips.py --check-generated
 `--check-baseline` es conserva només com a comparació històrica amb v1.8. Des de la integració RDF s'espera que indiqui `DIFERENT`, perquè el `deffacts` ja no duplica sectors, cultius, panells ni sensors.
 
 
-Les proves de la versió canònica són a `clips_core/run_proves.clp` (91 proves), i E1 les executa com a `actual`. Abans, E1 projecta la topologia de l'ontologia a `clips_core/topologia_rdf.clp` (generat, no es versiona) i comprova que `soar.clp` està al dia amb els mòduls. `clips_core/run_soar.clp` és només un smoke test manual. Les versions i els `run_soar_v1_x.clp` històrics es conserven fora del nucli actiu, a `../history/clips/simulator/`, per a E1 i la reproducció històrica.
+Les proves de la versió canònica són a `clips_core/run_proves.clp` (90 proves), i E1 les executa com a `actual`. Abans, E1 projecta la topologia de l'ontologia a `clips_core/topologia_rdf.clp` (generat, no es versiona) i comprova que `soar.clp` està al dia amb els mòduls. `clips_core/run_soar.clp` és només un smoke test manual. Les versions i els `run_soar_v1_x.clp` històrics es conserven fora del nucli actiu, a `../history/clips/simulator/`, per a E1 i la reproducció històrica.
 
 ## Executar-ho tot
 
@@ -92,7 +92,7 @@ simulacions soltes a `resultats/simulacions/`.
 |---|---|
 | `clips_core/soar.clp` | **Versió canònica (v1_9)**: la v1_6 amb la correcció de `nivell-hidric` i la decisió de **reg**, amb la topologia carregada de l'ontologia. És el punt d'entrada del simulador i es genera a partir dels mòduls de `clips_core/modules.txt`. |
 | `clips_core/core/`, `memory/`, `reasoning/`, `deliberation/`, `action/` | Font CLIPS modular, separada per responsabilitats cognitives. Els blocs del reg porten l'etiqueta `v1_9`. |
-| `clips_core/run_proves.clp` | Proves de la versió canònica (91: les 55 de la v1_6, 24 de reg i 12 de memòria semàntica, S1–S5). Les executa E1. |
+| `clips_core/run_proves.clp` | Proves de la versió canònica (90: 54 de la v1_6, 24 de reg i 12 de memòria semàntica, S1–S5). Les executa E1. |
 | `../history/clips/simulator/` | Versions monolítiques congelades: v1_5–v1_8 (per a E1, E9 i E10) i la v1_9 autònoma (amb la topologia al `deffacts`) amb el seu `run_soar_v1_9.clp`. |
 | `clips_core/build_clips.py` | Regenera `soar.clp`, comprova que correspon als mòduls i permet comparar amb v1.8 com a referència històrica. |
 | `ontology_loader.py` | Llegeix `../ontologia_domini.rdf` (TBox) i `../ontologia_model.rdf` (ABox), valida vocabulari + `domain/range` i projecta la instanciació a fets CLIPS. |
@@ -207,7 +207,7 @@ amb Ks (iteracions 20–22). E9 i E10 continuen comparant les versions antigues 
 
 | | Resultat |
 |---|---|
-| **E1** regressió | **canònica 91/91** (les 55 de la v1_6, 24 de reg i 12 de memòria semàntica) · v1_5 46/46 · v1_6 55/55 · v1_7 59/59 · v1_8 59/59 · snapshot v1_9 79/79 |
+| **E1** regressió | **canònica 90/90** (54 de la v1_6, 24 de reg i 12 de memòria semàntica) · v1_5 46/46 · v1_6 55/55 · v1_7 59/59 · v1_8 59/59 · snapshot v1_9 79/79 |
 | **E2** graella (24.500 casos × 3 sectors) | 0 violacions de seguretat, deficiència o conflicte · 0 casos no monòtons amb el vent · cobertura 55/79 regles (69,6 %). **Graella del reg** (1.680 casos × 3): 0 violacions de R1–R7 i 0 casos no monòtons de la dosi. Totes les regles del reg es disparen |
 | **E3** llindars (75 casos) | 57/57 de la v1_8 + 18/18 de reg → **75/75** |
 | **E11** agenda (20 dies) | Estratègies `depth`, `breadth`, `lex` i `mea`, especificitat (`simplicity` i `complexity`) i `random` amb 5 llavors: **0 decisions diferents** de 840 (ni del panell ni del reg). **Salience:** si les transicions de fase passen de −10 a 0, amb `depth` el panell canvia el **22,7 %** de les decisions i el reg **no arriba mai a decidir** (0 ordres de reg en 840 cicles: la fase passa abans que es pugui seleccionar). Amb `breadth` no es tanca **cap** cicle. La salience −10 de les transicions és imprescindible |

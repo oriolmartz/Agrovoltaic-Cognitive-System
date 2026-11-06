@@ -12,7 +12,7 @@
 ; D'on surt cada peca:
 ;   - Episodis -> coneixement general: "La consolidacio transforma episodis en
 ;     coneixement mes general" i "consolidar experiencies repetides"
-;     (Arquitectures Cognitives INTRO, diap. 51 i 78); "Resums de memoria episodica
+;     (Arquitectures Cognitives INTRO, diap. 52 i 79); "Resums de memoria episodica
 ;     i creacio d'abstraccions semantiques" (Arquitectura SOAR, diap. 45).
 ;   - Que sigui semantica: es coneixement independent del moment (Laird 2022, sec. 6-7).
 ;   - Que la desi una regla: Soar no te aprenentatge automatic de la memoria semantica,
@@ -92,13 +92,17 @@
 
 ; 3. ARXIU: els episodis ja consolidats i fora de la finestra surten de la memoria de
 ;    treball (i, si hi ha fitxer, s'hi afegeixen). El que ensenyaven ja es al resum.
+;    Nomes si el resum ja te prou casos per decidir (minim-casos): si no, l'episodi es l'unic
+;    que pot respondre en aquella situacio i perdre'l seria oblidar justament el poc frequent.
 ;    A proposta i no a monitoratge: alla tanca-cicle (auto-focus) pot tancar la fase abans.
 (defrule smem-arxiva
   (declare (auto-focus TRUE))
-  (smem-config (actiu on) (finestra ?w&:(> ?w 0)) (arxiu ?fx))
+  (smem-config (actiu on) (finestra ?w&:(> ?w 0)) (arxiu ?fx) (minim-casos ?mn))
   (fase (nom proposta))
   (cicle (numero ?c))
-  ?e <- (epmem-episodi (cicle ?ec&:(<= ?ec (- ?c ?w))) (consolidat si))
+  ?e <- (epmem-episodi (cicle ?ec&:(<= ?ec (- ?c ?w))) (consolidat si)
+                       (sector ?s) (operador ?op) (clau $?k))
+  (smem-resum (sector ?s) (operador ?op) (situacio $?k) (n ?n&:(>= ?n ?mn)))
   =>
   (if (neq ?fx "") then (smem-escriu-arxiu ?fx ?e))
   (epmem-idx-invalida)              ; l'index de la memoria episodica es reconstruira

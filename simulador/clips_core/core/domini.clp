@@ -546,6 +546,7 @@
   (slot actiu (allowed-symbols on off) (default off))
   (slot minim-casos (type INTEGER) (default 3))   ; per sota, el resum no decideix (es consulta epmem)
   (slot k (type NUMBER) (default 2))              ; prudencia: valor = pes * (bona - dolenta) / (n + k)
+  (slot hora-migdia (type INTEGER) (default 14))  ; hora local del maxim de radiacio (clau: el sol puja/baixa)
   (slot finestra (type INTEGER) (default 0))      ; cicles d'episodis consolidats a la MT (0 = tots)
   (slot arxiu (type STRING) (default "")))        ; on s'arxiven els episodis que surten de la MT
 

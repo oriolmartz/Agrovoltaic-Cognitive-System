@@ -276,7 +276,7 @@
 (bind ?*chunk-empat* (chunk-de empat 6))
 (prova "C6 Sector_3 no proposa orientar-produccio (ja es a l'angle optim)"
        (not (any-factp ((?o operador))
-              (and (eq ?o:sector Sector_3) (eq ?o:cicle 6) (eq ?o:nom orientar-produccio))))
+              (and (eq ?o:sector Sector_3) (eq ?o:cicle 6) (eq ?o:nom orientar-produccio)))))
 (prova "C6 Sector_3 selecciona mantenir-posicio" (seleccionat Sector_3 6 mantenir-posicio))
 (prova "C6 no hi ha impasse ni chunk d'empat" (eq ?*chunk-empat* FALSE))
 
@@ -290,7 +290,7 @@
 (prova "C7 no es genera preferencia per al chunk d'empat"
        (not (any-factp ((?p preferencia))
               (and (eq ?p:sector Sector_3) (eq ?p:cicle 7) (eq ?p:tipus millor-que)
-                   (eq ?p:font ?*chunk-empat*))))
+                   (eq ?p:font ?*chunk-empat*)))))
 (prova "C7 Sector_3 selecciona mantenir-posicio" (seleccionat Sector_3 7 mantenir-posicio))
 (prova "C7 sense empat real, el motiu no parla d'empat" (not (parla-d-empat Sector_3 7)))
 
@@ -389,6 +389,7 @@
   (if (eq (str-index "chunk-" (str-cat ?r)) 1) then (undefrule (sym-cat DELIBERACIO:: ?r))))
 (set-reset-globals FALSE)   ; conserva els comptadors de proves
 (reset)
+(epmem-idx-invalida)         ; els globals no es reinicien: l'index apuntaria a fets esborrats
 (set-current-module PROVA)
 (dades-ciclo 1 4.0 4.0 4.0)   ; entrades del cicle 1 (abans eren al deffacts)
 (activa-persistencia "")    ; sense fitxer de chunks en aquesta sessio
@@ -418,7 +419,7 @@
        (and (not (any-factp ((?g subobjectiu)) (eq ?g:id G-Sector_3-3)))
             (not (any-factp ((?p preferencia))
                    (and (eq ?p:sector Sector_3) (eq ?p:cicle 3) (eq ?p:tipus millor-que)
-                        (eq ?p:font RL)))))
+                        (eq ?p:font RL))))))
 (prova "R3 Sector_3 selecciona mantenir-posicio" (seleccionat Sector_3 3 mantenir-posicio))
 
 (aplica-ordres 3)
@@ -488,6 +489,7 @@
 
 (printout t crlf "=== G: proves del reg (v1_9) ===" crlf)
 (reset)
+(epmem-idx-invalida)         ; els globals no es reinicien: l'index apuntaria a fets esborrats
 (set-current-module PROVA)
 (dades-ciclo 1 4.0 4.0 4.0)   ; entrades del cicle 1 (abans eren al deffacts)
 (activa-persistencia "")
@@ -563,6 +565,7 @@
 ; minim-casos 3 (per defecte), finestra 2 cicles, arxiu a smem_arxiu_prova.dat.
 (printout t crlf "=== S: memoria semantica (consolidacio i arxiu) ===" crlf)
 (reset)
+(epmem-idx-invalida)         ; els globals no es reinicien: l'index apuntaria a fets esborrats
 (set-current-module PROVA)
 (activa-persistencia "")
 (activa-reforc off)
@@ -605,13 +608,18 @@
 
 (cicle-normal 5)
 (prova "S3 cada episodi valorat compta una vegada (12 = 4 cicles x 3 sectors)" (= 12 (suma-n-resums)))
-(prova "S4 finestra: no queda cap episodi consolidat de cicles <= 3"
-       (not (any-factp ((?e epmem-episodi)) (<= ?e:cicle 3))))
-(prova "S4 finestra: queden els episodis dels cicles 4 i 5" (= 6 (n-episodis)))
+(prova "S4 finestra: surten els episodis antics amb un resum de prou casos"
+       (not (any-factp ((?e epmem-episodi) (?r smem-resum))
+              (and (<= ?e:cicle 3) (eq ?e:sector ?r:sector) (eq ?e:operador ?r:operador)
+                   (eq ?e:clau ?r:situacio) (>= ?r:n 3)))))
+(prova "S4 finestra: es queden els episodis antics d'un resum amb pocs casos"
+       (any-factp ((?e epmem-episodi) (?r smem-resum))
+         (and (<= ?e:cicle 3) (eq ?e:sector ?r:sector) (eq ?e:operador ?r:operador)
+              (eq ?e:clau ?r:situacio) (< ?r:n 3))))
 (prova "S5 l'arxiu existeix" (fitxer-existeix "smem_arxiu_prova.dat"))
 (set-current-module DOMINI)
 (load-facts "smem_arxiu_prova.dat")
 (set-current-module PROVA)
-(prova "S5 l'arxiu es pot tornar a carregar: 9 episodis mes (cicles 1-3)" (= 15 (n-episodis)))
+(prova "S5 l'arxiu es pot tornar a carregar: tornen tots els episodis (15)" (= 15 (n-episodis)))
 
 (printout t crlf "=== RESUM: " ?*ok* " correctes, " ?*ko* " incorrectes ===" crlf)

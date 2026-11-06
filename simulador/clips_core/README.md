@@ -54,7 +54,7 @@ Per comprovar el mapping RDF abans de provar el controlador:
 python verificacio/e0_ontologia.py
 ```
 
-Per passar les proves de la versió canònica (91), executeu E1, que primer projecta la topologia del RDF a
+Per passar les proves de la versió canònica (90), executeu E1, que primer projecta la topologia del RDF a
 `topologia_rdf.clp` i avisa si `soar.clp` no està al dia amb els mòduls:
 
 ```bash

@@ -119,7 +119,7 @@ python verificacio/e3_llindars.py
 python verificacio/e1_regressio.py
 ```
 
-Amb la v1_9, E1 ha de donar fail 0: també la versió canònica (`actual`, 91 proves), que es prova amb la topologia de `ontologia_model.rdf` (E1 la projecta a `clips_core/topologia_rdf.clp`, un fitxer generat). Les snapshots històriques es reprodueixen sense injectar l'ontologia. E0 ha de sortir OK, E3 75/75 i els casos de prova 14/14: 
+Amb la v1_9, E1 ha de donar fail 0: també la versió canònica (`actual`, 90 proves), que es prova amb la topologia de `ontologia_model.rdf` (E1 la projecta a `clips_core/topologia_rdf.clp`, un fitxer generat). Les snapshots històriques es reprodueixen sense injectar l'ontologia. E0 ha de sortir OK, E3 75/75 i els casos de prova 14/14: 
 
 ## Regla d'iteració
 

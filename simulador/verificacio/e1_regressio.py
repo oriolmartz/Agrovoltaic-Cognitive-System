@@ -59,7 +59,10 @@ def executa(versio: str) -> dict:
     sortida = p.stdout + p.stderr
     passes = re.findall(r"\[PASS\] (.*)", sortida)
     fails = re.findall(r"\[FAIL\] (.*)", sortida)
-    errors = [l for l in sortida.splitlines() if re.search(r"\[[A-Z]+\d+\]|ERROR", l)]
+    # ENVRNMNT8: avis de memoria en tancar l'entorn (l'index de l'episodica), no es cap error de les proves
+    errors = [l for l in sortida.splitlines() if re.search(r"\[[A-Z]+\d+\]|ERROR", l) and "ENVRNMNT8" not in l]
+    if versio == "actual" and "=== RESUM" not in sortida:   # el fitxer s'ha aturat a mig cami
+        errors.insert(0, "ERROR: run_proves.clp no ha arribat al RESUM")
     d = os.path.join(ARREL, "resultats", "E1")
     os.makedirs(d, exist_ok=True)
     with open(os.path.join(d, f"traca_run_soar_{versio}.txt"), "w", encoding="utf-8") as f:
