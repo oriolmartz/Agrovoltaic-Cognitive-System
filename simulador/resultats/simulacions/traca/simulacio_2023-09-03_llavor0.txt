@@ -1,0 +1,1323 @@
+# Traca del CLIPS (soar.clp) -  - 2023-09-03 - Ribera de Sió (Balaguer) - llavor 0
+
+##############################################################################
+# 2023-09-03 07:00  CICLE 1
+#   Sector_1 entrada: vent=9.6 (previsio 9.8) radiacio=0.0 temp-cultiu=21.05 humitat=84.44
+#   Sector_2 entrada: vent=10.27 (previsio 10.3) radiacio=0.0 temp-cultiu=20.23 humitat=83.79
+#   Sector_3 entrada: vent=10.02 (previsio 7.5) radiacio=0.0 temp-cultiu=22.39 humitat=84.76
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[PROPOSTA] Sector_3: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: mantenir-posicio +6 (ja es a l'angle optim, 0.0 vs 0.0).
+[AVALUACIO] Sector_2: mantenir-posicio +6 (ja es a l'angle optim, 0.0 vs 0.0).
+[AVALUACIO] Sector_3: mantenir-posicio +6 (ja es a l'angle optim, 0.0 vs 0.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona mantenir-posicio. Criteri: maxima valoracio (7 punts).
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (7 punts).
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (7 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE mantenir-posicio -> 0.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 0.0 graus.
+[APLICACIO] Sector_1: ORDRE mantenir-posicio -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 1
+   Accio:      mantenir-posicio a 0.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(7)
+   Descartats: cap
+   Criteri:    maxima valoracio (7 punts)
+
+[EXPLICACIO] Sector_2, cicle 1
+   Accio:      mantenir-posicio a 0.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(7)
+   Descartats: cap
+   Criteri:    maxima valoracio (7 punts)
+
+[EXPLICACIO] Sector_3, cicle 1
+   Accio:      mantenir-posicio a 0.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(7)
+   Descartats: cap
+   Criteri:    maxima valoracio (7 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #1: Sector_1, cicle 1, mantenir-posicio.
+[EPMEM] NOU EPISODI #2: Sector_2, cicle 1, mantenir-posicio.
+[EPMEM] NOU EPISODI #3: Sector_3, cicle 1, mantenir-posicio.
+[FI DEL CICLE 1] Ordres enviades. Esperant les dades del cicle 2.
+
+
+##############################################################################
+# 2023-09-03 08:00  CICLE 2
+#   Sector_1 entrada: vent=9.49 (previsio 10.7) radiacio=0.0 temp-cultiu=21.08 humitat=84.36
+#   Sector_2 entrada: vent=9.49 (previsio 9.1) radiacio=0.0 temp-cultiu=20.57 humitat=83.61
+#   Sector_3 entrada: vent=9.65 (previsio 11.4) radiacio=0.0 temp-cultiu=22.14 humitat=84.73
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #3 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #2 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #1 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (-55.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_2: orientar-produccio (-55.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (-55.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: orientar-produccio +6 (energia, produccio 0.0 / demanda 6.57).
+[AVALUACIO] Sector_2: orientar-produccio +6 (energia, produccio 0.0 / demanda 6.57).
+[AVALUACIO] Sector_3: orientar-produccio +6 (energia, produccio 0.0 / demanda 6.57).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: mantenir-posicio 2.0 (memoria: a l'episodi #1, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #2, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: mantenir-posicio 2.0 (memoria: a l'episodi #3, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (6 punts).
+[REFORC] Sector_3: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 1.0, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 0.85, 4 rajoles actualitzades.
+[REFORC] Sector_1: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 0.72, 4 rajoles actualitzades.
+[SELECCIO] Sector_2: es selecciona orientar-produccio. Criteri: maxima valoracio (6 punts).
+[SELECCIO] Sector_3: es selecciona orientar-produccio. Criteri: maxima valoracio (6 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE orientar-produccio -> -55.0 graus.
+[APLICACIO] Sector_2: ORDRE orientar-produccio -> -55.0 graus.
+[APLICACIO] Sector_1: ORDRE orientar-produccio -> -55.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 2
+   Accio:      orientar-produccio a -55.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(5.0) orientar-produccio(6)
+   Descartats: cap
+   Criteri:    maxima valoracio (6 punts)
+
+[EXPLICACIO] Sector_2, cicle 2
+   Accio:      orientar-produccio a -55.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(5.0) orientar-produccio(6)
+   Descartats: cap
+   Criteri:    maxima valoracio (6 punts)
+
+[EXPLICACIO] Sector_3, cicle 2
+   Accio:      orientar-produccio a -55.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(5.0) orientar-produccio(6)
+   Descartats: cap
+   Criteri:    maxima valoracio (6 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #4: Sector_1, cicle 2, orientar-produccio.
+[EPMEM] NOU EPISODI #5: Sector_2, cicle 2, orientar-produccio.
+[EPMEM] NOU EPISODI #6: Sector_3, cicle 2, orientar-produccio.
+[FI DEL CICLE 2] Ordres enviades. Esperant les dades del cicle 3.
+
+
+##############################################################################
+# 2023-09-03 09:00  CICLE 3
+#   Sector_1 entrada: vent=10.94 (previsio 12.1) radiacio=3.15 temp-cultiu=20.6 humitat=84.31
+#   Sector_2 entrada: vent=11.47 (previsio 10.5) radiacio=3.04 temp-cultiu=19.95 humitat=83.53
+#   Sector_3 entrada: vent=11.22 (previsio 10.8) radiacio=3.12 temp-cultiu=22.33 humitat=84.73
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_1: vent 10.94 m/s (previsio 12.1) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] El risc mecanic de Sector_1 activa l'objectiu Obj_Seguretat.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #6 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #5 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #4 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (-55.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (-55.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (-55.0 graus).
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_1: mantenir-posicio +6 (ja es a l'angle optim, -55.0 vs -55.0).
+[AVALUACIO] Sector_2: mantenir-posicio +6 (ja es a l'angle optim, -55.0 vs -55.0).
+[AVALUACIO] Sector_3: mantenir-posicio +6 (ja es a l'angle optim, -55.0 vs -55.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #2, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_3: mantenir-posicio 2.0 (memoria: a l'episodi #3, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: maxima valoracio (10 punts).
+[REFORC] Sector_3: orientar-produccio del cicle 2 -> recompensa 1.0 (bona), error 1.0, 4 rajoles actualitzades.
+[REFORC] Sector_2: orientar-produccio del cicle 2 -> recompensa 1.0 (bona), error 0.85, 4 rajoles actualitzades.
+[REFORC] Sector_1: orientar-produccio del cicle 2 -> recompensa 1.0 (bona), error 0.72, 4 rajoles actualitzades.
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (9.0 punts).
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (9.0 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE mantenir-posicio -> -55.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> -55.0 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 3
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=alt
+   Candidats:  mantenir-posicio(7) posicio-seguretat(10)
+   Descartats: cap
+   Criteri:    maxima valoracio (10 punts)
+
+[EXPLICACIO] Sector_2, cicle 3
+   Accio:      mantenir-posicio a -55.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(9.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (9.0 punts)
+
+[EXPLICACIO] Sector_3, cicle 3
+   Accio:      mantenir-posicio a -55.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(9.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (9.0 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #7: Sector_1, cicle 3, posicio-seguretat.
+[EPMEM] NOU EPISODI #8: Sector_2, cicle 3, mantenir-posicio.
+[EPMEM] NOU EPISODI #9: Sector_3, cicle 3, mantenir-posicio.
+[MONITORATGE] Sector_2: oscil.lacio mantenir-posicio -> orientar-produccio -> mantenir-posicio en tres cicles.
+[MONITORATGE] Sector_3: oscil.lacio mantenir-posicio -> orientar-produccio -> mantenir-posicio en tres cicles.
+[FI DEL CICLE 3] Ordres enviades. Esperant les dades del cicle 4.
+
+
+##############################################################################
+# 2023-09-03 10:00  CICLE 4
+#   Sector_1 entrada: vent=11.24 (previsio 9.7) radiacio=24.2 temp-cultiu=21.63 humitat=84.19
+#   Sector_2 entrada: vent=10.81 (previsio 9.0) radiacio=31.57 temp-cultiu=20.86 humitat=83.23
+#   Sector_3 entrada: vent=10.52 (previsio 12.6) radiacio=30.01 temp-cultiu=22.8 humitat=84.67
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_3: vent 10.52 m/s (previsio 12.6) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] El risc mecanic de Sector_3 activa l'objectiu Obj_Seguretat.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #9 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #8 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #7 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (-55.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (-55.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (-55.0 graus).
+[PROPOSTA] Sector_3: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_3: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_1: orientar-produccio +6 (energia, produccio 0.58 / demanda 8.26).
+[AVALUACIO] Sector_2: mantenir-posicio +6 (ja es a l'angle optim, -55.0 vs -55.0).
+[AVALUACIO] Sector_3: mantenir-posicio +6 (ja es a l'angle optim, -55.0 vs -55.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: orientar-produccio 2.0 (memoria: a l'episodi #4, cicle 2, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_1: mantenir-posicio 2.0 (memoria: a l'episodi #1, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_2: mantenir-posicio 2.0 (memoria: a l'episodi #8, cicle 3, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_3: es selecciona posicio-seguretat. Criteri: maxima valoracio (10 punts).
+[REFORC] Sector_3: mantenir-posicio del cicle 3 -> recompensa 1.0 (bona), error 0.46, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 3 -> recompensa 1.0 (bona), error 0.42, 4 rajoles actualitzades.
+[REFORC] Sector_1: posicio-seguretat del cicle 3 -> recompensa 1.0 (bona), error 1.0, 5 rajoles actualitzades.
+[SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (11.0 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> -55.0 graus.
+[APLICACIO] Sector_1: ORDRE orientar-produccio -> -55.0 graus.
+[APLICACIO] Sector_3: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_3, cicle 4
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=alt
+   Candidats:  mantenir-posicio(9) posicio-seguretat(10)
+   Descartats: cap
+   Criteri:    maxima valoracio (10 punts)
+
+[EXPLICACIO] Sector_1, cicle 4
+   Accio:      orientar-produccio a -55.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(3.0) orientar-produccio(8.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (8.0 punts)
+
+[EXPLICACIO] Sector_2, cicle 4
+   Accio:      mantenir-posicio a -55.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(11.0)
+   Descartats: cap
+   Criteri:    maxima valoracio (11.0 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #10: Sector_3, cicle 4, posicio-seguretat.
+[EPMEM] NOU EPISODI #11: Sector_1, cicle 4, orientar-produccio.
+[EPMEM] NOU EPISODI #12: Sector_2, cicle 4, mantenir-posicio.
+[MONITORATGE] Sector_1: oscil.lacio orientar-produccio -> posicio-seguretat -> orientar-produccio en tres cicles.
+[FI DEL CICLE 4] Ordres enviades. Esperant les dades del cicle 5.
+
+
+##############################################################################
+# 2023-09-03 11:00  CICLE 5
+#   Sector_1 entrada: vent=10.53 (previsio 19.4) radiacio=76.54 temp-cultiu=22.8 humitat=84.01
+#   Sector_2 entrada: vent=10.78 (previsio 15.6) radiacio=69.94 temp-cultiu=22.78 humitat=82.84
+#   Sector_3 entrada: vent=11.62 (previsio 14.7) radiacio=58.64 temp-cultiu=24.72 humitat=84.61
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_3: vent 11.62 m/s (previsio 14.7) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] El risc mecanic de Sector_3 activa l'objectiu Obj_Seguretat.
+[ELABORACIO] Sector_2: vent 10.78 m/s (previsio 15.6) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] Sector_1: vent 10.53 m/s (previsio 19.4) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] Sector_2: enciam a 22.78 C (optim fins a 21.0, maxim 30.0). Risc de temperatura mitja.
+[ELABORACIO] Sector_2: enciam en maduracio (sensibilitat alta). El risc de temperatura passa de mitja a alt.
+[ELABORACIO] El risc temperatura de Sector_2 activa l'objectiu Obj_Produccio_Cultiu.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_2: l'episodi #12 (mantenir-posicio) es valora 'dolenta' (resultat correcte, risc 0 -> 2).
+[EPMEM] Sector_1: l'episodi #11 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_3: l'episodi #10 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (-54.6 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (-55.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (-55.0 graus).
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_2: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_3: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_3: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_2: orientar-ombra +6 (cultiu, risc temperatura alt).
+[AVALUACIO] Sector_3: orientar-produccio +6 (energia, produccio 1.39 / demanda 9.72).
+[AVALUACIO] Sector_1: mantenir-posicio +6 (ja es a l'angle optim, -55.0 vs -54.6).
+[AVALUACIO] Sector_2: mantenir-posicio +6 (ja es a l'angle optim, -55.0 vs -54.6).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_3: es selecciona posicio-seguretat. Criteri: maxima valoracio (12 punts).
+[REFORC] Sector_2: mantenir-posicio del cicle 4 -> recompensa -1.0 (dolenta), error -1.71, 4 rajoles actualitzades.
+[REFORC] Sector_1: orientar-produccio del cicle 4 -> recompensa 1.0 (bona), error 0.51, 4 rajoles actualitzades.
+[REFORC] Sector_3: posicio-seguretat del cicle 4 -> recompensa 1.0 (bona), error 0.82, 5 rajoles actualitzades.
+[SELECCIO] Sector_2: es selecciona posicio-seguretat. Criteri: maxima valoracio (10 punts).
+[SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_2: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_3: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_3, cicle 5
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=alt
+   Candidats:  mantenir-posicio(1) orientar-produccio(6) posicio-seguretat(12)
+   Descartats: cap
+   Criteri:    maxima valoracio (12 punts)
+
+[EXPLICACIO] Sector_2, cicle 5
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=alt temperatura=alt
+   Candidats:  mantenir-posicio(9) orientar-ombra(6) posicio-seguretat(10)
+   Descartats: cap
+   Criteri:    maxima valoracio (10 punts)
+
+[EXPLICACIO] Sector_1, cicle 5
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic
+   Candidats:  posicio-seguretat(0)
+   Descartats: mantenir-posicio
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #13: Sector_3, cicle 5, posicio-seguretat.
+[EPMEM] NOU EPISODI #14: Sector_2, cicle 5, posicio-seguretat.
+[EPMEM] NOU EPISODI #15: Sector_1, cicle 5, posicio-seguretat.
+[MONITORATGE] Sector_1: oscil.lacio posicio-seguretat -> orientar-produccio -> posicio-seguretat en tres cicles.
+[FI DEL CICLE 5] Ordres enviades. Esperant les dades del cicle 6.
+
+
+##############################################################################
+# 2023-09-03 12:00  CICLE 6
+#   Sector_1 entrada: vent=15.68 (previsio 15.6) radiacio=121.03 temp-cultiu=23.89 humitat=83.82
+#   Sector_2 entrada: vent=16.2 (previsio 14.9) radiacio=124.21 temp-cultiu=23.83 humitat=82.42
+#   Sector_3 entrada: vent=16.04 (previsio 14.5) radiacio=125.56 temp-cultiu=24.67 humitat=84.52
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_3: vent 16.04 m/s (previsio 14.5) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] El risc mecanic de Sector_3 activa l'objectiu Obj_Seguretat.
+[ELABORACIO] Sector_2: vent 16.2 m/s (previsio 14.9) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] Sector_1: vent 15.68 m/s (previsio 15.6) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] Sector_2: enciam a 23.83 C (optim fins a 21.0, maxim 30.0). Risc de temperatura mitja.
+[ELABORACIO] Sector_2: enciam en maduracio (sensibilitat alta). El risc de temperatura passa de mitja a alt.
+[ELABORACIO] El risc temperatura de Sector_2 activa l'objectiu Obj_Produccio_Cultiu.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_1: l'episodi #15 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #14 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 2 -> 2).
+[EPMEM] Sector_3: l'episodi #13 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (-40.7 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_2: orientar-produccio (-40.7 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (-40.7 graus).
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_2: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_3: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_2: REBUIG de orientar-ombra (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_3: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_3: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_2: orientar-ombra +6 (cultiu, risc temperatura alt).
+[AVALUACIO] Sector_1: orientar-produccio +6 (energia, produccio 3.05 / demanda 11.41).
+[AVALUACIO] Sector_2: orientar-produccio +6 (energia, produccio 3.05 / demanda 11.41).
+[AVALUACIO] Sector_3: orientar-produccio +6 (energia, produccio 3.05 / demanda 11.41).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: maxima valoracio (12 punts).
+[REFORC] Sector_1: posicio-seguretat del cicle 5 -> recompensa 1.0 (bona), error 0.66, 5 rajoles actualitzades.
+[REFORC] Sector_2: posicio-seguretat del cicle 5 -> recompensa 1.0 (bona), error 0.59, 6 rajoles actualitzades.
+[REFORC] Sector_3: posicio-seguretat del cicle 5 -> recompensa 1.0 (bona), error 0.41, 5 rajoles actualitzades.
+[SELECCIO] Sector_2: orientar-ombra queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_3: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_3: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_3: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_2: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 6
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=alt
+   Candidats:  mantenir-posicio(1) orientar-produccio(6) posicio-seguretat(12)
+   Descartats: cap
+   Criteri:    maxima valoracio (12 punts)
+
+[EXPLICACIO] Sector_2, cicle 6
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic temperatura=alt
+   Candidats:  posicio-seguretat(2)
+   Descartats: mantenir-posicio orientar-produccio orientar-ombra
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO] Sector_3, cicle 6
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic
+   Candidats:  posicio-seguretat(2)
+   Descartats: mantenir-posicio orientar-produccio
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #16: Sector_1, cicle 6, posicio-seguretat.
+[EPMEM] NOU EPISODI #17: Sector_2, cicle 6, posicio-seguretat.
+[EPMEM] NOU EPISODI #18: Sector_3, cicle 6, posicio-seguretat.
+[FI DEL CICLE 6] Ordres enviades. Esperant les dades del cicle 7.
+
+
+##############################################################################
+# 2023-09-03 13:00  CICLE 7
+#   Sector_1 entrada: vent=15.56 (previsio 13.2) radiacio=322.62 temp-cultiu=27.59 humitat=83.5
+#   Sector_2 entrada: vent=15.06 (previsio 14.1) radiacio=303.45 temp-cultiu=27.42 humitat=81.74
+#   Sector_3 entrada: vent=15.23 (previsio 11.6) radiacio=308.87 temp-cultiu=28.54 humitat=84.39
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_3: vent 15.23 m/s (previsio 11.6) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] El risc mecanic de Sector_3 activa l'objectiu Obj_Seguretat.
+[ELABORACIO] Sector_2: vent 15.06 m/s (previsio 14.1) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] Sector_1: vent 15.56 m/s (previsio 13.2) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] Sector_2: enciam a 27.42 C (optim fins a 21.0, maxim 30.0). Risc de temperatura alt.
+[ELABORACIO] El risc temperatura de Sector_2 activa l'objectiu Obj_Produccio_Cultiu.
+[ELABORACIO] Sector_2: radiacio 303.45 W/m2 (enciam: optim fins a 170.0, estres des de 170.0). Risc de radiacio alt.
+[ELABORACIO] Sector_2: radiacio alta amb calor alta. El risc de radiacio passa a critic.
+[ELABORACIO] Sector_1: tomaquet a 27.59 C (optim fins a 27.0, maxim 35.0). Risc de temperatura mitja.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #18 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_2: l'episodi #17 (posicio-seguretat) es valora 'dolenta' (resultat correcte, risc 2 -> 5).
+[EPMEM] Sector_1: l'episodi #16 (posicio-seguretat) es valora 'dolenta' (resultat correcte, risc 0 -> 1).
+[PROPOSTA] Sector_3: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (-25.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_2: orientar-produccio (-25.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (-25.0 graus).
+[PROPOSTA] Sector_1: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_2: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_3: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_2: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_3: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_1: orientar-ombra +3 (cultiu, risc temperatura mitja).
+[AVALUACIO] Sector_2: orientar-ombra +9 (cultiu, risc exces-radiacio critic).
+[AVALUACIO] Sector_2: orientar-ombra +6 (cultiu, risc temperatura alt).
+[AVALUACIO] Sector_1: orientar-produccio +6 (energia, produccio 9.09 / demanda 12.95).
+[AVALUACIO] Sector_2: orientar-produccio +6 (energia, produccio 9.09 / demanda 12.95).
+[AVALUACIO] Sector_3: orientar-produccio +6 (energia, produccio 9.09 / demanda 12.95).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_3: es selecciona posicio-seguretat. Criteri: maxima valoracio (12 punts).
+[REFORC] Sector_3: posicio-seguretat del cicle 6 -> recompensa 1.0 (bona), error 0.41, 5 rajoles actualitzades.
+[REFORC] Sector_2: posicio-seguretat del cicle 6 -> recompensa -1.0 (dolenta), error -1.61, 6 rajoles actualitzades.
+[REFORC] Sector_1: posicio-seguretat del cicle 6 -> recompensa -1.0 (dolenta), error -1.66, 5 rajoles actualitzades.
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: maxima valoracio (12 punts).
+[SELECCIO] Sector_2: es selecciona orientar-ombra. Criteri: maxima valoracio (15 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE orientar-ombra -> 0.0 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_3: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_3, cicle 7
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=alt
+   Candidats:  mantenir-posicio(1) orientar-produccio(6) posicio-seguretat(12)
+   Descartats: cap
+   Criteri:    maxima valoracio (12 punts)
+
+[EXPLICACIO] Sector_1, cicle 7
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=alt temperatura=mitja
+   Candidats:  mantenir-posicio(1) orientar-produccio(6) orientar-ombra(3) posicio-seguretat(12)
+   Descartats: cap
+   Criteri:    maxima valoracio (12 punts)
+
+[EXPLICACIO] Sector_2, cicle 7
+   Accio:      orientar-ombra a 0.0 graus
+   Riscos:     mecanic=alt temperatura=alt exces-radiacio=critic
+   Candidats:  mantenir-posicio(1) orientar-produccio(6) orientar-ombra(15) posicio-seguretat(12)
+   Descartats: cap
+   Criteri:    maxima valoracio (15 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #19: Sector_3, cicle 7, posicio-seguretat.
+[EPMEM] NOU EPISODI #20: Sector_1, cicle 7, posicio-seguretat.
+[EPMEM] NOU EPISODI #21: Sector_2, cicle 7, orientar-ombra.
+[FI DEL CICLE 7] Ordres enviades. Esperant les dades del cicle 8.
+
+
+##############################################################################
+# 2023-09-03 14:00  CICLE 8
+#   Sector_1 entrada: vent=14.74 (previsio 15.0) radiacio=232.01 temp-cultiu=27.77 humitat=83.21
+#   Sector_2 entrada: vent=14.31 (previsio 14.2) radiacio=250.22 temp-cultiu=27.63 humitat=81.12
+#   Sector_3 entrada: vent=14.1 (previsio 13.5) radiacio=244.53 temp-cultiu=29.07 humitat=84.27
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_3: vent 14.1 m/s (previsio 13.5) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] El risc mecanic de Sector_3 activa l'objectiu Obj_Seguretat.
+[ELABORACIO] Sector_2: vent 14.31 m/s (previsio 14.2) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] Sector_1: vent 14.74 m/s (previsio 15.0) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] Sector_2: enciam a 27.63 C (optim fins a 21.0, maxim 30.0). Risc de temperatura alt.
+[ELABORACIO] El risc temperatura de Sector_2 activa l'objectiu Obj_Produccio_Cultiu.
+[ELABORACIO] Sector_2: radiacio 250.22 W/m2 (enciam: optim fins a 170.0, estres des de 170.0). Risc de radiacio alt.
+[ELABORACIO] Sector_2: radiacio alta amb calor alta. El risc de radiacio passa a critic.
+[ELABORACIO] Sector_1: tomaquet a 27.77 C (optim fins a 27.0, maxim 35.0). Risc de temperatura mitja.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_2: l'episodi #21 (orientar-ombra) es valora 'neutra' (resultat correcte, risc 5 -> 5).
+[EPMEM] Sector_1: l'episodi #20 (posicio-seguretat) es valora 'neutra' (resultat correcte, risc 1 -> 1).
+[EPMEM] Sector_3: l'episodi #19 (posicio-seguretat) es valora 'neutra' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (-7.8 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_2: orientar-produccio (-7.8 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (-7.8 graus).
+[PROPOSTA] Sector_1: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_2: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_3: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_2: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_3: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_1: orientar-ombra +3 (cultiu, risc temperatura mitja).
+[AVALUACIO] Sector_2: orientar-ombra +9 (cultiu, risc exces-radiacio critic).
+[AVALUACIO] Sector_2: orientar-ombra +6 (cultiu, risc temperatura alt).
+[AVALUACIO] Sector_1: orientar-produccio +6 (energia, produccio 7.89 / demanda 13.88).
+[AVALUACIO] Sector_2: orientar-produccio +6 (energia, produccio 7.89 / demanda 13.88).
+[AVALUACIO] Sector_3: orientar-produccio +6 (energia, produccio 7.89 / demanda 13.88).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: orientar-ombra +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_3: es selecciona posicio-seguretat. Criteri: maxima valoracio (12 punts).
+[REFORC] Sector_2: orientar-ombra del cicle 7 -> recompensa 0.0 (neutra), error 0.0, 7 rajoles actualitzades.
+[REFORC] Sector_1: posicio-seguretat del cicle 7 -> recompensa 0.0 (neutra), error -0.16, 6 rajoles actualitzades.
+[REFORC] Sector_3: posicio-seguretat del cicle 7 -> recompensa 0.0 (neutra), error -0.33, 5 rajoles actualitzades.
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: maxima valoracio (12 punts).
+[SELECCIO] Sector_2: es selecciona orientar-ombra. Criteri: maxima valoracio (17 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE orientar-ombra -> 0.0 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_3: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_3, cicle 8
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=alt
+   Candidats:  mantenir-posicio(1) orientar-produccio(6) posicio-seguretat(12)
+   Descartats: cap
+   Criteri:    maxima valoracio (12 punts)
+
+[EXPLICACIO] Sector_1, cicle 8
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=alt temperatura=mitja
+   Candidats:  mantenir-posicio(1) orientar-produccio(6) orientar-ombra(3) posicio-seguretat(12)
+   Descartats: cap
+   Criteri:    maxima valoracio (12 punts)
+
+[EXPLICACIO] Sector_2, cicle 8
+   Accio:      orientar-ombra a 0.0 graus
+   Riscos:     mecanic=alt temperatura=alt exces-radiacio=critic
+   Candidats:  mantenir-posicio(1) orientar-produccio(6) orientar-ombra(17) posicio-seguretat(10)
+   Descartats: cap
+   Criteri:    maxima valoracio (17 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #22: Sector_3, cicle 8, posicio-seguretat.
+[EPMEM] NOU EPISODI #23: Sector_1, cicle 8, posicio-seguretat.
+[EPMEM] NOU EPISODI #24: Sector_2, cicle 8, orientar-ombra.
+[FI DEL CICLE 8] Ordres enviades. Esperant les dades del cicle 9.
+
+
+##############################################################################
+# 2023-09-03 15:00  CICLE 9
+#   Sector_1 entrada: vent=13.19 (previsio 16.3) radiacio=321.56 temp-cultiu=27.23 humitat=82.92
+#   Sector_2 entrada: vent=13.17 (previsio 16.7) radiacio=334.64 temp-cultiu=26.78 humitat=80.48
+#   Sector_3 entrada: vent=13.16 (previsio 13.9) radiacio=335.82 temp-cultiu=27.85 humitat=84.15
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_3: vent 13.16 m/s (previsio 13.9) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] El risc mecanic de Sector_3 activa l'objectiu Obj_Seguretat.
+[ELABORACIO] Sector_2: vent 13.17 m/s (previsio 16.7) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] Sector_1: vent 13.19 m/s (previsio 16.3) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] Sector_2: enciam a 26.78 C (optim fins a 21.0, maxim 30.0). Risc de temperatura alt.
+[ELABORACIO] El risc temperatura de Sector_2 activa l'objectiu Obj_Produccio_Cultiu.
+[ELABORACIO] Sector_2: radiacio 334.64 W/m2 (enciam: optim fins a 170.0, estres des de 170.0). Risc de radiacio alt.
+[ELABORACIO] Sector_2: radiacio alta amb calor alta. El risc de radiacio passa a critic.
+[ELABORACIO] Sector_1: tomaquet a 27.23 C (optim fins a 27.0, maxim 35.0). Risc de temperatura mitja.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_2: l'episodi #24 (orientar-ombra) es valora 'bona' (resultat correcte, risc 5 -> 5).
+[EPMEM] Sector_1: l'episodi #23 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 1 -> 1).
+[EPMEM] Sector_3: l'episodi #22 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (10.1 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_2: orientar-produccio (10.1 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (10.1 graus).
+[PROPOSTA] Sector_1: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_2: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_3: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: REBUIG de orientar-ombra (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de orientar-ombra (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_3: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_1: orientar-ombra +3 (cultiu, risc temperatura mitja).
+[AVALUACIO] Sector_2: orientar-ombra +9 (cultiu, risc exces-radiacio critic).
+[AVALUACIO] Sector_2: orientar-ombra +6 (cultiu, risc temperatura alt).
+[AVALUACIO] Sector_1: orientar-produccio +6 (energia, produccio 11.46 / demanda 13.88).
+[AVALUACIO] Sector_2: orientar-produccio +6 (energia, produccio 11.46 / demanda 13.88).
+[AVALUACIO] Sector_3: orientar-produccio +6 (energia, produccio 11.46 / demanda 13.88).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: orientar-ombra +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_3: es selecciona posicio-seguretat. Criteri: maxima valoracio (12 punts).
+[REFORC] Sector_2: orientar-ombra del cicle 8 -> recompensa 1.0 (bona), error 1.0, 7 rajoles actualitzades.
+[REFORC] Sector_1: posicio-seguretat del cicle 8 -> recompensa 1.0 (bona), error 0.95, 6 rajoles actualitzades.
+[REFORC] Sector_3: posicio-seguretat del cicle 8 -> recompensa 1.0 (bona), error 0.63, 5 rajoles actualitzades.
+[SELECCIO] Sector_2: orientar-ombra queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: orientar-ombra queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_2: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_3: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_3, cicle 9
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=alt
+   Candidats:  mantenir-posicio(1) orientar-produccio(6) posicio-seguretat(12)
+   Descartats: cap
+   Criteri:    maxima valoracio (12 punts)
+
+[EXPLICACIO] Sector_1, cicle 9
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic temperatura=mitja
+   Candidats:  posicio-seguretat(2)
+   Descartats: mantenir-posicio orientar-produccio orientar-ombra
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO] Sector_2, cicle 9
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic temperatura=alt exces-radiacio=critic
+   Candidats:  posicio-seguretat(0)
+   Descartats: mantenir-posicio orientar-produccio orientar-ombra
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #25: Sector_3, cicle 9, posicio-seguretat.
+[EPMEM] NOU EPISODI #26: Sector_1, cicle 9, posicio-seguretat.
+[EPMEM] NOU EPISODI #27: Sector_2, cicle 9, posicio-seguretat.
+[FI DEL CICLE 9] Ordres enviades. Esperant les dades del cicle 10.
+
+
+##############################################################################
+# 2023-09-03 16:00  CICLE 10
+#   Sector_1 entrada: vent=15.46 (previsio 19.4) radiacio=462.12 temp-cultiu=30.33 humitat=82.5
+#   Sector_2 entrada: vent=15.11 (previsio 15.4) radiacio=468.47 temp-cultiu=30.3 humitat=79.58
+#   Sector_3 entrada: vent=15.82 (previsio 13.7) radiacio=495.49 temp-cultiu=31.58 humitat=83.97
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_3: vent 15.82 m/s (previsio 13.7) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] El risc mecanic de Sector_3 activa l'objectiu Obj_Seguretat.
+[ELABORACIO] Sector_2: vent 15.11 m/s (previsio 15.4) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] Sector_1: vent 15.46 m/s (previsio 19.4) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] Sector_3: vinya a 31.58 C (optim fins a 30.0, maxim 38.0). Risc de temperatura mitja.
+[ELABORACIO] El risc temperatura de Sector_3 activa l'objectiu Obj_Produccio_Cultiu.
+[ELABORACIO] Sector_2: enciam a 30.3 C (optim fins a 21.0, maxim 30.0). Risc de temperatura critic.
+[ELABORACIO] Sector_2: radiacio 468.47 W/m2 (enciam: optim fins a 170.0, estres des de 170.0). Risc de radiacio alt.
+[ELABORACIO] Sector_2: radiacio alta amb calor alta. El risc de radiacio passa a critic.
+[ELABORACIO] Sector_1: tomaquet a 30.33 C (optim fins a 27.0, maxim 35.0). Risc de temperatura mitja.
+[ELABORACIO] Sector_1: radiacio 462.12 W/m2 (tomaquet: optim fins a 350.0, estres des de 435.0). Risc de radiacio alt.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_2: l'episodi #27 (posicio-seguretat) es valora 'dolenta' (resultat correcte, risc 5 -> 6).
+[EPMEM] Sector_1: l'episodi #26 (posicio-seguretat) es valora 'dolenta' (resultat correcte, risc 1 -> 3).
+[EPMEM] Sector_3: l'episodi #25 (posicio-seguretat) es valora 'dolenta' (resultat correcte, risc 0 -> 1).
+[PROPOSTA] Sector_3: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (27.2 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_2: orientar-produccio (27.2 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (27.2 graus).
+[PROPOSTA] Sector_1: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_3: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_2: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_3: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: REBUIG de orientar-ombra (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_3: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_1: orientar-ombra +6 (cultiu, risc exces-radiacio alt).
+[AVALUACIO] Sector_1: orientar-ombra +3 (cultiu, risc temperatura mitja).
+[AVALUACIO] Sector_2: orientar-ombra +9 (cultiu, risc exces-radiacio critic).
+[AVALUACIO] Sector_2: orientar-ombra +9 (cultiu, risc temperatura critic).
+[AVALUACIO] Sector_3: orientar-ombra +3 (cultiu, risc temperatura mitja).
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 16.5 / demanda 12.95).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 16.5 / demanda 12.95).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 16.5 / demanda 12.95).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_3: es selecciona posicio-seguretat. Criteri: maxima valoracio (12 punts).
+[REFORC] Sector_2: posicio-seguretat del cicle 9 -> recompensa -1.0 (dolenta), error -1.04, 7 rajoles actualitzades.
+[REFORC] Sector_1: posicio-seguretat del cicle 9 -> recompensa -1.0 (dolenta), error -1.18, 6 rajoles actualitzades.
+[REFORC] Sector_3: posicio-seguretat del cicle 9 -> recompensa -1.0 (dolenta), error -1.35, 5 rajoles actualitzades.
+[SELECCIO] Sector_2: es selecciona orientar-ombra. Criteri: maxima valoracio (18 punts).
+[SELECCIO] Sector_1: orientar-ombra queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_2: ORDRE orientar-ombra -> 0.0 graus.
+[APLICACIO] Sector_3: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_3, cicle 10
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=alt temperatura=mitja
+   Candidats:  mantenir-posicio(1) orientar-produccio(3) orientar-ombra(3) posicio-seguretat(12)
+   Descartats: cap
+   Criteri:    maxima valoracio (12 punts)
+
+[EXPLICACIO] Sector_2, cicle 10
+   Accio:      orientar-ombra a 0.0 graus
+   Riscos:     mecanic=alt temperatura=critic exces-radiacio=critic
+   Candidats:  mantenir-posicio(1) orientar-produccio(3) orientar-ombra(18) posicio-seguretat(12)
+   Descartats: cap
+   Criteri:    maxima valoracio (18 punts)
+
+[EXPLICACIO] Sector_1, cicle 10
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic temperatura=mitja exces-radiacio=alt
+   Candidats:  posicio-seguretat(2)
+   Descartats: mantenir-posicio orientar-produccio orientar-ombra
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #28: Sector_3, cicle 10, posicio-seguretat.
+[EPMEM] NOU EPISODI #29: Sector_2, cicle 10, orientar-ombra.
+[EPMEM] NOU EPISODI #30: Sector_1, cicle 10, posicio-seguretat.
+[MONITORATGE] Sector_2: oscil.lacio orientar-ombra -> posicio-seguretat -> orientar-ombra en tres cicles.
+[FI DEL CICLE 10] Ordres enviades. Esperant les dades del cicle 11.
+
+
+##############################################################################
+# 2023-09-03 17:00  CICLE 11
+#   Sector_1 entrada: vent=15.18 (previsio 12.9) radiacio=404.08 temp-cultiu=30.61 humitat=82.1
+#   Sector_2 entrada: vent=15.84 (previsio 11.2) radiacio=428.16 temp-cultiu=30.55 humitat=78.71
+#   Sector_3 entrada: vent=15.3 (previsio 14.9) radiacio=413.7 temp-cultiu=31.36 humitat=83.8
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_3: vent 15.3 m/s (previsio 14.9) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] El risc mecanic de Sector_3 activa l'objectiu Obj_Seguretat.
+[ELABORACIO] Sector_2: vent 15.84 m/s (previsio 11.2) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] Sector_1: vent 15.18 m/s (previsio 12.9) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] Sector_3: vinya a 31.36 C (optim fins a 30.0, maxim 38.0). Risc de temperatura mitja.
+[ELABORACIO] El risc temperatura de Sector_3 activa l'objectiu Obj_Produccio_Cultiu.
+[ELABORACIO] Sector_2: enciam a 30.55 C (optim fins a 21.0, maxim 30.0). Risc de temperatura critic.
+[ELABORACIO] Sector_2: radiacio 428.16 W/m2 (enciam: optim fins a 170.0, estres des de 170.0). Risc de radiacio alt.
+[ELABORACIO] Sector_2: radiacio alta amb calor alta. El risc de radiacio passa a critic.
+[ELABORACIO] Sector_1: tomaquet a 30.61 C (optim fins a 27.0, maxim 35.0). Risc de temperatura mitja.
+[ELABORACIO] Sector_1: radiacio 404.08 W/m2 (tomaquet: optim fins a 350.0, estres des de 435.0). Risc de radiacio mitja.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_1: l'episodi #30 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 3 -> 2).
+[EPMEM] Sector_2: l'episodi #29 (orientar-ombra) es valora 'neutra' (resultat correcte, risc 6 -> 6).
+[EPMEM] Sector_3: l'episodi #28 (posicio-seguretat) es valora 'neutra' (resultat correcte, risc 1 -> 1).
+[PROPOSTA] Sector_3: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (42.7 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_2: orientar-produccio (42.7 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (42.7 graus).
+[PROPOSTA] Sector_1: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_3: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_2: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_3: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_2: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_3: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_1: orientar-ombra +3 (cultiu, risc exces-radiacio mitja).
+[AVALUACIO] Sector_1: orientar-ombra +3 (cultiu, risc temperatura mitja).
+[AVALUACIO] Sector_2: orientar-ombra +9 (cultiu, risc exces-radiacio critic).
+[AVALUACIO] Sector_2: orientar-ombra +9 (cultiu, risc temperatura critic).
+[AVALUACIO] Sector_3: orientar-ombra +3 (cultiu, risc temperatura mitja).
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 13.57 / demanda 11.41).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 13.57 / demanda 11.41).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 13.57 / demanda 11.41).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: orientar-ombra +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_3: es selecciona posicio-seguretat. Criteri: maxima valoracio (12 punts).
+[REFORC] Sector_1: posicio-seguretat del cicle 10 -> recompensa 1.0 (bona), error 1.26, 7 rajoles actualitzades.
+[REFORC] Sector_2: orientar-ombra del cicle 10 -> recompensa 0.0 (neutra), error -0.21, 7 rajoles actualitzades.
+[REFORC] Sector_3: posicio-seguretat del cicle 10 -> recompensa 0.0 (neutra), error -0.17, 6 rajoles actualitzades.
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: maxima valoracio (12 punts).
+[SELECCIO] Sector_2: es selecciona orientar-ombra. Criteri: maxima valoracio (20 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE orientar-ombra -> 0.0 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_3: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_3, cicle 11
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=alt temperatura=mitja
+   Candidats:  mantenir-posicio(1) orientar-produccio(3) orientar-ombra(3) posicio-seguretat(12)
+   Descartats: cap
+   Criteri:    maxima valoracio (12 punts)
+
+[EXPLICACIO] Sector_1, cicle 11
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=alt temperatura=mitja exces-radiacio=mitja
+   Candidats:  mantenir-posicio(1) orientar-produccio(3) orientar-ombra(6) posicio-seguretat(12)
+   Descartats: cap
+   Criteri:    maxima valoracio (12 punts)
+
+[EXPLICACIO] Sector_2, cicle 11
+   Accio:      orientar-ombra a 0.0 graus
+   Riscos:     mecanic=alt temperatura=critic exces-radiacio=critic
+   Candidats:  mantenir-posicio(1) orientar-produccio(3) orientar-ombra(20) posicio-seguretat(10)
+   Descartats: cap
+   Criteri:    maxima valoracio (20 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #31: Sector_3, cicle 11, posicio-seguretat.
+[EPMEM] NOU EPISODI #32: Sector_1, cicle 11, posicio-seguretat.
+[EPMEM] NOU EPISODI #33: Sector_2, cicle 11, orientar-ombra.
+[FI DEL CICLE 11] Ordres enviades. Esperant les dades del cicle 12.
+
+
+##############################################################################
+# 2023-09-03 18:00  CICLE 12
+#   Sector_1 entrada: vent=16.61 (previsio 19.0) radiacio=360.97 temp-cultiu=30.17 humitat=81.71
+#   Sector_2 entrada: vent=16.26 (previsio 16.3) radiacio=353.88 temp-cultiu=29.78 humitat=77.88
+#   Sector_3 entrada: vent=16.58 (previsio 16.2) radiacio=384.04 temp-cultiu=31.43 humitat=83.64
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_3: vent 16.58 m/s (previsio 16.2) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] El risc mecanic de Sector_3 activa l'objectiu Obj_Seguretat.
+[ELABORACIO] Sector_2: vent 16.26 m/s (previsio 16.3) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] Sector_1: vent 16.61 m/s (previsio 19.0) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] Sector_3: vinya a 31.43 C (optim fins a 30.0, maxim 38.0). Risc de temperatura mitja.
+[ELABORACIO] El risc temperatura de Sector_3 activa l'objectiu Obj_Produccio_Cultiu.
+[ELABORACIO] Sector_2: enciam a 29.78 C (optim fins a 21.0, maxim 30.0). Risc de temperatura alt.
+[ELABORACIO] Sector_2: radiacio 353.88 W/m2 (enciam: optim fins a 170.0, estres des de 170.0). Risc de radiacio alt.
+[ELABORACIO] Sector_2: radiacio alta amb calor alta. El risc de radiacio passa a critic.
+[ELABORACIO] Sector_1: tomaquet a 30.17 C (optim fins a 27.0, maxim 35.0). Risc de temperatura mitja.
+[ELABORACIO] Sector_1: radiacio 360.97 W/m2 (tomaquet: optim fins a 350.0, estres des de 435.0). Risc de radiacio mitja.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_2: l'episodi #33 (orientar-ombra) es valora 'bona' (resultat correcte, risc 6 -> 5).
+[EPMEM] Sector_1: l'episodi #32 (posicio-seguretat) es valora 'neutra' (resultat correcte, risc 2 -> 2).
+[EPMEM] Sector_3: l'episodi #31 (posicio-seguretat) es valora 'neutra' (resultat correcte, risc 1 -> 1).
+[PROPOSTA] Sector_3: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (55.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_2: orientar-produccio (55.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (55.0 graus).
+[PROPOSTA] Sector_1: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_3: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_2: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_3: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: REBUIG de orientar-ombra (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de orientar-ombra (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_3: REBUIG de orientar-ombra (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_3: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_3: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: orientar-ombra +3 (cultiu, risc exces-radiacio mitja).
+[AVALUACIO] Sector_1: orientar-ombra +3 (cultiu, risc temperatura mitja).
+[AVALUACIO] Sector_2: orientar-ombra +9 (cultiu, risc exces-radiacio critic).
+[AVALUACIO] Sector_2: orientar-ombra +6 (cultiu, risc temperatura alt).
+[AVALUACIO] Sector_3: orientar-ombra +3 (cultiu, risc temperatura mitja).
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 10.52 / demanda 9.72).
+[AVALUACIO] Sector_2: orientar-produccio +3 (energia, produccio 10.52 / demanda 9.72).
+[AVALUACIO] Sector_3: orientar-produccio +3 (energia, produccio 10.52 / demanda 9.72).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: orientar-ombra +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_3: orientar-ombra queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: orientar-ombra queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: orientar-ombra queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[REFORC] Sector_2: orientar-ombra del cicle 11 -> recompensa 1.0 (bona), error 0.85, 7 rajoles actualitzades.
+[REFORC] Sector_1: posicio-seguretat del cicle 11 -> recompensa 0.0 (neutra), error -0.14, 7 rajoles actualitzades.
+[REFORC] Sector_3: posicio-seguretat del cicle 11 -> recompensa 0.0 (neutra), error -0.1, 6 rajoles actualitzades.
+[SELECCIO] Sector_2: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_3: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_3: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_3: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_2: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 12
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic temperatura=mitja exces-radiacio=mitja
+   Candidats:  posicio-seguretat(2)
+   Descartats: mantenir-posicio orientar-produccio orientar-ombra
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO] Sector_2, cicle 12
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic temperatura=alt exces-radiacio=critic
+   Candidats:  posicio-seguretat(0)
+   Descartats: mantenir-posicio orientar-produccio orientar-ombra
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO] Sector_3, cicle 12
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic temperatura=mitja
+   Candidats:  posicio-seguretat(2)
+   Descartats: mantenir-posicio orientar-produccio orientar-ombra
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #34: Sector_1, cicle 12, posicio-seguretat.
+[EPMEM] NOU EPISODI #35: Sector_2, cicle 12, posicio-seguretat.
+[EPMEM] NOU EPISODI #36: Sector_3, cicle 12, posicio-seguretat.
+[FI DEL CICLE 12] Ordres enviades. Esperant les dades del cicle 13.
+
+
+##############################################################################
+# 2023-09-03 19:00  CICLE 13
+#   Sector_1 entrada: vent=16.85 (previsio 16.2) radiacio=266.52 temp-cultiu=29.18 humitat=81.38
+#   Sector_2 entrada: vent=16.78 (previsio 13.8) radiacio=264.31 temp-cultiu=29.08 humitat=77.16
+#   Sector_3 entrada: vent=16.82 (previsio 13.3) radiacio=280.37 temp-cultiu=30.23 humitat=83.5
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_3: vent 16.82 m/s (previsio 13.3) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] El risc mecanic de Sector_3 activa l'objectiu Obj_Seguretat.
+[ELABORACIO] Sector_2: vent 16.78 m/s (previsio 13.8) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] Sector_1: vent 16.85 m/s (previsio 16.2) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] Sector_3: vinya a 30.23 C (optim fins a 30.0, maxim 38.0). Risc de temperatura mitja.
+[ELABORACIO] El risc temperatura de Sector_3 activa l'objectiu Obj_Produccio_Cultiu.
+[ELABORACIO] Sector_2: enciam a 29.08 C (optim fins a 21.0, maxim 30.0). Risc de temperatura alt.
+[ELABORACIO] Sector_2: radiacio 264.31 W/m2 (enciam: optim fins a 170.0, estres des de 170.0). Risc de radiacio alt.
+[ELABORACIO] Sector_2: radiacio alta amb calor alta. El risc de radiacio passa a critic.
+[ELABORACIO] Sector_2: s'ha gastat el 22.8% de l'aigua disponible (enciam tolera 30.0%). Necessitat de reg anticipada.
+[ELABORACIO] Sector_1: tomaquet a 29.18 C (optim fins a 27.0, maxim 35.0). Risc de temperatura mitja.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #36 (posicio-seguretat) es valora 'neutra' (resultat correcte, risc 1 -> 1).
+[EPMEM] Sector_2: l'episodi #35 (posicio-seguretat) es valora 'neutra' (resultat correcte, risc 5 -> 5).
+[EPMEM] Sector_1: l'episodi #34 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 2 -> 1).
+[PROPOSTA] Sector_3: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (55.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_2: orientar-produccio (55.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (55.0 graus).
+[PROPOSTA] Sector_1: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_3: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_2: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_3: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_2: regar-complet (+22.8% de l'aigua disponible) i regar-parcial (+7.8%), a prop del llindar i hora fresca.
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: REBUIG de orientar-ombra (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de orientar-ombra (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_3: REBUIG de orientar-ombra (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_3: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_3: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: orientar-ombra +3 (cultiu, risc temperatura mitja).
+[AVALUACIO] Sector_2: orientar-ombra +9 (cultiu, risc exces-radiacio critic).
+[AVALUACIO] Sector_2: orientar-ombra +6 (cultiu, risc temperatura alt).
+[AVALUACIO] Sector_3: orientar-ombra +3 (cultiu, risc temperatura mitja).
+[AVALUACIO] Sector_1: orientar-produccio +6 (energia, produccio 6.74 / demanda 8.26).
+[AVALUACIO] Sector_2: orientar-produccio +6 (energia, produccio 6.74 / demanda 8.26).
+[AVALUACIO] Sector_3: orientar-produccio +6 (energia, produccio 6.74 / demanda 8.26).
+[AVALUACIO] Sector_2: regar-parcial -1 (la bomba gasta energia i el sector no cobreix la demanda).
+[AVALUACIO] Sector_2: regar-complet -1 (la bomba gasta energia i el sector no cobreix la demanda).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: regar-parcial +3 (cultiu, necessitat de reg anticipada).
+[AVALUACIO] Sector_2: regar-complet +3 (cultiu, necessitat de reg anticipada).
+[AVALUACIO] Sector_2: regar-complet +2 (enciam, sensibilitat alt).
+[AVALUACIO] Sector_2: regar-parcial +1 (hora fresca).
+[AVALUACIO] Sector_2: regar-complet +1 (hora fresca).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_3: orientar-ombra queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: orientar-ombra queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: orientar-ombra queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[REFORC] Sector_3: posicio-seguretat del cicle 12 -> recompensa 0.0 (neutra), error 0.02, 6 rajoles actualitzades.
+[REFORC] Sector_2: posicio-seguretat del cicle 12 -> recompensa 0.0 (neutra), error 0.4, 7 rajoles actualitzades.
+[REFORC] Sector_1: posicio-seguretat del cicle 12 -> recompensa 1.0 (bona), error 0.95, 7 rajoles actualitzades.
+[SELECCIO] Sector_2: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_3: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_3: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_3: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_2: reg regar-complet. Criteri: maxima valoracio (5 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_2: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_2: ORDRE DE REG regar-complet -> +22.8% de l'aigua disponible.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 13
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic temperatura=mitja
+   Candidats:  posicio-seguretat(2)
+   Descartats: mantenir-posicio orientar-produccio orientar-ombra
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO] Sector_2, cicle 13
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic temperatura=alt exces-radiacio=critic
+   Candidats:  posicio-seguretat(2)
+   Descartats: mantenir-posicio orientar-produccio orientar-ombra
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO] Sector_3, cicle 13
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic temperatura=mitja
+   Candidats:  posicio-seguretat(2)
+   Descartats: mantenir-posicio orientar-produccio orientar-ombra
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO REG] Sector_2, cicle 13
+   Accio:      regar-complet (+22.8% de l'aigua disponible)
+   Necessitat: anticipada (esgotat 22.8%)
+   Candidats:  no-regar(1) regar-complet(5) regar-parcial(3)
+   Descartats: cap
+   Criteri:    maxima valoracio (5 punts)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #37: Sector_1, cicle 13, posicio-seguretat.
+[EPMEM] NOU EPISODI #38: Sector_2, cicle 13, posicio-seguretat.
+[EPMEM] NOU EPISODI #39: Sector_3, cicle 13, posicio-seguretat.
+[FI DEL CICLE 13] Ordres enviades. Esperant les dades del cicle 14.
+
+
+##############################################################################
+# 2023-09-03 20:00  CICLE 14
+#   Sector_1 entrada: vent=16.69 (previsio 14.8) radiacio=154.53 temp-cultiu=27.59 humitat=81.12
+#   Sector_2 entrada: vent=16.65 (previsio 19.9) radiacio=161.46 temp-cultiu=27.18 humitat=99.41
+#   Sector_3 entrada: vent=16.61 (previsio 11.0) radiacio=155.9 temp-cultiu=28.97 humitat=83.39
+##############################################################################
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO] Sector_3: vent 16.61 m/s (previsio 11.0) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] El risc mecanic de Sector_3 activa l'objectiu Obj_Seguretat.
+[ELABORACIO] Sector_2: vent 16.65 m/s (previsio 19.9) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] Sector_1: vent 16.69 m/s (previsio 14.8) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] Sector_2: enciam a 27.18 C (optim fins a 21.0, maxim 30.0). Risc de temperatura alt.
+[ELABORACIO] El risc temperatura de Sector_2 activa l'objectiu Obj_Produccio_Cultiu.
+[ELABORACIO] Sector_1: tomaquet a 27.59 C (optim fins a 27.0, maxim 35.0). Risc de temperatura mitja.
+[ELABORACIO -> PROPOSTA]
+[EPMEM] Sector_3: l'episodi #39 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 1 -> 0).
+[EPMEM] Sector_2: l'episodi #38 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 5 -> 2).
+[EPMEM] Sector_1: l'episodi #37 (posicio-seguretat) es valora 'neutra' (resultat correcte, risc 1 -> 1).
+[PROPOSTA] Sector_3: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_3: orientar-produccio (55.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_2: orientar-produccio (55.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (55.0 graus).
+[PROPOSTA] Sector_1: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_2: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_3: posicio-seguretat (0.0 graus).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: REBUIG de orientar-ombra (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de orientar-ombra (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_3: REBUIG de orientar-produccio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_3: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: orientar-ombra +3 (cultiu, risc temperatura mitja).
+[AVALUACIO] Sector_2: orientar-ombra +6 (cultiu, risc temperatura alt).
+[AVALUACIO] Sector_1: orientar-produccio +6 (energia, produccio 3.79 / demanda 7.21).
+[AVALUACIO] Sector_2: orientar-produccio +6 (energia, produccio 3.79 / demanda 7.21).
+[AVALUACIO] Sector_3: orientar-produccio +6 (energia, produccio 3.79 / demanda 7.21).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_2: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: posicio-seguretat +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_2: orientar-ombra queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: orientar-ombra queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[REFORC] Sector_3: posicio-seguretat del cicle 13 -> recompensa 1.0 (bona), error 0.97, 6 rajoles actualitzades.
+[REFORC] Sector_2: posicio-seguretat del cicle 13 -> recompensa 1.0 (bona), error 1.19, 7 rajoles actualitzades.
+[REFORC] Sector_1: posicio-seguretat del cicle 13 -> recompensa 0.0 (neutra), error -0.47, 6 rajoles actualitzades.
+[SELECCIO] Sector_2: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_3: orientar-produccio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_3: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_3: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_2: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 14
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic temperatura=mitja
+   Candidats:  posicio-seguretat(2)
+   Descartats: mantenir-posicio orientar-produccio orientar-ombra
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO] Sector_2, cicle 14
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic temperatura=alt
+   Candidats:  posicio-seguretat(2)
+   Descartats: mantenir-posicio orientar-produccio orientar-ombra
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO] Sector_3, cicle 14
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic
+   Candidats:  posicio-seguretat(2)
+   Descartats: mantenir-posicio orientar-produccio
+   Criteri:    unica opcio que compleix les restriccions dures
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #40: Sector_1, cicle 14, posicio-seguretat.
+[EPMEM] NOU EPISODI #41: Sector_2, cicle 14, posicio-seguretat.
+[EPMEM] NOU EPISODI #42: Sector_3, cicle 14, posicio-seguretat.
+[FI DEL CICLE 14] Ordres enviades. Esperant les dades del cicle 15.
+
