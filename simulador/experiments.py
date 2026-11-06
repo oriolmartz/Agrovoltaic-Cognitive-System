@@ -978,9 +978,106 @@ def E22(n_dies=30, llavors=(0, 1)):
     return r
 
 
+# ============================================================================ E24: escalabilitat de la memoria episodica
+
+OPERADORS_E24 = ("orientar-produccio", "orientar-ombra", "posicio-seguretat", "mantenir-posicio", "sollicitar-dades")
+
+
+def _episodis_reals_e24(n_dies):
+    """Episodis d'una simulacio real: E24 en reutilitza els trets, per no inventar-se les situacions."""
+    cfg = S.carrega_config({"lloc": "ribera_2022_2023", "mode_dies": "sequencial",
+                            "controlador": {"epmem": True, "smem": False}})
+    dies = S.selecciona_dies({**cfg, "dies": {"des_de": "2023-01-01", "fins_a": "2023-12-31"}}, n_dies)
+    sim = S.Simulacio(cfg, 0)
+    ctrl = S.ControladorSOAR(cfg, sim.domini)
+    sim.executa(dies, controlador=ctrl, etiqueta="E24")
+    return [{"operador": str(f["operador"]), "trets": [str(t) for t in f["trets"]]}
+            for f in ctrl.c.env.facts() if f.template.name.endswith("epmem-episodi")]
+
+
+def _omple_memoria_e24(env, reals, n, p, rng):
+    """Deixa a la memoria n episodis: trets d'un episodi real i operador segons el repartiment p."""
+    for i, op in enumerate(rng.choice(OPERADORS_E24, size=n, p=p), 1):
+        trets = (f"operador={op}" if t.startswith("operador=") else t for t in reals[rng.integers(len(reals))]["trets"])
+        env.assert_string(f"(epmem-episodi (id {i}) (cicle {i}) (operador {op}) (trets {' '.join(trets)}))")
+    env.eval("(epmem-idx-invalida)")
+
+
+def _consultes_e24(reals, n, p, rng):
+    """Consultes com les de DELIBERACIO: situacio com a cue i l'operador com a tret obligatori.
+    ponytail: les consultes es reparteixen entre operadors com els episodis; els operadors proposats
+    a cada cicle no segueixen ben be aquest repartiment. Per al cost per cicle real, vegeu E20."""
+    no_cue = ("operador=", "impas=", "resultat=", "valoracio=")
+    fetes = []
+    for op in rng.choice(OPERADORS_E24, size=n, p=p):
+        cue = [t for t in reals[rng.integers(len(reals))]["trets"] if not t.startswith(no_cue)]
+        fetes.append(f"(epmem-cerca (create$ {' '.join(cue)}) (create$ operador={op}) (create$) (create$))")
+    return fetes
+
+
+def _mesura_e24(env, consultes, index):
+    """ms per consulta i episodis recuperats, amb l'index activat (si) o amb cerca exhaustiva (no)."""
+    env.eval(f"(progn$ (?k (find-all-facts ((?x epmem-config)) TRUE)) (modify ?k (index {index})))")
+    env.eval(consultes[0])   # si cal, l'index es reconstrueix aqui, fora de la mesura
+    t0 = time.perf_counter()
+    trobats = [tuple(env.eval(q)) for q in consultes]
+    return 1000 * (time.perf_counter() - t0) / len(consultes), trobats
+
+
+def E24(n_dies=60, llavors=(0, 1, 2), mides=(1000, 5000, 15000, 30000), n_consultes=100):
+    """Escalabilitat de la memoria episodica: cost de recuperacio amb l'index i amb cerca exhaustiva.
+    Hipotesi: la indexacio redueix el cost de recuperacio respecte d'una cerca exhaustiva, pero el
+    rendiment encara depen de la quantitat i la distribucio dels episodis emmagatzemats.
+    Soar tambe indexa per reduir aquest cost, que creix lentament amb els episodis (Laird 2022, sobre
+    la memoria episodica; avaluacio d'escala: Derbinsky, Li & Laird 2012). Es mesura epmem-cerca
+    directament, sense simular, i en un sol proces perque altres processos no afectin els temps."""
+    reals = _episodis_reals_e24(n_dies)
+    compte = pd.Series([e["operador"] for e in reals]).value_counts().reindex(OPERADORS_E24, fill_value=0)
+    p_real = (compte / compte.sum()).to_numpy()
+    concentrat = np.full(len(OPERADORS_E24), 0.1 / (len(OPERADORS_E24) - 1))
+    concentrat[compte.to_numpy().argmax()] = 0.9
+    repartiments = {"real": p_real, "uniforme": np.full(len(OPERADORS_E24), 1 / len(OPERADORS_E24)),
+                    "concentrat": concentrat}
+    clp = os.path.join(ARREL, S.carrega_config({})["clp"])
+    files = []
+    for llavor in llavors:
+        for nom, p in repartiments.items():
+            for n in mides:
+                rng = np.random.default_rng([llavor, n])
+                # entorn nou per a cada mesura: omplir i buidar el mateix entorn encareix les consultes
+                # seguents (N = 1.000: de 0,5 a 6 ms despres de 120.000 episodis) i falseja els temps
+                env = S.ControladorCLIPS(clp, epmem=True, smem=False).env
+                env.eval("(set-current-module MEMORIA)")
+                _omple_memoria_e24(env, reals, n, p, rng)
+                consultes = _consultes_e24(reals, n_consultes, p, rng)
+                # l'ordre s'alterna perque cap de les dues mesures surti sempre primer
+                ordre = ("no", "si") if llavor % 2 == 0 else ("si", "no")
+                m = {ix: _mesura_e24(env, consultes, ix) for ix in ordre}
+                iguals = sum(a == b for a, b in zip(m["si"][1], m["no"][1]))
+                files.append({"llavor": llavor, "repartiment": nom, "episodis": n,
+                              "ms_exhaustiva": m["no"][0], "ms_index": m["si"][0],
+                              "mateix_record_pct": 100 * iguals / n_consultes})
+    df = pd.DataFrame(files)
+    resum = df.groupby(["repartiment", "episodis"])[["ms_exhaustiva", "ms_index", "mateix_record_pct"]].mean()
+    resum.insert(2, "guany", resum["ms_exhaustiva"] / resum["ms_index"])
+    resum = resum.round(3)
+    # pendent: quants ms de mes costa cada consulta per cada 1.000 episodis mes
+    pendents = pd.DataFrame([{"repartiment": nom,
+                              "pendent_exhaustiva": 1000 * np.polyfit(g["episodis"], g["ms_exhaustiva"], 1)[0],
+                              "pendent_index": 1000 * np.polyfit(g["episodis"], g["ms_index"], 1)[0]}
+                             for nom, g in df.groupby("repartiment")]).round(4)
+    d = carpeta("E24")
+    df.to_csv(os.path.join(d, "E24_mesures.csv"), index=False)
+    resum.to_csv(os.path.join(d, "E24_resum.csv"))
+    pendents.to_csv(os.path.join(d, "E24_pendents.csv"), index=False)
+    pd.DataFrame({"operador": OPERADORS_E24, "real": p_real, "episodis_simulacio": compte.to_numpy()}).to_csv(
+        os.path.join(d, "E24_repartiment_real.csv"), index=False)
+    return {"resum": resum, "tests": pendents}
+
+
 EXPERIMENTS = {"E4": E4, "E5": E5, "E6": E6, "E7": E7, "E8": E8, "E9": E9, "E10": E10, "E11": E11,
                "E12": E12, "E13": E13, "E14": E14, "E15": E15, "E16": E16, "E20": E20, "E21": E21,
-               "E22": E22}
+               "E22": E22, "E24": E24}
 
 
 def main():

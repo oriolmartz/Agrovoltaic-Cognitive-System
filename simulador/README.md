@@ -71,6 +71,7 @@ python experiments.py E12                   # sensibilitat del model i de la pre
 python experiments.py E13                   # consistència del coneixement après
 python experiments.py E14                   # escenaris extrems: calor, vent i sequera (mesos seguits)
 python experiments.py E15                   # reg: SOAR contra el reg fix, el reg FAO i sense reg
+python experiments.py E24                   # memòria episòdica: cost de recuperació amb índex i sense
 ```
 
 Opcions: `--processos N` (per defecte, tots els nuclis), `--traca` (desa la traça del CLIPS) i
@@ -465,6 +466,24 @@ de Sió, cada mes amb els dies seguits × 4 llavors = 24 blocs; Friedman i Wilco
 - **Consistència (Rashid):** 0 problemes a K1–K6 en 2.912 fotos.
 - **Temps per cicle:** les execucions compartien els dos processadors, així que els valors absoluts de ms tenen soroll. La comparació que compta és la de l'episòdica (que creix amb els episodis) amb la semàntica (que s'estabilitza).
 - **Conclusió:** la memòria semàntica resol el problema d'escalabilitat de l'episòdica, però a costa de treure-li quasi tot l'efecte sobre les decisions. Si es volgués que el resum pesés més, caldria un pes més gran o una fórmula que no es dilueixi amb n, per exemple (bona − dolenta)/n sense el +2. Però llavors s'hauria de tornar a comprovar el límit amb la seguretat (iteració 31).
+
+**E24 – escalabilitat de la memòria episòdica** (índex per operador contra cerca exhaustiva):
+
+*Hipòtesi:* la indexació redueix el cost de recuperació respecte d'una cerca exhaustiva, però el rendiment encara depèn de la quantitat i la distribució dels episodis emmagatzemats. Soar també indexa per reduir aquest cost, que creix lentament amb els episodis (Laird 2022; Derbinsky, Li & Laird 2012).
+
+*Com es mesura:* es crida directament `epmem-cerca`, sense simular ni disparar regles. Els trets surten dels 2.520 episodis d'una simulació de 60 dies del 2023 a Ribera. Cada memòria es genera amb 1.000, 5.000, 15.000 o 30.000 episodis i l'operador es sorteja segons tres repartiments: el real, l'uniforme (millor cas) i un 90 % en un sol operador (pitjor cas). Els dos últims són decisió nostra: són extrems per veure com influeix la distribució. 3 llavors, 100 consultes iguals amb índex i sense, i un entorn CLIPS nou per a cada mesura.
+
+| 30.000 episodis | Sense índex (ms/consulta) | Amb índex | Guany | Cost per cada 1.000 episodis més (ms) |
+|---|---|---|---|---|
+| Real | 19,6 | 13,3 | ×1,47 | de 0,66 a 0,45 |
+| Uniforme | 17,5 | 8,3 | ×2,11 | de 0,59 a 0,28 |
+| 90 % en un operador | 29,3 | 31,8 | ×0,92 | de 0,98 a 1,06 |
+
+- **La hipòtesi es compleix:** amb el repartiment real i l'uniforme, l'índex és més ràpid als 12 parells (llavor × mida); el cost continua creixent amb els episodis, i el guany depèn del repartiment. Amb el 90 % en un operador, l'índex és una mica més lent als 12 parells.
+- **Mateix resultat:** es recupera el mateix episodi al 100 % de les consultes.
+- **Guany més petit que la reducció d'episodis:** amb el repartiment uniforme es miren 5 vegades menys episodis, però només es guanya entre ×1,6 i ×2,1. Sense índex, el repartiment del 90 % ja és més lent que l'uniforme, cosa que apunta que el més car és comparar els episodis de l'operador buscat, que l'índex no evita. És una explicació possible, no l'hem mesurat per separat.
+- **Limitacions:** la memòria i les consultes són generades per a la prova i les consultes es reparteixen com els episodis, cosa que no passa al sistema real. E24 no mesura el guany per cicle i els seus guanys no són comparables amb els 10 → 3 ms de la iteració 36. Els resultats són descriptius: E24 no fa test estadístic.
+- **Error corregit durant l'experiment:** reutilitzar el mateix entorn CLIPS, omplint-lo i buidant-lo, encaria les consultes següents (amb 1.000 episodis, de 0,5 a 6 ms després de 120.000 episodis), i la primera execució va quedar invalidada. No n'hem trobat la causa exacta dins del CLIPS.
 
 ## Pendent
 
