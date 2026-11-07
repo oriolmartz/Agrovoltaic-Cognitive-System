@@ -71,6 +71,8 @@ python experiments.py E12                   # sensibilitat del model i de la pre
 python experiments.py E13                   # consistència del coneixement après
 python experiments.py E14                   # escenaris extrems: calor, vent i sequera (mesos seguits)
 python experiments.py E15                   # reg: SOAR contra el reg fix, el reg FAO i sense reg
+python experiments.py E12reg                # sensibilitat dels paràmetres de disseny del reg
+python experiments.py E23 --dies 120 --llavors 3 --processos 1   # estratègies d'oblit (un sol procés per als temps)
 python experiments.py E24                   # memòria episòdica: cost de recuperació amb índex i sense
 ```
 
@@ -214,7 +216,7 @@ versions antigues a propòsit.
 | **E3** llindars (85 casos) | **85/85**: els de la v1_8 i del reg, F01–F08 (fase fenològica) i M01–M02 (memòria amb vent) |
 | **E11** agenda (20 dies) | Estratègies `depth`, `breadth`, `lex` i `mea`, especificitat (`simplicity` i `complexity`) i `random` amb 5 llavors: **0 decisions diferents** de 840 (ni del panell ni del reg). **Salience:** si les transicions de fase passen de −10 a 0 (o se'n treu tota la salience), **no es tanca cap cicle** amb cap estratègia: 0 decisions de 840. La salience −10 de les transicions és imprescindible |
 | **E13** coneixement après (5 execucions × 20 dies) | 0 problemes a les 9 restriccions (K1–K8), en 100 fotos. En acabar: 1–4 chunks, 70–76 rajoles Q (\|Q\| ≤ 0,54) i 840 episodis (exactament 1 per sector i cicle) |
-| **E17** mutacions (112 mutants, iteració 36) | *Pendent de repetir amb les proves d'E1 arreglades (en una còpia a part: 89/112, 79 %).* **80 detectats (71,4 %)**: totes les substitucions d'operador, pes i salience; 9 de 12 llindars; 63 de 92 regles esborrades. **Totes les regles noves dels blocs 1–3 que canvien una decisió moren** (fase fenològica, sensors avariats, lectures impossibles, historial, fallada del reg, memòria limitada amb vent, restriccions incompatibles). El percentatge baixa respecte del 80,8 % de la v1_9 perquè hi ha 13 regles noves de memòria semàntica i de monitoratge que no canvien cap decisió observable. Els 32 que sobreviuen, a sota |
+| **E17** mutacions (112 mutants; proves d'E1 arreglades, iteració 37) | **89 detectats (79,5 %)**: totes les substitucions d'operador, pes i salience; 9 de 12 llindars; 72 de 92 regles esborrades. Abans de la iteració 37 en sortien 80 (71,4 %), perquè `run_proves.clp` s'aturava a mig camí i les proves de la memòria semàntica (S1–S5) no s'executaven: ara maten les regles `smem-*` i `rl-*`. **Totes les regles noves dels blocs 1–3 que canvien una decisió moren.** Els 23 que sobreviuen, a sota |
 | **E18** cicle SOAR (280 cicles, 17 amb impasse) | **0 cicles amb l'ordre de fases incorrecte, 0 regles fora de la seva fase, 0 cicles amb més o menys d'una decisió** per sector. Només surten dos recorreguts: el normal (263) i el que passa una vegada per l'impasse (17). **Control negatiu** (transicions a salience 0): detectats 28 de 28 cicles, tots per decisions que falten (C3). L'ordre de fases no es pot trencar perquè cada regla demana el fet `(fase (nom X))`: el que passa és que hi ha regles que ja no arriben a disparar-se. És la resposta a "fer dues accions seguides": el motor no ho permet, i ho comprova cada cicle |
 | **Invariants** | 0 violacions en totes les simulacions, també les del reg (I10–I12) |
 
@@ -228,12 +230,12 @@ Les regles que E2 no dispara mai són de tres menes:
   - `detecta-impas-sense-candidat` i `resol-sense-candidat`, perquè amb vent crític sempre queda `posicio-seguretat`;
   - `avalua-rebuig-fora-de-limits`, perquè l'angle òptim sempre és dins dels límits.
 
-Els **32 mutants d'E17 que sobreviuen** (iteració 36) són de cinc menes:
-- **Llindars del reg que l'ontologia sobreescriu** (anticipació, pluja i hora fresca: L10–L12). El mutant canvia el valor per defecte de la plantilla, però `reg-config` es carrega de l'ontologia de reg: és un mutant **equivalent**.
-- **Memòria, reforç i memòria semàntica** (neteja de consultes, `avalua-memoria-semantica`, `rl-*`, `desfa-empat-per-reforc`, `smem-*`): les proves s'executen amb la memòria semàntica i el reforç apagats. CP19 prova la memòria episòdica de punta a punta (abans no ho feia cap prova) i ha matat les regles de recuperació.
-- **Regles que només escriuen** (explicació, avisos, `detecta-oscillacio`, `percep-reg-correcte`): les proves miren la decisió, no el text de la traça.
-- **Preferències numèriques petites** (`avalua-energia-mantenir`, `-moviment`, `-estabilitat`): desempaten casos que cap prova no fixa (vegeu la discrepància de CP01).
-- **Camins redundants de seguretat** (`percep-sense-observacio`, `elabora-risc-mecanic-per-previsio`, `avalua-rebuig-fora-de-limits`, `detecta-impas-sense-candidat`, `resol-sense-candidat`): una altra regla pren la mateixa decisió (p. ex., sense lectura de vent, l'impasse de dades també fa servir la previsió). Són redundàncies volgudes en seguretat. **`percep-sensor-no-valid`, que abans sobrevivia, ara mor** (CP16).
+Els **23 mutants d'E17 que sobreviuen** (iteració 37) són de cinc menes:
+- **Llindars del reg que l'ontologia sobreescriu** (anticipació, pluja i hora fresca: L10–L12). El mutant canvia el valor per defecte de la plantilla, però `reg-config` es carrega de l'ontologia de reg: són mutants **equivalents**.
+- **Regles que només escriuen o netegen** (`explica-decisio`, `detecta-oscillacio`, `avisa-dades-pendents`, `avisa-fallada-actuador`, `avisa-fallada-reg`, `percep-reg-correcte`, `epmem-neteja-consultes`, `epmem-neteja-resultats`): les proves miren la decisió, no el text de la traça ni els fets temporals que s'esborren.
+- **Preferències numèriques petites** del panell (`avalua-energia-mantenir`, `-moviment`, `-estabilitat`) i del reg (`avalua-reg-hora-fresca`, `-energia`, `-estalvi`): desempaten casos que cap prova no fixa (vegeu la discrepància de CP01).
+- **Desempat pel reforç** (`desfa-empat-per-reforc`): les proves amb reforç no generen cap empat real.
+- **Camins redundants de seguretat** (`percep-sense-observacio`, `elabora-risc-mecanic-per-previsio`, `avalua-rebuig-fora-de-limits`, `detecta-impas-sense-candidat`, `resol-sense-candidat`): una altra regla pren la mateixa decisió (p. ex., sense lectura de vent, l'impasse de dades també fa servir la previsió). Són redundàncies volgudes en seguretat.
 
 ### Casos de prova documentats (19 + 1 cas no vist)
 
@@ -407,6 +409,20 @@ Amb el calendari de cultiu (bloc 1), fora de temporada no es rega, i per això t
 - **Regar també refreda el cultiu:** amb el balanç d'energia, SOAR té 26 h/mes menys d'estrès per calor que el reg de la finca (p = 1e-4) i 77 h menys que sense reg.
 - **L'energia de la bomba** és petita al costat de la producció (24 kWh d'11.100 al mes, un 0,2 %), i per això la preferència d'energia gairebé mai no canvia la decisió de regar.
 
+**E12reg – sensibilitat dels paràmetres de disseny del reg** (`python experiments.py E12reg`; mateix protocol que E15, d'abril a setembre a Ribera, mesos seguits × 2 llavors = 12 blocs; un paràmetre cada cop, SOAR contra el reg FAO-56):
+
+| Paràmetre (valor per defecte) | Valors provats | Aigua SOAR (m³/mes; FAO 52,6) | Estrès hídric SOAR (h/mes; FAO 35,8) |
+|---|---|---|---|
+| Anticipació, fracció de p (0,75) | 0,6 / 0,75 / 0,9 | 51,4 / 51,1 / 50,6 | 0,3 / 0,3 / 1,9 |
+| Pluja que anul·la el reg (10 mm) | 5 / 10 / 15 | 50,9 / 51,1 / 51,1 | 0,3 en tots |
+| Final de l'hora fresca del matí (8 h) | 7 / 8 / 9 | 51,1 en tots | 0,3 en tots |
+| Inici de l'hora fresca de la tarda (19 h) | 18 / 19 / 20 | 50,7 / 51,1 / 50,3 | 0,3 en tots |
+| Soroll de la previsió de pluja (σ = 0,3) | 0,15 / 0,3 / 0,6 | 51,1 en tots | 0,3 en tots |
+
+- **La conclusió d'E15 no depèn dels valors triats:** en tots els casos SOAR gasta la mateixa aigua que el reg FAO o una mica menys (p (Holm) ≥ 0,64) i deixa el cultiu pràcticament sense estrès (p (Holm) = 0,007). El signe de la diferència és el mateix per a tots els valors de tots els paràmetres (20 de 20).
+- **L'anticipació és el paràmetre que compta:** al 90 % de p es fan menys regs (7,5 contra 9,2 al mes) i apareix una mica d'estrès (1,9 h/mes); al 60 % se'n fan més (10,9) i es perd més aigua per percolació. El 75 % és un compromís raonable entre els dos.
+- **Tres paràmetres no tenen cap efecte en aquest període**, i l'experiment no els pot avaluar: l'hora fresca del matí (el primer cicle del dia ja és a les 7 h), la pluja que anul·la el reg per sobre de 10 mm i el soroll de la previsió de pluja (d'abril a setembre del 2023 gairebé no hi ha previsions de pluja a prop dels llindars). Caldria un període més plujós per provar-los.
+
 **E16 – memòria a llarg termini** (Ribera de Sió, 2022–2023, dies seguits; s'aprèn tot el 2022 i es mesura tot el 2023; 3 execucions × 12 mesos = 36 blocs):
 
 | Per mes del 2023 (3 sectors) | Sense memòria | Memòria només el 2023 | **Memòria dels dos anys** |
@@ -460,47 +476,65 @@ Amb el calendari de cultiu (bloc 1), fora de temporada no es rega, i per això t
 - El sistema detecta **24 de 24** regs fallats al cicle següent, i té **0 falses alarmes** en 52 regs que sí que van arribar.
 - Com que el cultiu continua amb estrès, ho torna a provar: l'estrès hídric només passa de 0,7 a 1,3 h/mes, amb la mateixa aigua.
 
-**E20 – memòria semàntica** (iteració 29; Ribera de Sió, tot el 2023, dies seguits; 2 execucions × 12 mesos = 24 blocs; versió final):
-
-> **Pendent de repetir:** la clau nova de la memòria semàntica (fase del cultiu i sol que puja o baixa) i la finestra amb mínim de casos canvien les dues columnes de semàntica. Les de sense memòria i episòdica no canvien: s'ha comprovat que 30 dies donen decisions idèntiques amb la versió anterior i amb la nova.
+**E20 – memòria semàntica** (iteracions 29 i 37; Ribera de Sió, tot el 2023, dies seguits; 2 execucions × 12 mesos = 24 blocs; versió final amb la clau nova i el refresc):
 
 | Per mes (3 sectors) | Sense memòria | Episòdica | Episòdica + semàntica | Semàntica amb finestra |
 |---|---|---|---|---|
-| Energia (kWh) | 8.969 | 8.885 | 8.979 | 8.979 |
-| Estrès per radiació (h) | 267,9 | 264,3 | 268,8 | 269,3 |
-| Estrès per calor (h) | 313,6 | 311,3 | 313,8 | 313,9 |
-| Estrès hídric (h) | 0,2 | 0,4 | 0,2 | 0,3 |
-| Impasses | 1,25 | 1,12 | **0,12** | **0,08** |
-| Decisions amb memòria episòdica / semàntica | 0 / 0 | 1.043 / 0 | 246 / 1.171 | 227 / 1.171 |
-| Episodis a la MT al desembre | 0 | 15.288 | 15.288 | **294** |
-| Resums semàntics al desembre | 0 | 0 | 137–141 | 136–142 |
+| Energia (kWh) | 8.969 | 8.885 | 8.969 | 8.969 |
+| Estrès per radiació (h) | 267,9 | 264,3 | 267,9 | 267,8 |
+| Estrès per calor (h) | 313,6 | 311,3 | 313,8 | 313,8 |
+| Estrès hídric (h) | 0,2 | 0,4 | 0,3 | 0,3 |
+| Impasses | 1,25 | 1,12 | **0,21** | **0,21** |
+| Decisions amb memòria episòdica / semàntica | 0 / 0 | 1.043 / 0 | 343 / 1.130 | 343 / 1.130 |
+| Episodis a la MT al desembre | 0 | 15.288 | 15.288 | **497–506** |
+| Resums semàntics al desembre | 0 | 0 | 445–446 | 447–454 |
 
-- **La semàntica gairebé no canvia les decisions:** l'energia i l'estrès no són diferents de sense memòria (p = 1 i p ≥ 0,39). L'episòdica sí que canvia el comportament, com a E16: un 0,9 % menys d'energia (p = 0,002), un 1,4 % menys d'estrès per radiació (p = 0,011) i un 0,7 % menys d'estrès per calor (p = 0,004). El motiu és la fórmula pes·(bona − dolenta)/(n + 2): quan un resum acumula molts casos barrejats, el valor queda a prop de 0. En canvi, l'episòdica pren el valor de l'últim episodi semblant, que pot ser ±2 sencer.
-- **Sí que fa dues coses útils:** gairebé elimina els impasses (de 1,25 a 0,12 al mes, p = 0,036), perquè el petit valor del resum desempata, i a mesura que hi ha resums amb n ≥ 3 deixa de consultar la memòria episòdica: al desembre, 0 decisions amb episòdica.
-- **La finestra controla el creixement:** amb la finestra, a la memòria de treball hi ha sempre 294 episodis, en lloc dels 15.288 de final d'any, i dona els mateixos resultats que sense finestra (energia +0,4 kWh, p = 1).
+- **La semàntica no canvia les decisions:** l'energia i l'estrès són els de sense memòria (−0,0 kWh, p = 1; radiació −0,04 h, p = 0,66; calor +0,1 h, p = 1). L'episòdica sí que canvia el comportament, com a E16: −84 kWh al mes (−0,9 %, p = 0,002), −3,7 h d'estrès per radiació (−1,4 %, p = 0,017) i −2,3 h per calor (−0,7 %, p = 0,006). El motiu és la fórmula pes·(bona − dolenta)/(n + 2): quan un resum acumula casos barrejats, el valor queda a prop de 0. En canvi, l'episòdica pren el valor de l'últim episodi semblant, que pot ser ±2 sencer.
+- **Clau nova (iteració 37):** amb la fase del cultiu i el sol que puja o baixa, hi ha uns 450 resums en lloc de ~140, i menys resums barrejats (del 65 % al 49 %). Tot i això, l'efecte sobre les decisions continua sent nul: separar millor les situacions no basta si el crèdit de cada episodi és sorollós (vegeu "Assignació de crèdit" a Pendent).
+- **Sí que fa dues coses útils:** redueix els impasses (de 1,25 a 0,21 al mes; Friedman p = 0,001, però per parelles amb Holm p = 0,07), perquè el petit valor del resum desempata, i a mesura que hi ha resums amb n ≥ 3 deixa de consultar la memòria episòdica: al desembre, 0,8 decisions per dia amb l'episòdica, contra 34 amb l'episòdica sola.
+- **La finestra controla el creixement:** a la memòria de treball hi ha uns 500 episodis en lloc dels 15.288 de final d'any, i dona els mateixos resultats que sense finestra (energia +0,2 kWh, p = 1). Ara en queden més que abans (294) perquè un episodi només s'arxiva si el seu resum ja té 3 casos (iteració 37): es conserven els de les situacions poc freqüents.
 - **Consistència (Rashid):** 0 problemes a K1–K6 en 2.912 fotos.
-- **Temps per cicle:** vegeu la mesura neta a l'apartat següent (un sol procés). A E20 i E16 les execucions compartien els dos processadors, i per això els ms absoluts tenen soroll.
-- **Conclusió:** la memòria semàntica resol el problema d'escalabilitat de l'episòdica, però a costa de treure-li quasi tot l'efecte sobre les decisions. Si es volgués que el resum pesés més, caldria un pes més gran o una fórmula que no es dilueixi amb n, per exemple (bona − dolenta)/n sense el +2. Però llavors s'hauria de tornar a comprovar el límit amb la seguretat (iteració 31).
+- **Temps per cicle:** vegeu la mesura neta a l'apartat següent.
+- **Conclusió:** la memòria semàntica resol el problema d'escalabilitat de l'episòdica (cost pla durant l'any), però a costa de treure-li l'efecte sobre les decisions. Si es volgués que el resum pesés més, caldria un pes més gran o una fórmula que no es dilueixi amb n. Però llavors s'hauria de tornar a comprovar el límit amb la seguretat (iteració 31).
 
 ### Temps per cicle (mesura neta)
 
-`python verificacio/temps_cicle.py`: un sol procés, sense res més en marxa, 364 dies seguits del 2023 (Ribera de Sió), amb cada configuració d'E20. El temps de CLIPS és el de `executa_cicle` (regles + lectura dels resultats). El temps de paret inclou també la simulació física i el pont Python-CLIPS. Resultats a `resultats/temps_cicle/`.
+`python verificacio/temps_cicle.py`: un sol procés, sense res més en marxa, 364 dies seguits del 2023 (Ribera de Sió), amb cada configuració d'E20 i el refresc de l'entorn CLIPS activat (vegeu més avall). El temps de CLIPS és el d'`executa_cicle` (regles + lectura dels resultats). El temps de paret inclou també la simulació física i el pont Python-CLIPS. Resultats a `resultats/temps_cicle/`.
 
 | | sense memòria | episòdica | semàntica | semàntica amb finestra |
 |---|---|---|---|---|
-| ms CLIPS per cicle, 1a setmana | 4,0 | 6,0 | 5,2 | 5,0 |
-| ms CLIPS per cicle, última setmana | 274 | 495 | 369 | 335 |
-| Creixement (ms per cicle i dia) | 0,60 | 1,53 | 1,22 | 1,07 |
-| Segons de paret per dia (mitjana) | 3,6 | 10,1 | 8,5 | 6,8 |
-| Minuts de paret, 1 any | 22 | 61 | 52 | 41 |
+| ms CLIPS per cicle, 1a setmana | 3,5 | 4,9 | 4,7 | 4,7 |
+| ms CLIPS per cicle, última setmana | 3,8 | 60,1 | 6,5 | 6,2 |
+| Creixement (ms per cicle i dia) | 0,001 | 0,162 | 0,036 | 0,005 |
+| Segons de paret per dia (mitjana) | 0,2 | 0,8 | 0,6 | 0,3 |
+| Minuts de paret, 1 any | 1,1 | 5,0 | 3,5 | 1,5 |
+| Episodis a la MT al final | 0 | 15.288 | 15.288 | 497 |
 
-Les dues columnes de semàntica són d'abans de la clau nova i s'han de tornar a mesurar.
-| Episodis a la MT al final | 0 | 15.288 | 15.288 | 294 |
+- **Sense memòria, el cost és constant** (3,5 → 3,8 ms en tot l'any).
+- **Episòdica:** és l'única que creix de veritat, de 4,9 a 60 ms, perquè cada consulta recorre els episodis de l'operador (E24). El creixement és lineal amb els episodis, de manera que un any més afegiria uns 60 ms per cicle: ~2 anys ≈ 120 ms i ~3 anys ≈ 180 ms al final, unes 3 i 6 vegades més temps total que 1 any (extrapolació, no mesura).
+- **Semàntica:** quan els resums tenen prou casos, deixa de consultar l'episòdica i el cost queda pla (6,5 ms al desembre), encara que hi hagi els mateixos 15.288 episodis a la MT. Amb la finestra, a més, la MT es queda en ~500 episodis. Per a 1–3 anys, és la configuració que escala.
+- **Abans del refresc** la mateixa mesura donava 274 ms (sense memòria) i 495 ms (episòdica) al desembre, i 22 i 61 minuts per any (`resultats/temps_cicle/` de la versió del 06/11). **Gairebé tot aquell creixement no era del sistema.**
+- **Per què creixia, fins i tot sense memòria:** no era per fets acumulats. La memòria de treball es manté entre 300 i 460 fets i el nombre d'objectes de Python és constant. Si es desa l'estat del dia 60 i es carrega en un entorn CLIPS nou, el cicle passa de 17,5 ms a 4,5 ms amb exactament els mateixos fets. És un llast intern de l'entorn CLIPS/clipspy que creix amb els cicles, no de les regles. E24 va trobar el mateix efecte en les consultes de la memòria episòdica (iteració 38).
+- **Com s'evita:** cada `refresc_cicles` cicles (98 per defecte, una setmana) el controlador desa l'estat i el carrega en un entorn CLIPS nou, amb el mateix mecanisme que els punts de control d'E16. És una millora de com s'executa el sistema, no de com raona: les decisions són idèntiques (`verificacio/prova_refresc.py`: 0 files diferents en 120 dies amb les quatre configuracions d'E20 i amb els braços B, E, F i G d'E23). No es fa amb l'agenda `random` (E11), perquè l'estat del generador aleatori del CLIPS no es pot desar. Els ms d'E8, E9 i E16 són d'abans del refresc; E20 i E23 s'han tornat a executar amb el refresc.
 
-- **Extrapolació:** el cost per cicle creix de manera aproximadament lineal amb els dies, de manera que el temps total creix amb el quadrat de la durada. Si el creixement es manté, 2 anys costarien unes 4 vegades el temps d'1 any i 3 anys unes 9 vegades. Per exemple, sense memòria serien ~1,5 h i ~3,3 h, i amb l'episòdica ~4 h i ~9 h. És una estimació, no una mesura.
-- **Per què creix, fins i tot sense memòria:** no és per fets acumulats. La memòria de treball es manté entre 300 i 460 fets i el nombre d'objectes de Python és constant. Si es desa l'estat del dia 60 i es carrega en un entorn CLIPS nou, el cicle passa de 17,5 ms a 4,5 ms amb exactament els mateixos fets. Per tant, és un llast intern de l'entorn CLIPS/clipspy que creix amb els cicles, no de les regles del sistema.
-- **Com s'evita (aplicat):** cada `refresc_cicles` cicles (98 per defecte, una setmana) el controlador desa l'estat i el carrega en un entorn CLIPS nou, amb el mateix mecanisme que els punts de control d'E16. Les decisions són idèntiques: `verificacio/prova_refresc.py` dona 0 files diferents en 120 dies amb les quatre configuracions d'E20, i també amb els braços B, E, F i G d'E23. Amb 120 dies, el temps passa de 88 a 22 s sense memòria i de 145 a 51 s amb l'episòdica. No es fa amb l'agenda `random` (E11), perquè l'estat del generador aleatori del CLIPS no es pot desar. **La taula d'aquest apartat és d'abans del refresc**, i els ms d'experiments anteriors (E8, E9, E16, E20, E23) també.
-- **Diferència entre memòries:** la diferència real entre configuracions és el que hi ha per sobre d'aquest creixement de base. L'episòdica és la més cara, perquè té 15.288 episodis a la memòria de treball. La finestra n'hi deixa 294 i és la més barata de les tres amb memòria.
+**E23 – estratègies d'oblit de la memòria episòdica** (120 dies seguits del 2023 a Ribera, 3 llavors, un sol procés i amb el refresc; detall a `estrategia_oblit.md` i `resultats/E23/`):
+
+*Hipòtesi:* oblidar episodis redueix el cost de cerca de la memòria episòdica sense canviar les decisions, i una estratègia per grups (F) conserva millor el que és útil que les estratègies sense criteri. Línia base A sense oblit (5.040 episodis al final); braços B finestra, C aleatori, D antiguitat, E activació d'episodi, F activació de grup i G (F sense proteccions), cadascun amb una capacitat del 25, 50 i 75 % dels episodis d'A (Nuxoll et al. 2010; Derbinsky & Laird 2013).
+
+| Capacitat 25 % | Episodis al final | Episodis examinats (vs A) | ms per cicle (vs A: 24,9) | Fidelitat |
+|---|---|---|---|---|
+| B finestra | 1.008 | −73,5 % | 40,2 (**+62 %**) | 100 % |
+| C aleatori | 1.215 | −69,4 % | 14,0 (−44 %) | 100 % |
+| D antiguitat | 1.215 | −69,9 % | 14,1 (−43 %) | 100 % |
+| E activació d'episodi | 1.215 | −69,7 % | 14,1 (−43 %) | 100 % |
+| F activació de grup | 1.215 | −62,1 % | 14,7 (−41 %) | 100 % |
+| G sense proteccions | 1.215 | −56,9 % | 16,0 (−36 %) | 99,96 % |
+
+- **Oblidar sí que fa el cicle més ràpid** (C–G): −35 a −44 % amb el 25 %, −17 a −22 % amb el 50 % i −5 a −7 % amb el 75 % (Wilcoxon aparellat per dia i llavor, n = 360, Holm p ≤ 0,0013 en tots els casos; `verificacio/e23_temps.py` → `E23_temps_tests.csv`). **Això corregeix la primera execució** (1 llavor, sense refresc i amb dos processos alhora), en què el temps no millorava: l'alentiment intern de l'entorn CLIPS i la competència pels processadors amagaven l'efecte.
+- **Les decisions no canvien:** fidelitat del 100 % en 17 dels 18 braços, i del 99,96 % en G al 25 % (6 decisions de 15.120). Energia, estrès, violacions i impasses: p (Holm) = 1 en tots els braços. La taxa d'encert de les consultes és del 98,7 % en tots.
+- **B (finestra) és més lent que no oblidar** (+62 % al 25 %, +137 % al 50 %, +155 % al 75 %), tot i que és el que menys episodis examina. Hipòtesi (no mesurada per separat): cada episodi arxivat crida `epmem-idx-invalida` i s'escriu al fitxer d'arxiu, i l'índex de la memòria episòdica es refà a cada consulta següent.
+- **F conserva més del que cal:** examina més episodis que C, D i E (−62 % contra −70 %) perquè protegeix els grups amb pocs episodis, i per això estalvia una mica menys de temps. En 120 dies no hi ha cap situació en què aquesta protecció canviï una decisió, així que l'avantatge esperat de F no es pot veure en aquest període. G mostra que sense proteccions es perd alguna decisió (6 de 15.120).
+- **Limitacions:** 120 dies (amb un any la memòria creix 3 vegades més); les capacitats són fraccions dels episodis d'A, no un límit de memòria real; el temps inclou tot el cicle CLIPS, no només la cerca.
 
 **E24 – escalabilitat de la memòria episòdica** (índex per operador contra cerca exhaustiva):
 
@@ -522,10 +556,10 @@ Les dues columnes de semàntica són d'abans de la clau nova i s'han de tornar a
 
 ## Pendent
 
-- **E12, paràmetres de disseny del reg** (75 % d'anticipació, dosi parcial, soroll de la previsió de pluja). La comprovació del reg i l'historial de lectures ja hi són (iteració 35, E22).
+- **E12reg amb un període plujós:** la pluja que anul·la el reg i el soroll de la previsió de pluja no han tingut efecte d'abril a setembre del 2023. La dosi parcial no s'ha variat (és dins de les regles del CLIPS).
 - **Previsió més enllà del vent:** ara la previsió de pluja només la fa servir el reg; la de calor no es fa servir.
 
-- **Resultats d'E17:** casos de prova que comprovin el text de l'explicació, i proves amb el reforç i la memòria semàntica activats.
+- **Resultats d'E17:** casos de prova que comprovin el text de l'explicació i els avisos, i un empat real que hagi de desfer el reforç.
 - **Memòria episòdica:** l'índex per operador (iteració 36) dona un 17 % amb 15.000 episodis. Un índex invertit per tret, com el de Soar, donaria més, però canviaria quins episodis es recuperen en cas d'empat; amb la finestra de la memòria semàntica no cal.
 - **Assignació de crèdit de la memòria:** el temps canvia els riscos d'una hora a l'altra, i el resultat d'un episodi en depèn tant com de l'operador. Per això el 57 % dels resums semàntics barregen casos bons i dolents i la memòria hi té poc efecte. Caldria comparar amb el que hauria passat amb un altre operador (contrafactual), cosa que la memòria episòdica no sap fer.
 - **E12, part de pesos i `alfa`:** són dins del CLIPS i no es poden variar des del simulador sense tocar el `.clp`.

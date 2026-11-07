@@ -1,5 +1,5 @@
 config,dies,ms_clips_primera_setmana,ms_clips_ultima_setmana,creixement_ms_per_dia,s_paret_per_dia_mitja,minuts_paret_total,n_epmem_final
-sense_memoria,364,4.0,274.3,0.603,3.6,22.1,0
-episodica,364,6.0,495.0,1.534,10.1,61.4,15288
-semantica,364,5.2,368.5,1.218,8.5,51.5,15288
-semantica_finestra,364,5.0,334.8,1.074,6.8,41.4,294
+sense_memoria,364,3.5,3.8,0.001,0.2,1.1,0
+episodica,364,4.9,60.1,0.162,0.8,5.0,15288
+semantica,364,4.7,6.5,0.036,0.6,3.5,15288
+semantica_finestra,364,4.7,6.2,0.005,0.3,1.5,497

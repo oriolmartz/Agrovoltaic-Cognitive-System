@@ -33,7 +33,7 @@
 <circle cx="270.8" cy="45.0" r="5" fill="#e377c2"><title>F_activacio_grup_25: 1215 episodis, 100.00%</title></circle>
 <circle cx="462.8" cy="45.0" r="5" fill="#1f77b4"><title>F_activacio_grup_50: 2505 episodis, 100.00%</title></circle>
 <circle cx="614.1" cy="45.0" r="5" fill="#ff7f0e"><title>F_activacio_grup_75: 3522 episodis, 100.00%</title></circle>
-<circle cx="270.8" cy="45.0" r="5" fill="#2ca02c"><title>G_grup_sense_proteccions_25: 1215 episodis, 100.00%</title></circle>
+<circle cx="270.8" cy="45.2" r="5" fill="#2ca02c"><title>G_grup_sense_proteccions_25: 1215 episodis, 99.96%</title></circle>
 <circle cx="462.8" cy="45.0" r="5" fill="#d62728"><title>G_grup_sense_proteccions_50: 2505 episodis, 100.00%</title></circle>
 <circle cx="614.1" cy="45.0" r="5" fill="#9467bd"><title>G_grup_sense_proteccions_75: 3522 episodis, 100.00%</title></circle>
 <text x="100" y="59" fill="#1f77b4" font-family="sans-serif" font-size="12">A_sense_oblit</text>

@@ -131,7 +131,7 @@ class ControladorSOAR:
                           estrategia=cc.get("estrategia"),
                           vigila_regles=cc.get("vigila_regles", False),
                           conserva_sortida=bool(cfg.get("traca_dir")),
-                          oblit=cc.get("oblit"))
+                          oblit=cc.get("oblit"), reg_config=cc.get("reg_config"))
         self.c = ControladorCLIPS(self.clp, **self._args)
         if cc.get("llavor_clips") is not None:     # per a l'estrategia 'random' de l'agenda
             self.c.env.eval(f"(seed {int(cc['llavor_clips'])})")
@@ -719,15 +719,15 @@ class Simulacio:
                 "regles": info["regles"] if s == SECTORS[0] else 0,
                 "ms": info["ms"] if s == SECTORS[0] else 0.0,
                 "fets_mt": info["fets"],
-                "epmem_episodis": info["oblit"].get("n_epmem", 0) if s == SECTORS[0] else 0,
-                "smem_resums": info["oblit"].get("n_smem", 0) if s == SECTORS[0] else 0,
-                "epmem_oblidats": info["oblit"].get("oblidats", 0) if s == SECTORS[0] else 0,
-                "epmem_escanejats": info["oblit"].get("escanejats", 0) if s == SECTORS[0] else 0,
-                "epmem_consultes": info["oblit"].get("consultes", 0) if s == SECTORS[0] else 0,
-                "epmem_consultes_encertades": info["oblit"].get("encerts", 0) if s == SECTORS[0] else 0,
-                "epmem_similitud_mitjana": info["oblit"].get("similitud_mitjana", 0.0)
+                "epmem_episodis": info.get("oblit", {}).get("n_epmem", 0) if s == SECTORS[0] else 0,
+                "smem_resums": info.get("oblit", {}).get("n_smem", 0) if s == SECTORS[0] else 0,
+                "epmem_oblidats": info.get("oblit", {}).get("oblidats", 0) if s == SECTORS[0] else 0,
+                "epmem_escanejats": info.get("oblit", {}).get("escanejats", 0) if s == SECTORS[0] else 0,
+                "epmem_consultes": info.get("oblit", {}).get("consultes", 0) if s == SECTORS[0] else 0,
+                "epmem_consultes_encertades": info.get("oblit", {}).get("encerts", 0) if s == SECTORS[0] else 0,
+                "epmem_similitud_mitjana": info.get("oblit", {}).get("similitud_mitjana", 0.0)
                     if s == SECTORS[0] else 0.0,
-                "epmem_ids_oblidats": info["oblit"].get("ids_oblidats", "") if s == SECTORS[0] else "",
+                "epmem_ids_oblidats": info.get("oblit", {}).get("ids_oblidats", "") if s == SECTORS[0] else "",
             })
         return files
 

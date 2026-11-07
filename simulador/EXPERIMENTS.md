@@ -7,6 +7,11 @@ Els resultats de cada experiment queden a `resultats/<E>/`.
 **Verificació** = el sistema està ben construït. Es mira per dins, i el resultat és passa o no passa.
 **Validació** = el sistema fa el que ha de fer. Es mira el que fa a la planta, amb estadística.
 
+## Què queda fora i per què
+
+- **Model checking** (Menzies & Pecheur 2005): no hi ha un model formal del CLIPS que un verificador de models pugui explorar, i traduir-lo a mà seria un altre sistema que caldria verificar. N'ocupen el lloc, de manera limitada, la graella exhaustiva d'E2 (totes les combinacions discretitzades d'entrades, un cicle) i la verificació en temps d'execució (invariants i E18). No cobreix seqüències llargues de cicles.
+- **Validació amb un expert** (Batarseh & Gonzalez): no hem tingut cap agrònom ni enginyer que revisés decisions. Se substitueix per sistemes de referència (seguidor comercial, panell fix, reg FAO-56 i de finca) i per fonts publicades per als llindars (`dades_reals/FONTS.md`). És una limitació: els resultats diuen que el sistema millora respecte d'aquestes referències, no que un expert hi estaria d'acord.
+
 ## Disseny estadístic comú
 
 - **Unitat de repetició: un dia.** Cada dia comença amb una planta nova i un controlador nou, de
@@ -22,7 +27,7 @@ Els resultats de cada experiment queden a `resultats/<E>/`.
   | Cas | Test |
   |---|---|
   | 2 configuracions | Wilcoxon de rangs amb signe |
-  | Més de 2 | Friedman i, després, Wilcoxon per parelles amb correcció de Holm |
+  | Més de 2 | Friedman i, després, Wilcoxon per parelles amb correcció de Holm (el procediment que recomana Demšar 2006 per comparar diversos sistemes sobre els mateixos casos) |
   | Esdeveniments que no passen mai (violacions de seguretat) | Cota superior de Clopper-Pearson; amb 0 casos, la "regla de tres" (≈ 3/n) |
 
   A totes les comparacions es dona també la mida de l'efecte (correlació biserial de rangs, que
@@ -91,8 +96,10 @@ Les propietats del reg a E2 (v1_9), per a cada sector:
 | **E20** | La memòria semàntica (iteració 29) decideix millor que l'episòdica? Evita que la memòria creixi sense límit? | Sistemes adaptatius (validesa externa) i escalabilitat | Tot el 2023 de Ribera de Sió, dies seguits, 2 execucions: sense memòria, només episòdica, episòdica + semàntica, i semàntica amb finestra (els episodis ja resumits de fa més d'una setmana surten de la memòria de treball). Bloc = (mes, execució). Decisions de cada memòria, concordança amb l'episòdica, episodis a la memòria de treball, temps per cicle i restriccions K1–K6 | `python experiments.py E20` |
 | **E21** | Amb un model físic validat (temperatura de la coberta per balanç d'energia, calendari de cultiu), SOAR protegeix el cultiu de la calor? | Validesa del model de simulació (Batarseh: el banc de proves ha de ser realista) i comparació amb referències | 48 dies del 2023 a Ribera (4 per mes). SOAR, seguidor comercial i panell fix, amb el model físic de la v1_9 i amb el nou. Mateixos dies i llavors (aparellat). SOAR − seguidor dins de cada model (Wilcoxon). La validació del model amb mesures reals és a `verificacio/v_temperatura_coberta.py` | `python experiments.py E21` |
 | **E22** | El sistema aguanta lectures absents, impossibles o de sensors avariats? Detecta que el reg no ha arribat al sòl? | Robustesa (Menzies §5) i monitoratge de l'efecte de les accions (enunciat, pas 8 del cicle) | A: 30 dies de Ribera × 2 llavors amb errors de sensors, amb l'historial (última lectura vàlida) i sense; B: juny-agost 2023 seguits amb la vàlvula que falla el 30 % de les vegades. Sensibilitat i falses alarmes de la detecció | `python experiments.py E22` |
+| **E23** | Quina estratègia d'oblit manté la memòria episòdica acotada sense empitjorar les decisions? Redueix el cost de cerca? | Sistemes adaptatius i escalabilitat; línia base sense oblit i braços de comparació com Nuxoll et al. (2010); activació de nivell base i retenció que preserva la competència (Derbinsky & Laird 2013) | 120 dies seguits del 2023 a Ribera, 3 llavors. A sense oblit; B finestra; C aleatori; D antiguitat (FIFO); E activació d'episodi; F activació de grup amb període de gràcia i mínim d'episodis; G com F sense proteccions. Tres capacitats (25, 50 i 75 % dels episodis de A). Fidelitat de decisions respecte d'A, episodis examinats per les consultes, temps per cicle i taxa d'encert. Detall a `estrategia_oblit.md` i `resultats/E23/` | `python experiments.py E23 --dies 120 --llavors 3` |
 | **E24** | L'índex de la memòria episòdica redueix el cost de recuperació? Com depèn de la quantitat i la distribució dels episodis? | Escalabilitat; Soar també indexa per reduir aquest cost (Laird 2022; Derbinsky, Li & Laird 2012) | Episodis amb els trets d'una simulació real (60 dies del 2023 a Ribera). 1.000, 5.000, 15.000 i 30.000 episodis × 3 repartiments entre operadors (real, uniforme, 90 % en un de sol) × 3 llavors; 100 consultes iguals amb índex i amb cerca exhaustiva. Ms per consulta, pendent i si es recupera el mateix episodi | `python experiments.py E24` |
 | **E12** | Les conclusions depenen dels números que vam triar a dit? | Anàlisi de sensibilitat (Batarseh) | Un paràmetre cada cop: GCR, `k_rad`, `k_sec`, el soroll i la disponibilitat de la previsió. Es mira si el signe de la diferència entre SOAR i el seguidor es manté | `python experiments.py E12` |
+| **E12reg** | La conclusió d'E15 (SOAR deixa el cultiu sense estrès amb la mateixa aigua que el reg FAO) depèn dels paràmetres del reg que vam triar? | Anàlisi de sensibilitat (Batarseh) | Un paràmetre cada cop: anticipació (0,6/0,75/0,9 de p), pluja que anul·la el reg (5/10/15 mm), hores fresques del matí (7/8/9 h) i de la tarda (18/19/20 h) i soroll de la previsió de pluja. Protocol d'E15 (abril–setembre, mesos seguits × 2 llavors). SOAR − FAO per a cada valor i si el signe es manté | `python experiments.py E12reg` |
 
 ## Casos de prova documentats
 
@@ -116,6 +123,11 @@ i la traça completa de cada cas:
 | CP12 | Reg a primera hora: l'enciam amb estrès i el tomàquet a prop del llindar; la vinya no s'anticipa | reg |
 | CP13 | No es rega perquè es preveuen 15 mm, llevat de l'enciam amb estrès crític | conflicte (reg) |
 | CP14 | Vinya al llindar exacte (55,0 %) i just a sota (54,9 %): reg deficitari | límits (reg) |
+| CP15 | Sensor d'humitat que deixa de respondre | dades absents + historial |
+| CP16 | Lectura impossible i sensor avariat | dades incoherents + fallades |
+| CP17 | Reg que no arriba al sòl | fallades (reg) + efecte observat |
+| CP18 | Vent crític amb l'actuador avariat (restriccions incompatibles) | seguretat + fallades + impasse |
+| CP19 | La memòria episòdica recorda una situació repetida | historial (memòria) |
 | Cas no vist | Un dia real de tramuntana a Cantallops (27/03/2023) que no es va fer servir per desenvolupar les regles: `python simulador.py escenaris/cas_no_vist_tramuntana.json` (i `--controlador seguidor` per comparar) | casos no vistos |
 
 ## Opcions comunes
@@ -123,3 +135,15 @@ i la traça completa de cada cas:
 - `--processos N`: quants processos fer servir en paral·lel. Per defecte, tots els nuclis.
 - `--traca`: desa la traça completa del CLIPS a `resultats/<E>/traca/`.
 - `--dies N`: a E4, E5, E6, E7, E11, E12 i E14, nombre de dies. A E8, E9, E10 i E13, nombre d'execucions. A E15, nombre de dies de cada mes (per a una prova ràpida).
+
+## Referències
+
+- Batarseh, F. A. & Gonzalez, A. J. (2015). Validation of knowledge-based systems: a reassessment of the field. *Artificial Intelligence Review*, 43(4), 485–500.
+- Demšar, J. (2006). Statistical comparisons of classifiers over multiple data sets. *Journal of Machine Learning Research*, 7, 1–30.
+- Derbinsky, N. & Laird, J. E. (2013). Effective and efficient forgetting of learned knowledge in Soar's working and procedural memories. *Cognitive Systems Research*, 24, 104–113.
+- Derbinsky, N., Li, J. & Laird, J. E. (2012). A multi-domain evaluation of scaling in a general episodic memory. *AAAI 2012*.
+- Laird, J. E. (2022). Introduction to the Soar cognitive architecture. arXiv:2205.03854.
+- Menzies, T. & Pecheur, C. (2005). Verification and validation and artificial intelligence. *Advances in Computers*, 65, 153–201.
+- Nuxoll, A., Tecuci, D., Ho, W. C. & Wang, N. (2010). Comparing forgetting algorithms for artificial episodic memory systems. *AISB 2010*.
+- Rashid, M., Torchiano, M., Rizzo, G., Mihindukulasooriya, N. & Corcho, O. (2019). A quality assessment approach for evolving knowledge bases. *Semantic Web*, 10(2), 349–383.
+- Tsai, W.-T., Vishnuvajjala, R. & Zhang, D. (1999). Verification and validation of knowledge-based systems. *IEEE Transactions on Knowledge and Data Engineering*, 11(1), 202–212.

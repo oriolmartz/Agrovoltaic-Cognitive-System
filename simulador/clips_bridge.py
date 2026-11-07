@@ -113,7 +113,8 @@ class ControladorCLIPS:
                  chunking: bool | None = None, epmem: bool | None = None,
                  smem: bool | None = None, smem_finestra: int = 0, smem_arxiu: str = "",
                  estrategia: str | None = None, vigila_regles: bool = False,
-                 conserva_sortida: bool = False, neteja: bool = True, oblit: dict | None = None):
+                 conserva_sortida: bool = False, neteja: bool = True, oblit: dict | None = None,
+                 reg_config: dict | None = None):
         self.fitxer = os.path.abspath(fitxer_clp)
         # Per compatibilitat, el CLP actiu usa automàticament l'ontologia de model.
         # Les snapshots historiques no la reben: així E1 continua reproduint-les tal com eren.
@@ -130,6 +131,9 @@ class ControladorCLIPS:
         self.neteja = neteja
         self._chunks_coneguts: set[str] = set()
         self.oblit = GestorOblit(oblit) if oblit is not None else None
+        # Valors de reg-config que substitueixen els de l'ontologia del reg (nomes per a l'analisi de
+        # sensibilitat E12reg; per defecte no se'n canvia cap)
+        self.reg_config = dict(reg_config or {})
 
         dir_abans = os.getcwd()
         os.chdir(os.path.dirname(self.fitxer))   # el .clp pot carregar fitxers relatius
@@ -183,6 +187,8 @@ class ControladorCLIPS:
         # el deffacts de l'escenari porta dades del cicle 1: les treiem, les posa el simulador
         self.env.eval("(PYTHON::py-treu-entrades)")
         self.env.eval("(set-current-module DOMINI)")   # els asserts de Python van a DOMINI
+        for slot, valor in self.reg_config.items():
+            self.env.eval(f"(do-for-fact ((?r reg-config)) TRUE (modify ?r ({slot} {valor})))")
         self.primer = True
         self._chunks_coneguts = set()
         self.cap.buida()

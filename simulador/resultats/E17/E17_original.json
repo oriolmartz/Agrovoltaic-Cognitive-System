@@ -3,15 +3,15 @@
     "id": "ORIGINAL",
     "tipus": "-",
     "descripcio": "sense mutacio",
-    "P1_run_proves": "26 pass, 0 fail",
+    "P1_run_proves": "90 pass, 0 fail",
     "P2_E3_fallades": 0,
     "P3_casos_que_fallen": "",
     "mort_per": "P1,P3",
     "mort": true,
-    "segons": 20.4
+    "segons": 18.0
   },
   "per_prova": {
-    "P1": 27,
+    "P1": 54,
     "P2": 58,
     "P3": 70
   }
