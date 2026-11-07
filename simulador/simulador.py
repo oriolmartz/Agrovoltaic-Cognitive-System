@@ -111,6 +111,10 @@ class Entrada:
     avariats: dict | None = None  # sector -> sensors que es diagnostiquen avariats (pero envien valor)
 
 
+# Cicles entre entorns CLIPS nous (una setmana de 14 hores de sol al dia); 0 = no es refresca.
+REFRESC_CICLES = 98
+
+
 class ControladorSOAR:
     """El sistema basat en regles. Cada instancia te el seu entorn CLIPS."""
 
@@ -119,21 +123,40 @@ class ControladorSOAR:
     def __init__(self, cfg: dict, domini: dict):
         cc = cfg["controlador"]
         self.clp = os.path.join(ARREL, cfg["clp"])
-        self.c = ControladorCLIPS(self.clp, fitxer_ontologia=ontologia_per_clp(cfg),
-                                  reforc=cc.get("reforc"), parelles=cc.get("parelles"),
-                                  chunking=cc.get("chunking"), epmem=cc.get("epmem"),
-                                  smem=cc.get("smem"), smem_finestra=cc.get("smem_finestra", 0),
-                                  smem_arxiu=cc.get("smem_arxiu", ""),
-                                  estrategia=cc.get("estrategia"),
-                                  vigila_regles=cc.get("vigila_regles", False),
-                                  conserva_sortida=bool(cfg.get("traca_dir")),
-                                  oblit=cc.get("oblit"))
+        self._args = dict(fitxer_ontologia=ontologia_per_clp(cfg),
+                          reforc=cc.get("reforc"), parelles=cc.get("parelles"),
+                          chunking=cc.get("chunking"), epmem=cc.get("epmem"),
+                          smem=cc.get("smem"), smem_finestra=cc.get("smem_finestra", 0),
+                          smem_arxiu=cc.get("smem_arxiu", ""),
+                          estrategia=cc.get("estrategia"),
+                          vigila_regles=cc.get("vigila_regles", False),
+                          conserva_sortida=bool(cfg.get("traca_dir")),
+                          oblit=cc.get("oblit"))
+        self.c = ControladorCLIPS(self.clp, **self._args)
         if cc.get("llavor_clips") is not None:     # per a l'estrategia 'random' de l'agenda
             self.c.env.eval(f"(seed {int(cc['llavor_clips'])})")
+        # Un entorn CLIPS es torna mes lent com mes cicles porta, encara que els fets no creixin:
+        # amb els mateixos fets carregats en un entorn nou, el cicle del dia 60 passa de 17,5 a 4,5 ms
+        # (verificacio/temps_cicle.py). Cada 'refresc_cicles' es desa l'estat i es carrega en un
+        # entorn nou, amb el mateix mecanisme que els punts de control d'E16 (decisions identiques,
+        # verificacio/prova_refresc.py). No es fa amb l'agenda 'random': l'estat del generador
+        # aleatori del CLIPS no es pot desar.
+        self.refresc = 0 if cc.get("llavor_clips") is not None else int(cc.get("refresc_cicles", REFRESC_CICLES))
+        self._cicles_entorn = 0
         self.domini = domini
         self.primer_cicle = None
 
+    def _refresca(self):
+        est = self.c.desa_estat()
+        nou = ControladorCLIPS(self.clp, **self._args)
+        nou.restaura_estat(est)
+        self.c = nou
+        self._cicles_entorn = 0
+
     def decideix(self, e: Entrada) -> dict:
+        if self.refresc and self._cicles_entorn >= self.refresc:
+            self._refresca()
+        self._cicles_entorn += 1
         c = self.c
         if self.primer_cicle is None:
             self.primer_cicle = e.cicle

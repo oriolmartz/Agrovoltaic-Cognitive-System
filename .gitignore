@@ -56,3 +56,6 @@ simulador/resultats/E16/parts/
 simulador/resultats/E20/parts/
 # Simulacions de demostracio (es regeneren executant el simulador)
 simulador/resultats/simulacions/
+# E23: execucions parcials i arxius d'episodis oblidats (es regeneren amb experiments.py E23)
+simulador/resultats/E23/parts/
+simulador/resultats/E23/arxiu/

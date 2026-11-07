@@ -29,6 +29,7 @@
   "controlador": {"tipus": "soar", "reforc": null, "parelles": null, "chunking": null, "epmem": null,
                   "smem": null, "smem_finestra": 0, "smem_arxiu": "",
                   "oblit": null,
+                  "refresc_cicles": 98,
                   "estrategia": null},
   "mode_dies": "independents"
 }
