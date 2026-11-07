@@ -2,7 +2,7 @@
 
 ## Resum
 
-> **Actualització (07/11/2026).** S'ha tornat a executar amb 3 llavors, en un sol procés i amb el refresc de l'entorn CLIPS (iteració 39). Les taules d'aquest informe són de la primera execució (1 llavor). Amb la mesura neta, **oblidar sí que redueix el temps per cicle**: de 24,9 ms (A) a 14,0–16,0 ms amb C–G al 25 % (−36 a −44 %), −17 a −22 % al 50 % i −5 a −7 % al 75 % (Holm p ≤ 0,0013; `E23_temps_tests.csv`). B (finestra) continua sent més lent que A (+62 a +155 %). La fidelitat és del 100 % en tots els braços menys G al 25 % (99,96 %). Resultats actuals al `README.md` del simulador.
+> **Actualització (07/11/2026).** S'ha tornat a executar amb 3 llavors, en un sol procés i amb el refresc de l'entorn CLIPS (iteració 39). Les taules d'aquest informe són de la primera execució (1 llavor). Amb la mesura neta, **oblidar sí que redueix el temps per cicle**: a la versió final, de 28,3 ms (A) a 15,7–17,3 ms amb C–G al 25 % (−39 a −44 %) i −15 a −19 % al 50 % (Holm p ≤ 1e-8); al 75 % l'estalvi és petit (−3 a −8 %) i no és significatiu per a E (`E23_temps_tests.csv`). B (finestra) continua sent més lent que A (+56 a +140 %). La fidelitat és del 100 % en tots els braços menys G al 25 % (99,96 %). Resultats actuals al `README.md` del simulador.
 
 
 Aquest informe recull l'execució d'E23 durant 120 dies seqüencials, de l'1 de

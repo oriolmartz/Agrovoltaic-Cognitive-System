@@ -546,6 +546,7 @@
   (slot actiu (allowed-symbols on off) (default off))
   (slot minim-casos (type INTEGER) (default 3))   ; per sota, el resum no decideix (es consulta epmem)
   (slot k (type NUMBER) (default 2))              ; prudencia: valor = pes * (bona - dolenta) / (n + k)
+  (slot hora-migdia (type INTEGER) (default 14))  ; hora local del maxim de radiacio (clau: el sol puja/baixa)
   (slot finestra (type INTEGER) (default 0))      ; cicles d'episodis consolidats a la MT (0 = tots)
   (slot arxiu (type STRING) (default "")))        ; on s'arxiven els episodis que surten de la MT
 
@@ -724,10 +725,26 @@
 (deffunction epmem-despres (?a ?b)
   (> (str-compare ?a ?b) 0))
 
-; Clau canonica de la situacio per a la memoria semantica: els mateixos trets del cue,
-; sense el sector (va a part) i ordenats, perque l'ordre dels fets risc no canvii la clau.
+;; Clau canonica de la situacio per a la memoria semantica: els trets del cue sense el sector (va a
+;; part), mes la fase del cultiu i si el sol puja o baixa, ordenats perque l'ordre dels fets risc no
+;; canvii la clau. Aixi un resum no barreja casos que no es poden comparar: "gestionar contradiccions"
+;; i "evitar records contaminats" (Arquitectures Cognitives INTRO, diap. 79). Quins dos trets, decisio
+;; nostra a partir de les dades de 2023 (resums amb casos bons i dolents: del 65 % al 49 %).
+(deffunction epmem-fase-cultiu (?s)
+  (bind ?r desconeguda)
+  (do-for-fact ((?sc sector) (?cu cultiu)) (and (eq ?sc:id ?s) (eq ?cu:id ?sc:cultiu))
+    (bind ?r ?cu:fase))
+  ?r)
+
+; El sol puja abans del migdia solar i baixa despres (Ribera 2022-2023: maxim de GHI a les 14 h).
+(deffunction epmem-sol (?c)
+  (bind ?r desconegut)
+  (do-for-fact ((?m moment) (?k smem-config)) (eq ?m:cicle ?c)
+    (bind ?r (if (< ?m:hora ?k:hora-migdia) then puja else baixa)))
+  ?r)
+
 (deffunction epmem-clau-situacio (?s ?c)
-  (bind ?r (create$))
+  (bind ?r (create$ (epmem-tret fase (epmem-fase-cultiu ?s)) (epmem-tret sol (epmem-sol ?c))))
   (progn$ (?t (epmem-cue-situacio ?s ?c))
     (if (neq (str-index "sector=" (str-cat ?t)) 1) then (bind ?r (create$ ?r ?t))))
   (sort epmem-despres ?r))
@@ -942,7 +959,9 @@
 
 (deffunction desa-epmem (?fitxer)
   (bind ?m (set-current-module DOMINI))
-  (save-facts ?fitxer local epmem-episodi)
+  ; Els resums de la memoria semantica van al mateix fitxer que els episodis: els episodis
+  ; consolidats ja hi son comptats, i si no es guardessin junts es perdrien en recarregar.
+  (save-facts ?fitxer local epmem-episodi smem-resum)
   (set-current-module ?m)
   TRUE)
 
@@ -966,7 +985,23 @@
             (if (> ?id ?max) then (bind ?max ?id)))))
   (progn$ (?st (find-all-facts ((?x epmem-estat)) TRUE))
     (modify ?st (seguent-id (+ ?max 1)) (sessio-inici (+ ?max 1))))
-  (printout t "[EPMEM] Carregats " ?n " episodis de " ?fitxer "." crlf)
+  ; Resums de la memoria semantica: sense duplicats (mateix sector, operador i situacio).
+  (bind ?nr 0)
+  (progn$ (?fr (find-all-facts ((?x smem-resum)) TRUE))
+    (if (fact-existp ?fr) then
+      (if (any-factp ((?o smem-resum))
+            (and (< (fact-index ?o) (fact-index ?fr))
+                 (eq ?o:sector (fact-slot-value ?fr sector))
+                 (eq ?o:operador (fact-slot-value ?fr operador))
+                 (eq ?o:situacio (fact-slot-value ?fr situacio))))
+       then (retract ?fr)
+       else (bind ?nr (+ ?nr 1)))))
+  ; Fitxer sense resums (format anterior): els episodis marcats com a consolidats ja no estarien
+  ; a cap resum. Es tornen a marcar perque es tornin a comptar.
+  (if (= ?nr 0) then
+    (do-for-all-facts ((?e epmem-episodi)) (eq ?e:consolidat si)
+      (modify ?e (consolidat no))))
+  (printout t "[EPMEM] Carregats " ?n " episodis i " ?nr " resums de " ?fitxer "." crlf)
   ?n)
 
 (deffunction activa-epmem (?fitxer)
@@ -2761,7 +2796,7 @@
 ; D'on surt cada peca:
 ;   - Episodis -> coneixement general: "La consolidacio transforma episodis en
 ;     coneixement mes general" i "consolidar experiencies repetides"
-;     (Arquitectures Cognitives INTRO, diap. 51 i 78); "Resums de memoria episodica
+;     (Arquitectures Cognitives INTRO, diap. 52 i 79); "Resums de memoria episodica
 ;     i creacio d'abstraccions semantiques" (Arquitectura SOAR, diap. 45).
 ;   - Que sigui semantica: es coneixement independent del moment (Laird 2022, sec. 6-7).
 ;   - Que la desi una regla: Soar no te aprenentatge automatic de la memoria semantica,
@@ -2841,13 +2876,17 @@
 
 ; 3. ARXIU: els episodis ja consolidats i fora de la finestra surten de la memoria de
 ;    treball (i, si hi ha fitxer, s'hi afegeixen). El que ensenyaven ja es al resum.
+;    Nomes si el resum ja te prou casos per decidir (minim-casos): si no, l'episodi es l'unic
+;    que pot respondre en aquella situacio i perdre'l seria oblidar justament el poc frequent.
 ;    A proposta i no a monitoratge: alla tanca-cicle (auto-focus) pot tancar la fase abans.
 (defrule smem-arxiva
   (declare (auto-focus TRUE))
-  (smem-config (actiu on) (finestra ?w&:(> ?w 0)) (arxiu ?fx))
+  (smem-config (actiu on) (finestra ?w&:(> ?w 0)) (arxiu ?fx) (minim-casos ?mn))
   (fase (nom proposta))
   (cicle (numero ?c))
-  ?e <- (epmem-episodi (cicle ?ec&:(<= ?ec (- ?c ?w))) (consolidat si))
+  ?e <- (epmem-episodi (cicle ?ec&:(<= ?ec (- ?c ?w))) (consolidat si)
+                       (sector ?s) (operador ?op) (clau $?k))
+  (smem-resum (sector ?s) (operador ?op) (situacio $?k) (n ?n&:(>= ?n ?mn)))
   =>
   (if (neq ?fx "") then (smem-escriu-arxiu ?fx ?e))
   (epmem-idx-invalida)              ; l'index de la memoria episodica es reconstruira
