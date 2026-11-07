@@ -26,6 +26,6 @@ decisions_rl,memoria_nomes_2023,sense_memoria_2_anys,36,10.33,16.31,-5.97,"(-9.1
 decisions_memoria,memoria_2_anys,memoria_nomes_2023,36,1041.97,1043.83,-1.86,"(-10.167, 5.195)",0.43,+0.21 (petit),4.9e-14
 decisions_memoria,memoria_2_anys,sense_memoria_2_anys,36,1041.97,0.0,1041.97,"(1006.444, 1079.444)",5e-07,+1.00 (gran),4.9e-14
 decisions_memoria,memoria_nomes_2023,sense_memoria_2_anys,36,1043.83,0.0,1043.83,"(1009.278, 1079.612)",5e-07,+1.00 (gran),4.9e-14
-ms_per_cicle,memoria_2_anys,memoria_nomes_2023,36,362.86,213.43,149.43,"(70.544, 231.957)",0.07,+0.40 (mitja),0.028
-ms_per_cicle,memoria_2_anys,sense_memoria_2_anys,36,362.86,194.07,168.79,"(94.724, 237.51)",0.00018,+0.72 (gran),0.028
-ms_per_cicle,memoria_nomes_2023,sense_memoria_2_anys,36,213.43,194.07,19.36,"(-63.229, 103.662)",0.54,+0.12 (petit),0.028
+ms_per_cicle,memoria_2_anys,memoria_nomes_2023,36,124.63,42.99,81.64,"(77.944, 85.433)",8.7e-11,+1.00 (gran),2.3e-16
+ms_per_cicle,memoria_2_anys,sense_memoria_2_anys,36,124.63,5.43,119.2,"(110.025, 128.186)",8.7e-11,+1.00 (gran),2.3e-16
+ms_per_cicle,memoria_nomes_2023,sense_memoria_2_anys,36,42.99,5.43,37.56,"(31.044, 43.852)",8.7e-11,+1.00 (gran),2.3e-16

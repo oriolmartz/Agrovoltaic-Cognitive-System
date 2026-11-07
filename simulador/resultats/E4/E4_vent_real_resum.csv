@@ -26,4 +26,4 @@ bomba_kwh,0.00 ± 0.00,0.17 ± 0.38
 energia_neta_kwh,277.40 ± 82.03,264.39 ± 78.89
 percolacio_mm,0.53 ± 4.47,0.54 ± 4.47
 regles_per_cicle,0.00 ± 0.00,125.48 ± 8.60
-ms_per_cicle,0.00 ± 0.00,6.69 ± 1.45
+ms_per_cicle,0.00 ± 0.00,5.40 ± 0.79

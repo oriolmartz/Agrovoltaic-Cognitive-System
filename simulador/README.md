@@ -339,12 +339,12 @@ d'hores d'estrès per calor amb el seguidor és petita (−0,12 h/dia) i, amb la
 - **Amb chunking:** 0,05 impasses/dia, i els chunks prenen 32 decisions al dia.
 - **Sense chunking:** 0,40 impasses/dia (p = 3e-7).
 - **Les decisions finals són idèntiques** (energia, estrès…). Els chunks reprodueixen exactament el que hauria decidit el subobjectiu, que és el que ha de fer el chunking a Soar.
-- **No acceleren:** cada cicle triga 0,2 ms més (p = 0,52). Les regles noves tenen un cost de *matching* (el "problema de la utilitat") que compensa el que s'estalvien.
+- **No acceleren:** cada cicle triga 0,6 ms més (12,7 contra 12,1 ms; p = 0,022, efecte petit). Les regles noves tenen un cost de *matching* (el "problema de la utilitat") més gran que el que s'estalvien.
 
 **E9 – reforç** (10 execucions; v1_5, v1_6 i v1_7, amb el reg de la finca):
 - **El reforç decideix 0,4 de les 42 decisions diàries.**
 - **Energia i estrès són pràcticament iguals** entre v1_5, v1_6 i v1_7 (diferències de menys d'1 kWh/dia).
-- **El temps per cicle és de 24–26 ms** de mitjana als dies de prova.
+- **El temps per cicle és de 15 ms** de mitjana als dies de prova (14,8, 15,2 i 15,4 ms; només v1_5 contra v1_7 és significatiu, −0,55 ms, Holm p = 0,016).
 
 **E10 – capacitat de la funció Q** (30 llavors, 400 mostres; encert de la política a 4 estats):
 
@@ -434,7 +434,7 @@ Amb el calendari de cultiu (bloc 1), fora de temporada no es rega, i per això t
 | Impasses | 1,3 | 1,0 | 0,8 |
 | Decisions on intervé la memòria | 0 | 1.044 | 1.042 |
 | Episodis en acabar | 0 | 15.288 | 30.618 |
-| Temps per cicle (ms, dos processos alhora) | 194 | 213 | 363 |
+| Temps per cicle (ms, un procés, amb el refresc) | 5,4 | 43,0 | 124,6 |
 
 - **La memòria canvia el comportament, però l'efecte és petit:** amb la memòria dels dos anys es fa més ombra, amb un 1,8 % menys d'estrès per radiació (−4,8 h/mes, p = 4e-5), un 0,8 % menys d'estrès per calor (−2,6 h/mes, p = 1e-4) i un 1,1 % menys d'energia (−97 kWh/mes, p = 2e-6). L'aigua i els impasses no canvien de manera significativa. L'efecte és més petit que abans dels blocs 1–3 perquè ara la memòria no puntua amb vent (iteració 34) i fora de temporada no hi ha riscos del cultiu que la facin decidir.
 - **L'any anterior només compta al principi:** "memòria només el 2023" comença de zero l'1 de gener i, a partir del març, decideix pràcticament igual que la memòria de dos anys (al novembre i al desembre, idèntic). Al gener totes tres configuracions fan el mateix (no hi ha cultiu). Al febrer, sense l'any anterior, la memòria encara no fa res (+27 kWh respecte de sense memòria, contra −109 amb els dos anys).
@@ -494,7 +494,7 @@ Amb el calendari de cultiu (bloc 1), fora de temporada no es rega, i per això t
 - **Sí que fa dues coses útils:** redueix els impasses (de 1,25 a 0,21 al mes; Friedman p = 0,001, però per parelles amb Holm p = 0,07), perquè el petit valor del resum desempata, i a mesura que hi ha resums amb n ≥ 3 deixa de consultar la memòria episòdica: al desembre, 0,8 decisions per dia amb l'episòdica, contra 34 amb l'episòdica sola.
 - **La finestra controla el creixement:** a la memòria de treball hi ha uns 500 episodis en lloc dels 15.288 de final d'any, i dona els mateixos resultats que sense finestra (energia +0,2 kWh, p = 1). Ara en queden més que abans (294) perquè un episodi només s'arxiva si el seu resum ja té 3 casos (iteració 37): es conserven els de les situacions poc freqüents.
 - **Consistència (Rashid):** 0 problemes a K1–K6 en 2.912 fotos.
-- **Temps per cicle:** vegeu la mesura neta a l'apartat següent.
+- **Temps per cicle:** de mitjana a tot l'any, 5,3 ms sense memòria, 43,8 amb l'episòdica, 22,4 amb la semàntica i 8,7 amb la finestra (un procés, amb el refresc). La mesura neta, per setmanes, és a l'apartat següent.
 - **Conclusió:** la memòria semàntica resol el problema d'escalabilitat de l'episòdica (cost pla durant l'any), però a costa de treure-li l'efecte sobre les decisions. Si es volgués que el resum pesés més, caldria un pes més gran o una fórmula que no es dilueixi amb n. Però llavors s'hauria de tornar a comprovar el límit amb la seguretat (iteració 31).
 
 ### Temps per cicle (mesura neta)
@@ -503,36 +503,37 @@ Amb el calendari de cultiu (bloc 1), fora de temporada no es rega, i per això t
 
 | | sense memòria | episòdica | semàntica | semàntica amb finestra |
 |---|---|---|---|---|
-| ms CLIPS per cicle, 1a setmana | 3,5 | 4,9 | 4,7 | 4,7 |
-| ms CLIPS per cicle, última setmana | 3,8 | 60,1 | 6,5 | 6,2 |
-| Creixement (ms per cicle i dia) | 0,001 | 0,162 | 0,036 | 0,005 |
-| Segons de paret per dia (mitjana) | 0,2 | 0,8 | 0,6 | 0,3 |
-| Minuts de paret, 1 any | 1,1 | 5,0 | 3,5 | 1,5 |
+| ms CLIPS per cicle, 1a setmana | 3,8 | 5,3 | 5,7 | 5,2 |
+| ms CLIPS per cicle, última setmana | 4,3 | 62,8 | 10,7 | 8,1 |
+| Creixement (ms per cicle i dia) | 0,001 | 0,175 | 0,050 | 0,007 |
+| Segons de paret per dia (mitjana) | 0,2 | 0,9 | 0,6 | 0,3 |
+| Minuts de paret, 1 any | 1,2 | 5,6 | 3,9 | 1,8 |
 | Episodis a la MT al final | 0 | 15.288 | 15.288 | 497 |
 
-- **Sense memòria, el cost és constant** (3,5 → 3,8 ms en tot l'any).
-- **Episòdica:** és l'única que creix de veritat, de 4,9 a 60 ms, perquè cada consulta recorre els episodis de l'operador (E24). El creixement és lineal amb els episodis, de manera que un any més afegiria uns 60 ms per cicle: ~2 anys ≈ 120 ms i ~3 anys ≈ 180 ms al final, unes 3 i 6 vegades més temps total que 1 any (extrapolació, no mesura).
-- **Semàntica:** quan els resums tenen prou casos, deixa de consultar l'episòdica i el cost queda pla (6,5 ms al desembre), encara que hi hagi els mateixos 15.288 episodis a la MT. Amb la finestra, a més, la MT es queda en ~500 episodis. Per a 1–3 anys, és la configuració que escala.
+- **Sense memòria, el cost és constant** (3,8 → 4,3 ms en tot l'any).
+- **Variació entre execucions:** a la versió final aquesta mesura dona temps un 5–15 % més alts que la de la iteració 39 (abans: 3,5 → 3,8, 4,9 → 60,1, 4,7 → 6,5 i 4,7 → 6,2 ms). Les decisions són idèntiques; la diferència és de la màquina i de les columnes noves que es registren a cada cicle. Per això comparem configuracions mesurades en la mateixa execució, no números d'execucions diferents.
+- **Episòdica:** és l'única que creix de veritat, de 5,3 a 63 ms, perquè cada consulta recorre els episodis de l'operador (E24). El creixement és lineal amb els episodis, de manera que un any més afegiria uns 60 ms per cicle: ~2 anys ≈ 120 ms i ~3 anys ≈ 180 ms al final, unes 3 i 6 vegades més temps total que 1 any (extrapolació, no mesura).
+- **Semàntica:** quan els resums tenen prou casos, deixa de consultar l'episòdica i el cost creix poc (10,7 ms al desembre, contra 63 de l'episòdica), encara que hi hagi els mateixos 15.288 episodis a la MT. Amb la finestra, a més, la MT es queda en ~500 episodis. Per a 1–3 anys, és la configuració que escala.
 - **Abans del refresc** la mateixa mesura donava 274 ms (sense memòria) i 495 ms (episòdica) al desembre, i 22 i 61 minuts per any (`resultats/temps_cicle/` de la versió del 06/11). **Gairebé tot aquell creixement no era del sistema.**
 - **Per què creixia, fins i tot sense memòria:** no era per fets acumulats. La memòria de treball es manté entre 300 i 460 fets i el nombre d'objectes de Python és constant. Si es desa l'estat del dia 60 i es carrega en un entorn CLIPS nou, el cicle passa de 17,5 ms a 4,5 ms amb exactament els mateixos fets. És un llast intern de l'entorn CLIPS/clipspy que creix amb els cicles, no de les regles. E24 va trobar el mateix efecte en les consultes de la memòria episòdica (iteració 38).
-- **Com s'evita:** cada `refresc_cicles` cicles (98 per defecte, una setmana) el controlador desa l'estat i el carrega en un entorn CLIPS nou, amb el mateix mecanisme que els punts de control d'E16. És una millora de com s'executa el sistema, no de com raona: les decisions són idèntiques (`verificacio/prova_refresc.py`: 0 files diferents en 120 dies amb les quatre configuracions d'E20 i amb els braços B, E, F i G d'E23). No es fa amb l'agenda `random` (E11), perquè l'estat del generador aleatori del CLIPS no es pot desar. Els ms d'E8, E9 i E16 són d'abans del refresc; E20 i E23 s'han tornat a executar amb el refresc.
+- **Com s'evita:** cada `refresc_cicles` cicles (98 per defecte, una setmana) el controlador desa l'estat i el carrega en un entorn CLIPS nou, amb el mateix mecanisme que els punts de control d'E16. És una millora de com s'executa el sistema, no de com raona: les decisions són idèntiques (`verificacio/prova_refresc.py`: 0 files diferents en 120 dies amb les quatre configuracions d'E20 i amb els braços B, E, F i G d'E23). No es fa amb l'agenda `random` (E11), perquè l'estat del generador aleatori del CLIPS no es pot desar. Tots els experiments s'han tornat a executar amb el refresc i un sol procés a la versió final; respecte de l'execució anterior, només canvien els temps (totes les decisions, l'energia i l'estrès són idèntics).
 
 **E23 – estratègies d'oblit de la memòria episòdica** (120 dies seguits del 2023 a Ribera, 3 llavors, un sol procés i amb el refresc; detall a `estrategia_oblit.md` i `resultats/E23/`):
 
 *Hipòtesi:* oblidar episodis redueix el cost de cerca de la memòria episòdica sense canviar les decisions, i una estratègia per grups (F) conserva millor el que és útil que les estratègies sense criteri. Línia base A sense oblit (5.040 episodis al final); braços B finestra, C aleatori, D antiguitat, E activació d'episodi, F activació de grup i G (F sense proteccions), cadascun amb una capacitat del 25, 50 i 75 % dels episodis d'A (Nuxoll et al. 2010; Derbinsky & Laird 2013).
 
-| Capacitat 25 % | Episodis al final | Episodis examinats (vs A) | ms per cicle (vs A: 24,9) | Fidelitat |
+| Capacitat 25 % | Episodis al final | Episodis examinats (vs A) | ms per cicle (vs A: 28,3) | Fidelitat |
 |---|---|---|---|---|
-| B finestra | 1.008 | −73,5 % | 40,2 (**+62 %**) | 100 % |
-| C aleatori | 1.215 | −69,4 % | 14,0 (−44 %) | 100 % |
-| D antiguitat | 1.215 | −69,9 % | 14,1 (−43 %) | 100 % |
-| E activació d'episodi | 1.215 | −69,7 % | 14,1 (−43 %) | 100 % |
-| F activació de grup | 1.215 | −62,1 % | 14,7 (−41 %) | 100 % |
-| G sense proteccions | 1.215 | −56,9 % | 16,0 (−36 %) | 99,96 % |
+| B finestra | 1.008 | −73,5 % | 44,0 (**+56 %**) | 100 % |
+| C aleatori | 1.215 | −69,4 % | 15,9 (−44 %) | 100 % |
+| D antiguitat | 1.215 | −69,9 % | 15,9 (−44 %) | 100 % |
+| E activació d'episodi | 1.215 | −69,7 % | 15,7 (−44 %) | 100 % |
+| F activació de grup | 1.215 | −62,1 % | 16,5 (−42 %) | 100 % |
+| G sense proteccions | 1.215 | −56,9 % | 17,3 (−39 %) | 99,96 % |
 
-- **Oblidar sí que fa el cicle més ràpid** (C–G): −35 a −44 % amb el 25 %, −17 a −22 % amb el 50 % i −5 a −7 % amb el 75 % (Wilcoxon aparellat per dia i llavor, n = 360, Holm p ≤ 0,0013 en tots els casos; `verificacio/e23_temps.py` → `E23_temps_tests.csv`). **Això corregeix la primera execució** (1 llavor, sense refresc i amb dos processos alhora), en què el temps no millorava: l'alentiment intern de l'entorn CLIPS i la competència pels processadors amagaven l'efecte.
+- **Oblidar sí que fa el cicle més ràpid** (C–G): −39 a −44 % amb el 25 % i −15 a −19 % amb el 50 % (Wilcoxon aparellat per dia i llavor, n = 360, Holm p ≤ 1e-8). Amb el 75 % l'estalvi és petit (−3 a −8 %): significatiu per a C, D, F i G (Holm p ≤ 0,025), però no per a E (−2,8 %, p = 0,88) ( `verificacio/e23_temps.py` → `E23_temps_tests.csv`). **Això corregeix la primera execució** (1 llavor, sense refresc i amb dos processos alhora), en què el temps no millorava: l'alentiment intern de l'entorn CLIPS i la competència pels processadors amagaven l'efecte.
 - **Les decisions no canvien:** fidelitat del 100 % en 17 dels 18 braços, i del 99,96 % en G al 25 % (6 decisions de 15.120). Energia, estrès, violacions i impasses: p (Holm) = 1 en tots els braços. La taxa d'encert de les consultes és del 98,7 % en tots.
-- **B (finestra) és més lent que no oblidar** (+62 % al 25 %, +137 % al 50 %, +155 % al 75 %), tot i que és el que menys episodis examina. Hipòtesi (no mesurada per separat): cada episodi arxivat crida `epmem-idx-invalida` i s'escriu al fitxer d'arxiu, i l'índex de la memòria episòdica es refà a cada consulta següent.
+- **B (finestra) és més lent que no oblidar** (+56 % al 25 %, +135 % al 50 %, +140 % al 75 %), tot i que és el que menys episodis examina. Hipòtesi (no mesurada per separat): cada episodi arxivat crida `epmem-idx-invalida` i s'escriu al fitxer d'arxiu, i l'índex de la memòria episòdica es refà a cada consulta següent.
 - **F conserva més del que cal:** examina més episodis que C, D i E (−62 % contra −70 %) perquè protegeix els grups amb pocs episodis, i per això estalvia una mica menys de temps. En 120 dies no hi ha cap situació en què aquesta protecció canviï una decisió, així que l'avantatge esperat de F no es pot veure en aquest període. G mostra que sense proteccions es perd alguna decisió (6 de 15.120).
 - **Limitacions:** 120 dies (amb un any la memòria creix 3 vegades més); les capacitats són fraccions dels episodis d'A, no un límit de memòria real; el temps inclou tot el cicle CLIPS, no només la cerca.
 
@@ -563,4 +564,4 @@ Amb el calendari de cultiu (bloc 1), fora de temporada no es rega, i per això t
 - **Memòria episòdica:** l'índex per operador (iteració 36) dona un 17 % amb 15.000 episodis. Un índex invertit per tret, com el de Soar, donaria més, però canviaria quins episodis es recuperen en cas d'empat; amb la finestra de la memòria semàntica no cal.
 - **Assignació de crèdit de la memòria:** el temps canvia els riscos d'una hora a l'altra, i el resultat d'un episodi en depèn tant com de l'operador. Per això el 57 % dels resums semàntics barregen casos bons i dolents i la memòria hi té poc efecte. Caldria comparar amb el que hauria passat amb un altre operador (contrafactual), cosa que la memòria episòdica no sap fer.
 - **E12, part de pesos i `alfa`:** són dins del CLIPS i no es poden variar des del simulador sense tocar el `.clp`.
-- **Cost de tornar-ho a executar tot:** amb 2 processadors, unes 20 hores (E16 i E20 són simulacions d'1 i 2 anys seguits que no es poden repartir). Una memòria cau de resultats per versió del `.clp` i un mode ràpid de proves ho reduirien; el refresc periòdic de l'entorn CLIPS (vegeu la mesura de temps) ja ho redueix.
+- **Cost de tornar-ho a executar tot:** amb el refresc periòdic de l'entorn CLIPS, unes 5 hores amb dues cues en paral·lel i l'E23 sol (abans, unes 20 hores). Les parts més llargues són E2 (82 min), E16 i E20 (simulacions d'1 i 2 anys seguits que no es poden repartir) i E23 (68 min). Una memòria cau de resultats per versió del `.clp` ho reduiria més.
