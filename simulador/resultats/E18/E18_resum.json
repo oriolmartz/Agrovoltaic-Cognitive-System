@@ -1,14 +1,14 @@
 {
   "cicles": 280,
-  "cicles_amb_impasse": 18,
+  "cicles_amb_impasse": 17,
   "C1_ordre_incorrecte": 0,
   "C2_cicles_amb_regles_fora_de_fase": 0,
   "C3_cicles_amb_mes_o_menys_d_una_decisio": 0,
-  "regles_disparades": 34343,
-  "regles_sense_fase_a_la_condicio": 3729,
+  "regles_disparades": 37373,
+  "regles_sense_fase_a_la_condicio": 3636,
   "recorreguts_diferents": {
-    "percepcio > elaboracio > proposta > avaluacio > seleccio > aplicacio > explicacio > monitoratge > espera": 262,
-    "percepcio > elaboracio > proposta > avaluacio > seleccio > impas > seleccio > aplicacio > explicacio > monitoratge > espera": 18
+    "percepcio > elaboracio > proposta > avaluacio > seleccio > aplicacio > explicacio > monitoratge > espera": 263,
+    "percepcio > elaboracio > proposta > avaluacio > seleccio > impas > seleccio > aplicacio > explicacio > monitoratge > espera": 17
   },
   "control_negatiu": {
     "cicles": 28,
@@ -17,7 +17,7 @@
     "C2_fora_de_fase": 0,
     "C3_decisions_ko": 28,
     "cicles_amb_impasse": 0,
-    "regles_per_cicle": 94.3
+    "regles_per_cicle": 90.5
   },
-  "regles_per_cicle": 122.7
+  "regles_per_cicle": 133.5
 }

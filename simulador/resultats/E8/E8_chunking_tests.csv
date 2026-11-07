@@ -1,8 +1,8 @@
 metrica,A,B,n,mitjana A,mitjana B,A-B,IC95,p (Holm),efecte,Friedman p
-energia_kwh,amb_chunking,sense_chunking,100,321.53,321.53,0.0,"(0.0, 0.0)",1,+0.00 (negligible),-
-h_estres_rad,amb_chunking,sense_chunking,100,10.71,10.71,0.0,"(0.0, 0.0)",1,+0.00 (negligible),-
-h_estres_calor,amb_chunking,sense_chunking,100,27.52,27.52,0.0,"(0.0, 0.0)",1,+0.00 (negligible),-
-impasses,amb_chunking,sense_chunking,100,0.01,0.47,-0.46,"(-0.57, -0.36)",2e-10,-0.67 (gran),-
-decisions_chunk,amb_chunking,sense_chunking,100,31.53,0.0,31.53,"(29.71, 33.28)",2.8e-18,+1.00 (gran),-
+energia_kwh,amb_chunking,sense_chunking,100,326.0,326.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),-
+h_estres_rad,amb_chunking,sense_chunking,100,11.16,11.16,0.0,"(0.0, 0.0)",1,+0.00 (negligible),-
+h_estres_calor,amb_chunking,sense_chunking,100,19.57,19.57,0.0,"(0.0, 0.0)",1,+0.00 (negligible),-
+impasses,amb_chunking,sense_chunking,100,0.05,0.4,-0.35,"(-0.47, -0.24)",2.6e-07,-0.51 (gran),-
+decisions_chunk,amb_chunking,sense_chunking,100,32.08,0.0,32.08,"(30.96, 33.1)",3.6e-18,+1.00 (gran),-
 decisions_rl,amb_chunking,sense_chunking,100,0.0,0.0,0.0,"(0.0, 0.0)",1,+0.00 (negligible),-
-ms_per_cicle,amb_chunking,sense_chunking,100,55.8,54.09,1.71,"(0.563, 2.817)",0.00067,+0.39 (mitja),-
+ms_per_cicle,amb_chunking,sense_chunking,100,25.37,25.14,0.23,"(-0.139, 0.639)",0.52,+0.07 (negligible),-

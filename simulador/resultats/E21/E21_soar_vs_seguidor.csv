@@ -1,9 +1,9 @@
 model,metrica,soar,seguidor,soar-seguidor,p (Wilcoxon)
-nou,energia_kwh,301.0265,316.4961,-15.4697,0.0
+nou,energia_kwh,301.0099,316.4961,-15.4862,0.0
 nou,h_estres_calor,10.2708,10.5208,-0.25,0.003
 nou,h_calor_critica,2.2917,2.5208,-0.2292,0.005
 nou,h_estres_rad,9.0,9.5417,-0.5417,0.0
-v19,energia_kwh,298.9706,316.4961,-17.5255,0.0
+v19,energia_kwh,298.8864,316.4961,-17.6097,0.0
 v19,h_estres_calor,12.8542,12.8958,-0.0417,0.1573
 v19,h_calor_critica,4.0625,4.1458,-0.0833,0.0455
-v19,h_estres_rad,9.9792,10.7083,-0.7292,0.0
+v19,h_estres_rad,9.9583,10.7083,-0.75,0.0

@@ -652,6 +652,68 @@ def E15(n_dies=None, llavors=(0, 1, 2, 3)):
     return {"resum": resum, "tests": t, "per_cultiu": cult}
 
 
+# ============================================================================ E12reg: sensibilitat del reg
+
+# Parametres de disseny del reg (un cada cop). El valor del mig es el de l'ontologia del reg / config.json.
+VARIACIONS_REG = {
+    "anticipacio": ([0.6, 0.75, 0.9], lambda v: {"controlador": {"reg_config": {"anticipacio": v}}}),
+    "pluja_anulla_mm": ([5.0, 10.0, 15.0], lambda v: {"controlador": {"reg_config": {"pluja-anulla": v}}}),
+    "hora_fresca_mati": ([7, 8, 9], lambda v: {"controlador": {"reg_config": {"hora-fresca-mati": v}}}),
+    "hora_fresca_tarda": ([18, 19, 20], lambda v: {"controlador": {"reg_config": {"hora-fresca-tarda": v}}}),
+    "previsio_pluja_sigma": ([0.15, 0.3, 0.6], lambda v: {"soroll": {"previsio_pluja_sigma": v}}),
+}
+# el reg FAO no fa servir reg-config: nomes cal repetir-lo quan canvia el soroll de la previsio
+REG_AFECTA_FAO = ("previsio_pluja_sigma",)
+
+
+def E12reg(n_dies=None, llavors=(0, 1)):
+    """Sensibilitat dels parametres de disseny del reg (un cada cop): anticipacio (fraccio de p),
+    pluja prevista que anul.la el reg, hores fresques del mati i de la tarda i soroll de la previsio de pluja.
+    Mateix protocol que E15 (abril-setembre a Ribera, mesos de dies seguits); per a cada valor es
+    compara SOAR amb el reg FAO-56 de llibre. Si SOAR continua amb menys estres hidric i no gasta mes
+    aigua en tot el rang, la conclusio d'E15 no depen dels valors triats."""
+    mesos = {m: S.selecciona_dies({**S.carrega_config({}), "dies": {"des_de": f"2023-{m}-01", "fins_a": f"2023-{m}-31"}})
+             for m in ("04", "05", "06", "07", "08", "09")}
+    if n_dies:
+        mesos = {m: d[:n_dies] for m, d in mesos.items()}
+    configs, parelles = {}, []
+    for par, (valors, f) in VARIACIONS_REG.items():
+        mig = valors[len(valors) // 2]
+        for v in valors:
+            soar = "base|soar" if v == mig else f"{par}={v}|soar"
+            fao = (f"{par}={v}|fao" if v != mig else "base|fao") if par in REG_AFECTA_FAO else "base|fao"
+            configs.setdefault(soar, S._fusiona({"humitat": {"reg": {"mode": "soar"}}}, f(v)))
+            configs.setdefault(fao, S._fusiona({"humitat": {"reg": {"mode": "fao"}}}, f(v) if par in REG_AFECTA_FAO else {}))
+            parelles.append((par, v, soar, fao))
+    df = executa_blocs(configs, mesos, llavors, experiment="E12reg")
+    pb = per_bloc(df)
+    metriques = ["aigua_reg_m3", "h_estres_aigua", "percolacio_mm", "regs"]
+    files = []
+    for par, v, soar, fao in parelles:
+        ample = pb[pb["etiqueta"].isin([soar, fao])].pivot_table(index=["bloc", "llavor"], columns="etiqueta",
+                                                                 values=metriques)
+        for m in metriques:
+            r = st.compara_aparellat(ample[(m, soar)], ample[(m, fao)], "soar", "fao", m)
+            files.append({"parametre": par, "valor": v, "metrica": m, "n": r["n"],
+                          "soar": round(r["mitjana_A"], 2), "fao": round(r["mitjana_B"], 2),
+                          "soar-fao": round(r["dif_mitjana"], 2), "IC95": r["IC95_dif"],
+                          "p": r["p_wilcoxon"], "efecte": round(r["efecte_rb"], 2)})
+    t = pd.DataFrame(files)
+    t["p (Holm)"] = 1.0
+    for m, g in t.groupby("metrica"):
+        t.loc[g.index, "p (Holm)"] = st.holm(g["p"].tolist())
+    t["p (Holm)"] = t["p (Holm)"].map(lambda x: f"{x:.2g}")
+    t = t.drop(columns="p")
+    rob = (t.groupby(["parametre", "metrica"])["soar-fao"]
+           .agg(lambda x: "sí" if (x > 0).all() or (x < 0).all() or (x == 0).all() else "NO").rename("signe_estable")
+           .reset_index())
+    d = carpeta("E12")
+    t.to_csv(os.path.join(d, "E12_reg.csv"), index=False)
+    rob.to_csv(os.path.join(d, "E12_reg_robustesa.csv"), index=False)
+    pb.to_csv(os.path.join(d, "E12_reg_per_mes.csv"), index=False)
+    return {"resum": t.set_index(["parametre", "valor", "metrica"]), "tests": rob}
+
+
 # ============================================================================ E16: memoria a llarg termini
 
 def _treball_e16(arg):
@@ -1303,7 +1365,7 @@ def E24(n_dies=60, llavors=(0, 1, 2), mides=(1000, 5000, 15000, 30000), n_consul
     return {"resum": resum, "tests": pendents}
 
 
-EXPERIMENTS = {"E4": E4, "E5": E5, "E6": E6, "E7": E7, "E8": E8, "E9": E9, "E10": E10, "E11": E11,
+EXPERIMENTS = {"E12reg": E12reg, "E4": E4, "E5": E5, "E6": E6, "E7": E7, "E8": E8, "E9": E9, "E10": E10, "E11": E11,
                "E12": E12, "E13": E13, "E14": E14, "E15": E15, "E16": E16, "E20": E20, "E21": E21,
                "E22": E22, "E23": E23, "E24": E24}
 

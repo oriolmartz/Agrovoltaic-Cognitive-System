@@ -148,7 +148,37 @@
   (slot tipus (allowed-symbols humitat-sol pluja radiacio temperatura-aire temperatura-cultiu vent))
   (slot operatiu (allowed-symbols si no))
   (slot qualitat (allowed-symbols valida absent incoherent))
-  (slot cicle-ultima-lectura (type INTEGER)))
+  (slot cicle-ultima-lectura (type INTEGER))
+  ; ultima lectura valida (la desa el CLIPS a la percepcio; iteracio 35): historial per a una
+  ; lectura que falta
+  (slot ultim-valor (type NUMBER SYMBOL) (allowed-symbols cap) (default cap))
+  (slot cicle-ultim-valor (type INTEGER) (default 0)))
+
+; CONFIG | Origen: disseny (iteracio 35) | Persistencia: estatica | Modifica: ningu
+; Quants cicles es pot fer servir l'ultima lectura d'un sensor que falta. La humitat del sol
+; canvia a poc a poc (el balanc hidric en mou com a molt un parell de punts per hora), la
+; temperatura i la radiacio canvien d'una hora a l'altra i el vent no es substitueix mai
+; (seguretat: sense lectura de vent hi ha l'impasse de dades).
+(deftemplate dades-config
+  (slot edat-maxima-humitat (type INTEGER) (default 3))
+  (slot edat-maxima-altres (type INTEGER) (default 1)))
+
+; DERIVAT | Origen: PERCEPCIO | Persistencia: 1 cicle | Modifica: DELIBERACIO
+; Lectura que falta i que s'ha substituit per l'ultima valida (traçabilitat).
+(deftemplate lectura-estimada
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot tipus (type SYMBOL))
+  (slot valor (type NUMBER))
+  (slot edat (type INTEGER)))                 ; cicles des de la lectura
+
+; DERIVAT | Origen: PERCEPCIO | Persistencia: 1 cicle | Modifica: DELIBERACIO
+; Lectura descartada per impossible (fora del rang fisic del sensor).
+(deftemplate lectura-incoherent
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot tipus (type SYMBOL))
+  (slot valor (type NUMBER)))
 
 ; FETS DERIVATS (elaboració)
 
@@ -157,7 +187,7 @@
 (deftemplate risc
   (slot sector (type SYMBOL))
   (slot cicle (type INTEGER))
-  (slot tipus (allowed-symbols mecanic fallada-actuador dades
+  (slot tipus (allowed-symbols mecanic fallada-actuador fallada-reg dades
                                estres-hidric exces-radiacio temperatura))
   (slot nivell (allowed-symbols baix mitja alt critic))
   (slot font (type SYMBOL)))   ; regla que l'ha detectat (traçabilitat)
@@ -217,9 +247,11 @@
   (slot op (type SYMBOL))                 ; nom de l'operador
   (slot sector (type SYMBOL))
   (slot cicle (type INTEGER))
-  (slot tipus (allowed-symbols acceptable rebuig prohibida requerida millor pitjor
-                               millor-que pitjor-que indiferent numerica rl))
-  (slot op2 (type SYMBOL) (default cap))  ; només per a millor-que / pitjor-que / indiferent
+  ; Tipus de preferencia de Soar que es fan servir: acceptable, reject (rebuig), require
+  ; (requerida), better (millor-que), numeric (numerica) i rl (Q apresa). No s'usen best/worst,
+  ; worse ni indifferent (iteracio 36).
+  (slot tipus (allowed-symbols acceptable rebuig requerida millor-que numerica rl))
+  (slot op2 (type SYMBOL) (default cap))  ; només per a millor-que
   (slot valor (type NUMBER) (default 0))
   (slot font (type SYMBOL)))              ; regla que l'ha generada
 
@@ -234,7 +266,8 @@
 ; CONTROL | Origen: SELECCIO | Persistencia: fins a resoldre'l | Modifica: DECISIO/IMPAS
 ; Impasse: el coneixement immediat no permet decidir.
 (deftemplate impas
-  (slot tipus (allowed-symbols empat sense-canvi dades-insuficients conflicte restriccio-fallida))
+  ; restriccio-fallida: una restriccio dura no es pot complir (vent critic i panell que no es mou)
+  (slot tipus (allowed-symbols empat sense-canvi dades-insuficients restriccio-fallida))
   (slot sector (type SYMBOL))
   (slot cicle (type INTEGER))
   (multislot operadors)                   ; operadors involucrats
@@ -326,6 +359,15 @@
   (slot operador (type SYMBOL))
   (slot angle (type NUMBER))
   (multislot riscos)                      ; riscos presents (tipus-nivell)
+  (slot resultat (allowed-symbols pendent correcte fallada) (default pendent)))
+
+; RESULTAT/HISTORIC | Origen: APLICACIO (reg) | Persistencia: fins al cicle seguent | Modifica: PERCEPCIO
+; Ordre de reg pendent de comprovar: al cicle seguent la humitat ha d'haver pujat (iteracio 35).
+(deftemplate reg-pendent
+  (slot sector (type SYMBOL))
+  (slot cicle (type INTEGER))
+  (slot dosi (type NUMBER))                   ; % de l'aigua disponible
+  (slot humitat-abans (type NUMBER))
   (slot resultat (allowed-symbols pendent correcte fallada) (default pendent)))
 
 ;  REG (v1_9) ------------------------------------------------------------------
@@ -429,7 +471,8 @@
   (slot pes-memoria (type NUMBER) (default 2))              ; valor maxim de la preferencia de memoria
   (slot llindar-similitud (type NUMBER) (default 0.5))      ; puntuacio normalitzada minima per fer cas d'un record
   (multislot exclusions)                                    ; claus de tret que no s'emmagatzemen
-  (slot fitxer (type STRING) (default "")))                 ; fitxer de persistencia ("" = sense)
+  (slot fitxer (type STRING) (default ""))                  ; fitxer de persistencia ("" = sense)
+  (slot index (allowed-symbols si no) (default si)))        ; index per operador a epmem-cerca (iteracio 36)
 
 ; CONTROL | Origen: MEMORIA | Persistencia: global | Modifica: MEMORIA
 ; Estat intern: id del proxim episodi (present-id de Soar).
@@ -503,6 +546,7 @@
   (slot actiu (allowed-symbols on off) (default off))
   (slot minim-casos (type INTEGER) (default 3))   ; per sota, el resum no decideix (es consulta epmem)
   (slot k (type NUMBER) (default 2))              ; prudencia: valor = pes * (bona - dolenta) / (n + k)
+  (slot hora-migdia (type INTEGER) (default 14))  ; hora local del maxim de radiacio (clau: el sol puja/baixa)
   (slot finestra (type INTEGER) (default 0))      ; cicles d'episodis consolidats a la MT (0 = tots)
   (slot arxiu (type STRING) (default "")))        ; on s'arxiven els episodis que surten de la MT
 
@@ -578,6 +622,7 @@
   (conflicte (objectiu-1 Obj_Seguretat) (objectiu-2 Obj_Produccio_Energia))
   (conflicte (objectiu-1 Obj_Produccio_Energia) (objectiu-2 Obj_Minimitzar_Moviment))
   ; (reg-config) tambe ve de l'ontologia de reg (Config_Reg_Defecte).
+  (dades-config)
 
   ; quin risc activa quin objectiu (Risc_Dades no n'activa cap: obre un impasse)
   (activa (tipus-risc estres-hidric) (objectiu Obj_Produccio_Cultiu))
@@ -680,10 +725,26 @@
 (deffunction epmem-despres (?a ?b)
   (> (str-compare ?a ?b) 0))
 
-; Clau canonica de la situacio per a la memoria semantica: els mateixos trets del cue,
-; sense el sector (va a part) i ordenats, perque l'ordre dels fets risc no canvii la clau.
+;; Clau canonica de la situacio per a la memoria semantica: els trets del cue sense el sector (va a
+;; part), mes la fase del cultiu i si el sol puja o baixa, ordenats perque l'ordre dels fets risc no
+;; canvii la clau. Aixi un resum no barreja casos que no es poden comparar: "gestionar contradiccions"
+;; i "evitar records contaminats" (Arquitectures Cognitives INTRO, diap. 79). Quins dos trets, decisio
+;; nostra a partir de les dades de 2023 (resums amb casos bons i dolents: del 65 % al 49 %).
+(deffunction epmem-fase-cultiu (?s)
+  (bind ?r desconeguda)
+  (do-for-fact ((?sc sector) (?cu cultiu)) (and (eq ?sc:id ?s) (eq ?cu:id ?sc:cultiu))
+    (bind ?r ?cu:fase))
+  ?r)
+
+; El sol puja abans del migdia solar i baixa despres (Ribera 2022-2023: maxim de GHI a les 14 h).
+(deffunction epmem-sol (?c)
+  (bind ?r desconegut)
+  (do-for-fact ((?m moment) (?k smem-config)) (eq ?m:cicle ?c)
+    (bind ?r (if (< ?m:hora ?k:hora-migdia) then puja else baixa)))
+  ?r)
+
 (deffunction epmem-clau-situacio (?s ?c)
-  (bind ?r (create$))
+  (bind ?r (create$ (epmem-tret fase (epmem-fase-cultiu ?s)) (epmem-tret sol (epmem-sol ?c))))
   (progn$ (?t (epmem-cue-situacio ?s ?c))
     (if (neq (str-index "sector=" (str-cat ?t)) 1) then (bind ?r (create$ ?r ?t))))
   (sort epmem-despres ?r))
@@ -732,9 +793,93 @@
     (if (member$ ?t ?trets) then (return TRUE)))
   FALSE)
 
+;; --- index per operador (iteracio 36) -------------------------------------------------
+;; Cada consulta demana els episodis d'un operador concret (requereix operador=X). Sense index,
+;; epmem-cerca recorre TOTS els episodis a cada consulta: el cost creix amb la memoria (E16:
+;; de 211 a 554 ms per cicle en dos anys). Soar ho resol amb un index invertit per tret
+;; (Derbinsky & Laird 2009). Aqui, una llista d'adreces d'episodi per a cada operador: la
+;; consulta nomes mira els del seu operador. El resultat es identic (el desempat es per id).
+;; L'index es reconstrueix sencer quan es retira algun episodi (finestra de la memoria
+;; semantica, fitxer, punt de control); sense finestra no es retira mai cap episodi.
+(defglobal MEMORIA
+  ?*epmem-idx-valid* = FALSE
+  ?*epmem-idx-orientar-produccio* = (create$)
+  ?*epmem-idx-orientar-ombra* = (create$)
+  ?*epmem-idx-posicio-seguretat* = (create$)
+  ?*epmem-idx-mantenir-posicio* = (create$)
+  ?*epmem-idx-sollicitar-dades* = (create$))
+
+(deffunction epmem-idx-invalida () (bind ?*epmem-idx-valid* FALSE) TRUE)
+
+(deffunction epmem-idx-llista (?op)
+  (switch ?op
+    (case orientar-produccio then ?*epmem-idx-orientar-produccio*)
+    (case orientar-ombra then ?*epmem-idx-orientar-ombra*)
+    (case posicio-seguretat then ?*epmem-idx-posicio-seguretat*)
+    (case mantenir-posicio then ?*epmem-idx-mantenir-posicio*)
+    (case sollicitar-dades then ?*epmem-idx-sollicitar-dades*)
+    (default FALSE)))
+
+(deffunction epmem-idx-afegeix (?op ?f)
+  (switch ?op
+    (case orientar-produccio then (bind ?*epmem-idx-orientar-produccio* (create$ ?*epmem-idx-orientar-produccio* ?f)))
+    (case orientar-ombra then (bind ?*epmem-idx-orientar-ombra* (create$ ?*epmem-idx-orientar-ombra* ?f)))
+    (case posicio-seguretat then (bind ?*epmem-idx-posicio-seguretat* (create$ ?*epmem-idx-posicio-seguretat* ?f)))
+    (case mantenir-posicio then (bind ?*epmem-idx-mantenir-posicio* (create$ ?*epmem-idx-mantenir-posicio* ?f)))
+    (case sollicitar-dades then (bind ?*epmem-idx-sollicitar-dades* (create$ ?*epmem-idx-sollicitar-dades* ?f)))
+    (default (epmem-idx-invalida)))
+  TRUE)
+
+(deffunction epmem-idx-reconstrueix ()
+  (bind ?*epmem-idx-orientar-produccio* (create$))
+  (bind ?*epmem-idx-orientar-ombra* (create$))
+  (bind ?*epmem-idx-posicio-seguretat* (create$))
+  (bind ?*epmem-idx-mantenir-posicio* (create$))
+  (bind ?*epmem-idx-sollicitar-dades* (create$))
+  (bind ?*epmem-idx-valid* TRUE)
+  (do-for-all-facts ((?e epmem-episodi)) TRUE (epmem-idx-afegeix ?e:operador ?e))
+  TRUE)
+
+(deffunction epmem-index-actiu ()
+  (bind ?r FALSE)
+  (do-for-fact ((?k epmem-config)) (eq ?k:index si) (bind ?r TRUE))
+  ?r)
+
+; Operador que demana la consulta (requereix operador=X), o FALSE.
+(deffunction epmem-operador-requerit (?requereix)
+  (progn$ (?t ?requereix)
+    (bind ?txt (str-cat ?t))
+    (if (eq (str-index "operador=" ?txt) 1)
+     then (return (sym-cat (sub-string 10 (str-length ?txt) ?txt)))))
+  FALSE)
+
 ; Retorna (id cardinalitat) del millor episodi: maxima cardinalitat de trets del cue
 ; satisfets i, a igualtat, el mes recent (id mes gran). (0 0) si no n'hi ha cap.
+(deffunction epmem-cerca-index (?cue ?requereix ?exclou ?prohibits ?op)
+  (if (not ?*epmem-idx-valid*) then (epmem-idx-reconstrueix))
+  (bind ?millor 0)
+  (bind ?card-millor -1)
+  (bind ?min (if (> (length$ ?cue) 0) then 1 else 0))
+  (progn$ (?e (epmem-idx-llista ?op))
+    (bind ?id (fact-slot-value ?e id))
+    (bind ?tr (fact-slot-value ?e trets))
+    (if (and (not (member$ ?id ?prohibits))
+             (epmem-conte-tots ?requereix ?tr)
+             (not (epmem-conte-algun ?exclou ?tr)))
+     then
+      (bind ?k (epmem-cardinalitat ?cue ?tr))
+      (if (and (>= ?k ?min)
+               (or (> ?k ?card-millor)
+                   (and (= ?k ?card-millor) (> ?id ?millor))))
+       then (bind ?millor ?id)
+            (bind ?card-millor ?k))))
+  (if (= ?millor 0) then (return (create$ 0 0)))
+  (create$ ?millor ?card-millor))
+
 (deffunction epmem-cerca (?cue ?requereix ?exclou ?prohibits)
+  (bind ?op (epmem-operador-requerit ?requereix))
+  (if (and ?op (epmem-index-actiu) (neq (epmem-idx-llista ?op) FALSE))
+   then (return (epmem-cerca-index ?cue ?requereix ?exclou ?prohibits ?op)))
   (bind ?millor 0)
   (bind ?card-millor -1)
   (bind ?min (if (> (length$ ?cue) 0) then 1 else 0))
@@ -814,7 +959,9 @@
 
 (deffunction desa-epmem (?fitxer)
   (bind ?m (set-current-module DOMINI))
-  (save-facts ?fitxer local epmem-episodi)
+  ; Els resums de la memoria semantica van al mateix fitxer que els episodis: els episodis
+  ; consolidats ja hi son comptats, i si no es guardessin junts es perdrien en recarregar.
+  (save-facts ?fitxer local epmem-episodi smem-resum)
   (set-current-module ?m)
   TRUE)
 
@@ -826,6 +973,7 @@
   (bind ?m (set-current-module DOMINI))
   (load-facts ?fitxer)
   (set-current-module ?m)
+  (epmem-idx-invalida)
   (bind ?max 0)
   (bind ?n 0)
   (progn$ (?fr (find-all-facts ((?x epmem-episodi)) TRUE))
@@ -837,7 +985,23 @@
             (if (> ?id ?max) then (bind ?max ?id)))))
   (progn$ (?st (find-all-facts ((?x epmem-estat)) TRUE))
     (modify ?st (seguent-id (+ ?max 1)) (sessio-inici (+ ?max 1))))
-  (printout t "[EPMEM] Carregats " ?n " episodis de " ?fitxer "." crlf)
+  ; Resums de la memoria semantica: sense duplicats (mateix sector, operador i situacio).
+  (bind ?nr 0)
+  (progn$ (?fr (find-all-facts ((?x smem-resum)) TRUE))
+    (if (fact-existp ?fr) then
+      (if (any-factp ((?o smem-resum))
+            (and (< (fact-index ?o) (fact-index ?fr))
+                 (eq ?o:sector (fact-slot-value ?fr sector))
+                 (eq ?o:operador (fact-slot-value ?fr operador))
+                 (eq ?o:situacio (fact-slot-value ?fr situacio))))
+       then (retract ?fr)
+       else (bind ?nr (+ ?nr 1)))))
+  ; Fitxer sense resums (format anterior): els episodis marcats com a consolidats ja no estarien
+  ; a cap resum. Es tornen a marcar perque es tornin a comptar.
+  (if (= ?nr 0) then
+    (do-for-all-facts ((?e epmem-episodi)) (eq ?e:consolidat si)
+      (modify ?e (consolidat no))))
+  (printout t "[EPMEM] Carregats " ?n " episodis i " ?nr " resums de " ?fitxer "." crlf)
   ?n)
 
 (deffunction activa-epmem (?fitxer)
@@ -861,13 +1025,14 @@
   (bind ?mot "")
   (do-for-fact ((?o operador-seleccionat)) (and (eq ?o:sector ?s) (eq ?o:cicle ?c))
     (bind ?mot ?o:motiu))
-  (assert (epmem-episodi (id ?id) (cicle ?c) (sector ?s) (cultiu (epmem-cultiu ?s))
+  (bind ?f (assert (epmem-episodi (id ?id) (cicle ?c) (sector ?s) (cultiu (epmem-cultiu ?s))
                          (operador ?op) (angle ?a)
                          (risc-total (epmem-risc-total ?s ?c))
                          (cobertura (epmem-cobertura ?s ?c))
                          (impas ?imp) (motiu ?mot)
                          (trets (epmem-trets ?s ?c ?op ?imp pendent pendent))
-                         (clau (epmem-clau-situacio ?s ?c))))
+                         (clau (epmem-clau-situacio ?s ?c)))))
+  (if ?*epmem-idx-valid* then (epmem-idx-afegeix ?op ?f))
   (printout t "[EPMEM] NOU EPISODI #" ?id ": " ?s ", cicle " ?c ", " ?op "." crlf)
   (modify ?st (seguent-id (+ ?id 1)) (brut si)))
 
@@ -1030,16 +1195,16 @@
    else baix)))
 
 ; Puntuacio total d'un operador: suma de valoracions numeriques.
-; requerida i millor/pitjor pesen molt mes que qualsevol valoracio.
+; La requerida pesa molt mes que qualsevol suma de valoracions (E19: n'hi ha prou amb > 33).
+; Les preferencies best/worst de Soar no s'usen: +-100 passaria per sobre de tota l'escala de
+; prioritats i podria fer guanyar un operador a la seguretat (iteracio 36).
 (deffunction puntuacio (?s ?op ?c)
   (bind ?total 0)
   (do-for-all-facts ((?p preferencia))
       (and (eq ?p:sector ?s) (eq ?p:op ?op) (eq ?p:cicle ?c))
     (switch ?p:tipus
       (case numerica then (bind ?total (+ ?total ?p:valor)))
-      (case requerida then (bind ?total (+ ?total 1000)))
-      (case millor then (bind ?total (+ ?total 100)))
-      (case pitjor then (bind ?total (- ?total 100)))))
+      (case requerida then (bind ?total (+ ?total 1000)))))
   ?total)
 
 ; Objectiu al qual serveix cada operador.
@@ -1134,6 +1299,143 @@
   (assert (traca (pas ?c) (fase percepcio)
                  (missatge (str-cat ?s ": lectura absent, risc de dades " ?n)))))
 
+;; --- PERCEPCIO: lectures no fiables i historial (iteracio 35) ------------------
+;; Tres camins porten a "lectura que no es fa servir": el sensor diu que esta avariat
+;; (percep-sensor-no-valid), el valor es fisicament impossible (percep-lectura-incoherent) o
+;; no ha arribat. Si falta i el sensor tenia una lectura valida fa poc, es fa servir aquella
+;; (percep-ultima-lectura, historial); si no, percep-lectura-absent crea el risc de dades.
+
+; Rang fisic de cada sensor. Fora d'aquest rang el valor es un error del sensor, no una
+; mesura: radiacio 0-1400 W/m2 (constant solar 1367), temperatura de l'aire -30..55 C
+; (record de Catalunya 45,1 C, 2023), del cultiu -30..70 C, humitat 0-105 % de l'aigua
+; disponible, vent 0-75 m/s (ratxes rècord a Catalunya ~60 m/s), pluja 0-200 mm/h.
+(deffunction lectura-plausible (?tp ?v)
+  (switch ?tp
+    (case radiacio then (and (>= ?v 0) (<= ?v 1400)))
+    (case temperatura-aire then (and (>= ?v -30) (<= ?v 55)))
+    (case temperatura-cultiu then (and (>= ?v -30) (<= ?v 70)))
+    (case humitat-sol then (and (>= ?v 0) (<= ?v 105)))
+    (case vent then (and (>= ?v 0) (<= ?v 75)))
+    (case pluja then (and (>= ?v 0) (<= ?v 200)))
+    (default TRUE)))
+
+(deffunction edat-maxima-lectura (?tp)
+  (bind ?r 0)
+  (do-for-fact ((?k dades-config)) TRUE
+    (bind ?r (if (eq ?tp humitat-sol) then ?k:edat-maxima-humitat else ?k:edat-maxima-altres)))
+  ?r)
+
+; Torna a escriure l'observacio amb un slot canviat (CLIPS no deixa fer modify amb un nom de
+; slot variable). Aixi una sola regla serveix per a tots els sensors.
+(deffunction obs-substitueix (?o ?tp ?val)
+  (bind ?txt (str-cat "(observacio (sector " (fact-slot-value ?o sector) ") (cicle "
+                      (fact-slot-value ?o cicle) ")"))
+  (foreach ?sl (create$ radiacio temperatura-aire temperatura-cultiu humitat-sol vent pluja)
+    (bind ?txt (str-cat ?txt " (" ?sl " " (if (eq ?sl ?tp) then ?val else (fact-slot-value ?o ?sl)) ")")))
+  (retract ?o)
+  (assert-string (str-cat ?txt ")")))
+
+; El sensor diu que esta avariat (diagnostic propi) pero envia un valor: no es fa servir.
+(defrule percep-sensor-no-valid
+  (declare (auto-focus TRUE) (salience 30))
+  (fase (nom percepcio))
+  (cicle (numero ?c))
+  ?o <- (observacio (sector ?s) (cicle ?c))
+  (estat-sensor (sector ?s) (tipus ?tp) (operatiu no))
+  (test (numberp (fact-slot-value ?o ?tp)))
+  (not (lectura-estimada (sector ?s) (cicle ?c) (tipus ?tp)))   ; el valor ja es l'estimat
+  =>
+  (printout t "[PERCEPCIO] " ?s ": el sensor de " ?tp " diu que esta avariat; la lectura ("
+              (fact-slot-value ?o ?tp) ") no es fa servir." crlf)
+  (assert (traca (pas ?c) (fase percepcio)
+                 (missatge (str-cat ?s ": sensor de " ?tp " avariat, lectura descartada"))))
+  (obs-substitueix ?o ?tp absent))
+
+; Valor impossible: error del sensor (pic, desconnexio). Es descarta i el sensor queda marcat.
+(defrule percep-lectura-incoherent
+  (declare (auto-focus TRUE) (salience 20))
+  (fase (nom percepcio))
+  (cicle (numero ?c))
+  ?o <- (observacio (sector ?s) (cicle ?c))
+  ?e <- (estat-sensor (sector ?s) (tipus ?tp))
+  (test (and (numberp (fact-slot-value ?o ?tp))
+             (not (lectura-plausible ?tp (fact-slot-value ?o ?tp)))))
+  (not (lectura-estimada (sector ?s) (cicle ?c) (tipus ?tp)))
+  =>
+  (bind ?v (fact-slot-value ?o ?tp))
+  (printout t "[PERCEPCIO] " ?s ": lectura de " ?tp " impossible (" ?v "). Es descarta." crlf)
+  (assert (lectura-incoherent (sector ?s) (cicle ?c) (tipus ?tp) (valor ?v)))
+  (modify ?e (qualitat incoherent))
+  (assert (traca (pas ?c) (fase percepcio)
+                 (missatge (str-cat ?s ": lectura de " ?tp " impossible (" ?v "), descartada"))))
+  (obs-substitueix ?o ?tp absent))
+
+; Historial: si falta una lectura que canvia a poc a poc i n'hi ha una de valida prou
+; recent, es fa servir aquella i queda anotat (lectura-estimada). El vent no: sense lectura
+; de vent no es pot garantir la seguretat (impasse de dades). La pluja tampoc: la d'una hora
+; no diu res de la seguent.
+(defrule percep-ultima-lectura
+  (declare (auto-focus TRUE) (salience 10))
+  (fase (nom percepcio))
+  (cicle (numero ?c))
+  ?o <- (observacio (sector ?s) (cicle ?c))
+  (estat-sensor (sector ?s) (tipus ?tp&~vent&~pluja) (ultim-valor ?uv&:(numberp ?uv))
+                (cicle-ultim-valor ?cu))
+  (test (eq (fact-slot-value ?o ?tp) absent))
+  (test (<= (- ?c ?cu) (edat-maxima-lectura ?tp)))
+  =>
+  (bind ?edat (- ?c ?cu))
+  (printout t "[PERCEPCIO] " ?s ": falta la lectura de " ?tp "; es fa servir la de fa " ?edat
+              " cicle(s): " ?uv "." crlf)
+  (assert (lectura-estimada (sector ?s) (cicle ?c) (tipus ?tp) (valor ?uv) (edat ?edat)))
+  (assert (traca (pas ?c) (fase percepcio)
+                 (missatge (str-cat ?s ": " ?tp " estimada amb l'ultima lectura (" ?uv ", fa " ?edat " cicles)"))))
+  (obs-substitueix ?o ?tp ?uv))
+
+; Desa l'ultima lectura valida de cada sensor (per al cicle seguent).
+(defrule percep-recorda-lectura
+  (declare (auto-focus TRUE) (salience -5))
+  (fase (nom percepcio))
+  (cicle (numero ?c))
+  ?o <- (observacio (sector ?s) (cicle ?c))
+  ?e <- (estat-sensor (sector ?s) (tipus ?tp) (operatiu si) (cicle-ultim-valor ?cu&:(< ?cu ?c)))
+  (test (numberp (fact-slot-value ?o ?tp)))
+  (not (lectura-estimada (sector ?s) (cicle ?c) (tipus ?tp)))
+  =>
+  (modify ?e (ultim-valor (fact-slot-value ?o ?tp)) (cicle-ultim-valor ?c)))
+
+; Efecte del reg del cicle anterior: la humitat ha d'haver pujat almenys la meitat de la dosi
+; (la resta pot ser l'evapotranspiracio d'una hora i la percolacio). Nomes amb una lectura
+; real (no estimada).
+(defrule percep-reg-correcte
+  (declare (auto-focus TRUE))
+  (fase (nom percepcio))
+  (cicle (numero ?c))
+  ?r <- (reg-pendent (sector ?s) (cicle =(- ?c 1)) (dosi ?d) (humitat-abans ?h0) (resultat pendent))
+  (observacio (sector ?s) (cicle ?c) (humitat-sol ?h&:(numberp ?h)))
+  (not (lectura-estimada (sector ?s) (cicle ?c) (tipus humitat-sol)))
+  (test (>= (- ?h ?h0) (* 0.5 ?d)))
+  =>
+  (modify ?r (resultat correcte))
+  (assert (traca (pas ?c) (fase percepcio)
+                 (missatge (str-cat ?s ": efecte del reg confirmat, humitat de " ?h0 " a " ?h "%")))))
+
+(defrule percep-fallada-reg
+  (declare (auto-focus TRUE))
+  (fase (nom percepcio))
+  (cicle (numero ?c))
+  ?r <- (reg-pendent (sector ?s) (cicle =(- ?c 1)) (dosi ?d) (humitat-abans ?h0) (resultat pendent))
+  (observacio (sector ?s) (cicle ?c) (humitat-sol ?h&:(numberp ?h)))
+  (not (lectura-estimada (sector ?s) (cicle ?c) (tipus humitat-sol)))
+  (test (< (- ?h ?h0) (* 0.5 ?d)))
+  =>
+  (printout t "[PERCEPCIO] " ?s ": es va ordenar regar +" ?d "% pero la humitat ha passat de " ?h0
+              " a " ?h "%. Fallada del reg." crlf)
+  (modify ?r (resultat fallada))
+  (assert (risc (sector ?s) (cicle ?c) (tipus fallada-reg) (nivell alt) (font P8-fallada-reg)))
+  (assert (traca (pas ?c) (fase percepcio)
+                 (missatge (str-cat ?s ": el reg no ha fet pujar la humitat (" ?h0 " -> " ?h "%), fallada del reg")))))
+
 (defrule percep-sense-observacio
   (declare (auto-focus TRUE))
   (fase (nom percepcio))
@@ -1156,7 +1458,9 @@
   (panell (sector ?s) (tolerancia-angle ?tol))
   (not (panell (sector ?s) (angle ?x&:(> (abs (- ?x ?a)) ?tol))))
   =>
-  (modify ?e (resultat correcte)))
+  (modify ?e (resultat correcte))
+  (assert (traca (pas ?c) (fase percepcio)
+                 (missatge (str-cat ?s ": efecte confirmat, el panell es a " ?a " graus (" ?op ")")))))
 
 (defrule percep-fallada-actuador
   (declare (auto-focus TRUE))
@@ -1225,7 +1529,7 @@
   (fase (nom elaboracio))
   (cicle (numero ?c))
   (sector (id ?s) (cultiu ?cu))
-  (cultiu (id ?cu) (tipus ?tc))
+  (cultiu (id ?cu) (tipus ?tc) (fase ~repos))     ; sense cultiu a la parcel·la no hi ha res a protegir
   (llindars-cultiu (tipus ?tc) (temp-optima-max ?opt) (temp-absoluta-max ?abs))
   (observacio (sector ?s) (cicle ?c) (temperatura-cultiu ?t&:(numberp ?t)))
   (not (risc (sector ?s) (cicle ?c) (tipus temperatura)))
@@ -1243,7 +1547,7 @@
   (fase (nom elaboracio))
   (cicle (numero ?c))
   (sector (id ?s) (cultiu ?cu))
-  (cultiu (id ?cu) (tipus ?tc))
+  (cultiu (id ?cu) (tipus ?tc) (fase ~repos))     ; sense cultiu a la parcel·la no hi ha res a protegir
   (llindars-cultiu (tipus ?tc) (fraccio-esgotament-p ?p))
   (observacio (sector ?s) (cicle ?c) (humitat-sol ?h&:(numberp ?h)))
   (not (risc (sector ?s) (cicle ?c) (tipus estres-hidric)))
@@ -1261,7 +1565,7 @@
   (fase (nom elaboracio))
   (cicle (numero ?c))
   (sector (id ?s) (cultiu ?cu))
-  (cultiu (id ?cu) (tipus ?tc))
+  (cultiu (id ?cu) (tipus ?tc) (fase ~repos))     ; sense cultiu a la parcel·la no hi ha res a protegir
   (llindars-cultiu (tipus ?tc) (radiacio-optima-max ?opt) (radiacio-estres ?est))
   (observacio (sector ?s) (cicle ?c) (radiacio ?r&:(numberp ?r)))
   (not (risc (sector ?s) (cicle ?c) (tipus exces-radiacio)))
@@ -1273,6 +1577,23 @@
     (assert (risc (sector ?s) (cicle ?c) (tipus exces-radiacio) (nivell ?n) (font E4-radiacio)))
     (assert (traca (pas ?c) (fase elaboracio)
                    (missatge (str-cat ?s ": radiacio " ?r " W/m2, risc de radiacio " ?n))))))
+
+; La fase fenologica fa el cultiu mes o menys sensible (p. ex. el tomaquet a la floracio: el
+; quallat falla amb calor moderada, Sato et al. 2000). Si el calendari de cultiu informa una fase
+; de sensibilitat alta, un risc de temperatura o de radiacio mitja es tracta com a alt.
+; Nomes amb la fase coneguda: sense calendari (fase desconeguda) no canvia res.
+(defrule elabora-risc-per-sensibilitat
+  (declare (auto-focus TRUE))
+  (fase (nom elaboracio))
+  (cicle (numero ?c))
+  (sector (id ?s) (cultiu ?cu))
+  (cultiu (id ?cu) (tipus ?tc) (fase ?fs&~desconeguda&~repos) (sensibilitat alt|critic))
+  ?r <- (risc (sector ?s) (cicle ?c) (tipus ?t&temperatura|exces-radiacio) (nivell mitja))
+  =>
+  (printout t "[ELABORACIO] " ?s ": " ?tc " en " ?fs " (sensibilitat alta). El risc de " ?t " passa de mitja a alt." crlf)
+  (modify ?r (nivell alt) (font E6-sensibilitat))
+  (assert (traca (pas ?c) (fase elaboracio)
+                 (missatge (str-cat ?s ": " ?tc " en " ?fs ", risc de " ?t " alt per sensibilitat")))))
 
 ; molta llum i molta calor alhora fan mal de veritat al cultiu
 (defrule elabora-radiacio-amb-calor
@@ -1314,7 +1635,7 @@
   (fase (nom elaboracio))
   (cicle (numero ?c))
   (sector (id ?s) (cultiu ?cu))
-  (cultiu (id ?cu) (tipus ?tc))
+  (cultiu (id ?cu) (tipus ?tc) (fase ~repos))     ; sense cultiu a la parcel·la no hi ha res a protegir
   (llindars-cultiu (tipus ?tc) (fraccio-esgotament-p ?p))
   (reg-config (anticipacio ?an))
   (observacio (sector ?s) (cicle ?c) (humitat-sol ?h&:(numberp ?h)))
@@ -1658,6 +1979,10 @@
 ; funcionar be en aquella situacio, negativa si va anar malament. El pes depen de
 ; la semblança entre la situacio recordada i l'actual. Es un criteri tou: no
 ; pot superar una restriccio dura (rebuig) ni una preferencia requerida.
+; Amb risc mecanic (vent d'avis o critic) la memoria no puntua: els pesos de seguretat es
+; van calcular sense memoria, i ±2 de memoria mes l'estabilitat podien fer guanyar la
+; produccio a la seguretat amb vent alt (E19, iteracio 31: 6 de 682 cicles a Cantallops).
+; Aixi la prioritat de la seguretat no depen de quant pesi la memoria.
 (defrule avalua-memoria
   (declare (auto-focus TRUE))
   (fase (nom avaluacio))
@@ -1667,6 +1992,7 @@
                   (memoria-id ?m) (normalitzada ?n&:(>= ?n ?ll)))
   (epmem-episodi (id ?m) (cicle ?mc) (valoracio ?v&bona|dolenta))
   (operador (sector ?s) (cicle ?c) (nom ?op) (estat proposat))
+  (not (risc (sector ?s) (cicle ?c) (tipus mecanic)))   ; amb vent, la memoria no opina (iteracio 34)
   (not (preferencia (op ?op) (sector ?s) (cicle ?c) (font AV10-memoria)))
   =>
   (bind ?val (/ (round (* 100 ?pes ?n)) 100))
@@ -1693,6 +2019,7 @@
   (smem-situacio (sector ?s) (cicle ?c) (clau $?cl))
   (smem-resum (sector ?s) (operador ?op) (situacio $?cl)
               (bona ?b) (neutra ?nt) (dolenta ?d) (n ?n&:(>= ?n ?mn)))
+  (not (risc (sector ?s) (cicle ?c) (tipus mecanic)))   ; amb vent, la memoria no opina (iteracio 34)
   (not (preferencia (op ?op) (sector ?s) (cicle ?c) (font AV11-memoria-semantica)))
   =>
   (bind ?val (/ (round (* 100 ?pes (/ (- ?b ?d) (+ ?n ?k)))) 100))
@@ -1968,6 +2295,30 @@
   (assert (subobjectiu (id (sym-cat G- ?s - ?c)) (tipus resoldre-dades) (sector ?s) (estat actiu)))
   (assert (traca (pas ?c) (fase seleccio)
                  (missatge (str-cat ?s ": impasse de dades insuficients")))))
+
+; Restriccions incompatibles: amb vent critic la seguretat obliga a anar a l'angle de seguretat,
+; pero l'actuador no respon (fallada detectada) i el panell no hi es. Cap operador pot complir
+; la restriccio: es un impasse propi, no un simple "sense candidat" (posicio-seguretat es pot
+; proposar i seleccionar, pero no tindra efecte). Va abans de la seleccio normal (salience 10).
+(defrule detecta-impas-restriccio-fallida
+  (declare (auto-focus TRUE) (salience 10))
+  (fase (nom seleccio))
+  (cicle (numero ?c))
+  (risc (sector ?s) (cicle ?c) (tipus mecanic) (nivell critic))
+  (risc (sector ?s) (cicle ?c) (tipus fallada-actuador))
+  (panell (id ?p) (sector ?s) (angle ?a) (angle-seguretat ?as) (tolerancia-angle ?tol))
+  (test (> (abs (- ?a ?as)) ?tol))
+  (not (operador-seleccionat (sector ?s) (cicle ?c)))
+  (not (impas (sector ?s) (cicle ?c)))
+  (not (preferencia (sector ?s) (cicle ?c) (op posicio-seguretat) (tipus requerida)))   ; ja resolt
+  =>
+  (printout t crlf "[SELECCIO] " ?s ": IMPAS DE RESTRICCIONS INCOMPATIBLES. Vent critic: " ?p
+              " ha d'anar a " ?as " graus, pero es a " ?a " i l'actuador no respon." crlf)
+  (assert (impas (tipus restriccio-fallida) (sector ?s) (cicle ?c) (operadors posicio-seguretat)
+                 (rao "vent critic amb l'actuador avariat: la seguretat no es pot garantir")))
+  (assert (subobjectiu (id (sym-cat G- ?s - ?c)) (tipus resoldre-restriccio) (sector ?s) (estat actiu)))
+  (assert (traca (pas ?c) (fase seleccio)
+                 (missatge (str-cat ?s ": impasse de restriccions incompatibles (vent critic i actuador avariat)")))))
 
 (defrule detecta-impas-sense-candidat
   (declare (auto-focus TRUE))
@@ -2445,7 +2796,7 @@
 ; D'on surt cada peca:
 ;   - Episodis -> coneixement general: "La consolidacio transforma episodis en
 ;     coneixement mes general" i "consolidar experiencies repetides"
-;     (Arquitectures Cognitives INTRO, diap. 51 i 78); "Resums de memoria episodica
+;     (Arquitectures Cognitives INTRO, diap. 52 i 79); "Resums de memoria episodica
 ;     i creacio d'abstraccions semantiques" (Arquitectura SOAR, diap. 45).
 ;   - Que sigui semantica: es coneixement independent del moment (Laird 2022, sec. 6-7).
 ;   - Que la desi una regla: Soar no te aprenentatge automatic de la memoria semantica,
@@ -2525,15 +2876,20 @@
 
 ; 3. ARXIU: els episodis ja consolidats i fora de la finestra surten de la memoria de
 ;    treball (i, si hi ha fitxer, s'hi afegeixen). El que ensenyaven ja es al resum.
+;    Nomes si el resum ja te prou casos per decidir (minim-casos): si no, l'episodi es l'unic
+;    que pot respondre en aquella situacio i perdre'l seria oblidar justament el poc frequent.
 ;    A proposta i no a monitoratge: alla tanca-cicle (auto-focus) pot tancar la fase abans.
 (defrule smem-arxiva
   (declare (auto-focus TRUE))
-  (smem-config (actiu on) (finestra ?w&:(> ?w 0)) (arxiu ?fx))
+  (smem-config (actiu on) (finestra ?w&:(> ?w 0)) (arxiu ?fx) (minim-casos ?mn))
   (fase (nom proposta))
   (cicle (numero ?c))
-  ?e <- (epmem-episodi (cicle ?ec&:(<= ?ec (- ?c ?w))) (consolidat si))
+  ?e <- (epmem-episodi (cicle ?ec&:(<= ?ec (- ?c ?w))) (consolidat si)
+                       (sector ?s) (operador ?op) (clau $?k))
+  (smem-resum (sector ?s) (operador ?op) (situacio $?k) (n ?n&:(>= ?n ?mn)))
   =>
   (if (neq ?fx "") then (smem-escriu-arxiu ?fx ?e))
+  (epmem-idx-invalida)              ; l'index de la memoria episodica es reconstruira
   (retract ?e))
 
 ; Que s'ha consolidat (equivalent a epmem-informe).
@@ -2730,6 +3086,30 @@
   (modify ?g (estat resolt))
   (retract ?i))
 
+; Restriccions incompatibles: no hi ha cap accio que garanteixi la seguretat. La deliberacio
+; (1) torna a enviar l'ordre de seguretat, que es l'unica que la pot complir si la fallada es
+; transitoria, i (2) deriva el cas a una persona amb una alarma (aturada d'emergencia o fixar el
+; panell a ma). No es crea cap chunk: es un cas de seguretat que ha de decidir sempre la deliberacio.
+(defrule resol-restriccio-fallida
+  (declare (auto-focus TRUE))
+  (fase (nom impas))
+  ?i <- (impas (tipus restriccio-fallida) (sector ?s) (cicle ?c))
+  ?g <- (subobjectiu (sector ?s) (tipus resoldre-restriccio) (estat actiu))
+  (panell (sector ?s) (angle-seguretat ?as))
+  =>
+  (if (not (any-factp ((?o operador)) (and (eq ?o:sector ?s) (eq ?o:cicle ?c) (eq ?o:nom posicio-seguretat))))
+   then (assert (operador (id (sym-cat ?s -seguretat- ?c)) (cicle ?c) (sector ?s)
+                          (nom posicio-seguretat) (angle-objectiu ?as) (estat proposat))))
+  (assert (preferencia (op posicio-seguretat) (sector ?s) (cicle ?c) (tipus requerida)
+                       (font IMPAS-restriccio)))
+  (printout t "[IMPAS] " ?s ": ALARMA. La seguretat no es pot garantir amb l'actuador avariat. Es torna "
+              "a ordenar posicio-seguretat i cal intervencio humana immediata." crlf)
+  (assert (traca (pas ?c) (fase impas)
+                 (missatge (str-cat ?s ": ALARMA, vent critic amb actuador avariat; posicio-seguretat "
+                                    "requerida i intervencio humana"))))
+  (modify ?g (estat resolt))
+  (retract ?i))
+
 (defrule impas-a-seleccio
   (declare (salience 0) (auto-focus TRUE))
   ?f <- (fase (nom impas))
@@ -2783,6 +3163,10 @@
     (printout t "[APLICACIO] " ?s ": ORDRE DE REG " ?op " -> +" ?d "% de l'aigua disponible." crlf))
   (modify ?o (estat aplicat))
   (assert (ordre-reg (sector ?s) (cicle ?c) (accio ?op) (dosi ?d) (motiu ?m)))
+  ; al cicle seguent es comprova que la humitat ha pujat (percep-reg-correcte / percep-fallada-reg)
+  (if (neq ?op no-regar) then
+    (do-for-fact ((?ob observacio)) (and (eq ?ob:sector ?s) (eq ?ob:cicle ?c) (numberp ?ob:humitat-sol))
+      (assert (reg-pendent (sector ?s) (cicle ?c) (dosi ?d) (humitat-abans ?ob:humitat-sol)))))
   (assert (traca (pas ?c) (fase aplicacio)
                  (missatge (str-cat ?s ": reg " ?op " " ?d "%")))))
 
@@ -2901,6 +3285,16 @@
   (printout t "[MONITORATGE] " ?s ": l'actuador no ha respost. Cal revisio de manteniment." crlf)
   (assert (traca (pas ?c) (fase monitoratge)
                  (missatge (str-cat ?s ": actuador sense resposta, avis de manteniment")))))
+
+(defrule avisa-fallada-reg
+  (declare (auto-focus TRUE))
+  (fase (nom monitoratge))
+  (cicle (numero ?c))
+  (risc (sector ?s) (cicle ?c) (tipus fallada-reg))
+  =>
+  (printout t "[MONITORATGE] " ?s ": el reg no ha arribat al sol. Cal revisar la valvula o el degoteig." crlf)
+  (assert (traca (pas ?c) (fase monitoratge)
+                 (missatge (str-cat ?s ": reg sense efecte, avis de manteniment")))))
 
 ; Tanca el cicle: els objectius es tornen a calcular el cicle seguent.
 ; Nota de persistencia: els fets temporals del cicle es conserven de moment per

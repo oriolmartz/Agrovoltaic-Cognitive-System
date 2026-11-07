@@ -1,22 +1,20 @@
 {
   "versio": "soar",
-  "casos": 1890,
-  "decisions": 5670,
-  "segons": 61.5,
+  "casos": 24500,
+  "decisions": 73500,
+  "segons": 5282.8,
   "violacions_per_propietat": {},
   "violacions_monotonia_vent": 0,
   "regles_total": 88,
-  "regles_disparades": 52,
-  "cobertura_regles_pct": 59.1,
+  "regles_disparades": 56,
+  "cobertura_regles_pct": 63.6,
   "regles_no_disparades": [
     "ACCIO::avisa-fallada-actuador",
     "ACCIO::avisa-fallada-reg",
     "ACCIO::detecta-oscillacio",
     "DECISIO::desfa-empat-per-reforc",
-    "DECISIO::detecta-impas-empat",
     "DECISIO::detecta-impas-restriccio-fallida",
     "DECISIO::detecta-impas-sense-candidat",
-    "DELIBERACIO::avalua-energia-produccio",
     "DELIBERACIO::avalua-estabilitat",
     "DELIBERACIO::avalua-memoria",
     "DELIBERACIO::avalua-memoria-consulta",
@@ -32,8 +30,6 @@
     "DELIBERACIO::percep-sense-observacio",
     "DELIBERACIO::percep-sensor-no-valid",
     "DELIBERACIO::percep-ultima-lectura",
-    "DELIBERACIO::proposa-orientar-produccio",
-    "IMPAS::resol-empat",
     "IMPAS::resol-restriccio-fallida",
     "IMPAS::resol-sense-candidat",
     "MEMORIA::epmem-emmagatzema",
@@ -47,14 +43,16 @@
     "REFORC::rl-registra"
   ],
   "decisions_per_accio": {
-    "posicio-seguretat": 4514,
-    "mantenir-posicio": 508,
-    "sollicitar-dades": 324,
-    "orientar-ombra": 324
+    "posicio-seguretat": 57892,
+    "orientar-ombra": 5692,
+    "mantenir-posicio": 5168,
+    "sollicitar-dades": 4200,
+    "orientar-produccio": 548
   },
   "impasses": {
-    "cap": 4860,
-    "dades-insuficients": 810
+    "cap": 62580,
+    "dades-insuficients": 10500,
+    "empat": 420
   },
   "reg": {
     "casos": 1680,

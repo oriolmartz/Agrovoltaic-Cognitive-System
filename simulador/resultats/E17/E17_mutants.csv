@@ -1,113 +1,113 @@
 id,tipus,descripcio,P1_run_proves,P2_E3_fallades,P3_casos_que_fallen,mort_per,mort,segons
-L01,llindar,vent d'avis 12 -> 13 m/s,"26 pass, 0 fail",3,,P2,True,21.1
-L02,llindar,vent maxim 16 -> 17 m/s,"26 pass, 0 fail",2,CP04,"P2,P3",True,20.8
-L03,llindar,"p del tomaquet 0,40 -> 0,50","26 pass, 0 fail",5,CP12,"P2,P3",True,21.7
-L04,llindar,"p de l'enciam 0,30 -> 0,40","26 pass, 0 fail",7,"CP10,CP13","P2,P3",True,21.7
-L05,llindar,"p de la vinya 0,45 -> 0,55","26 pass, 0 fail",3,CP14,"P2,P3",True,20.9
-L06,llindar,temperatura optima maxima del tomaquet 27 -> 29,"26 pass, 0 fail",5,,P2,True,20.9
-L07,llindar,temperatura optima maxima de l'enciam 21 -> 23,"26 pass, 0 fail",2,CP05,"P2,P3",True,21.2
-L08,llindar,temperatura optima maxima de la vinya 30 -> 32,"26 pass, 0 fail",2,,P2,True,21.1
-L09,llindar,radiacio optima maxima del tomaquet 350 -> 400,"26 pass, 0 fail",2,,P2,True,21.7
-L10,llindar,reg: anticipacio al 75 % -> 90 % de p,"26 pass, 0 fail",0,,,False,21.3
-L11,llindar,reg: pluja que anul.la el reg 10 -> 15 mm,"26 pass, 0 fail",0,,,False,21.5
-L12,llindar,reg: hora fresca del mati fins a les 8 -> 9 h,"26 pass, 0 fail",0,,,False,20.8
-W01,pes,pes de la seguretat 5 -> 1,"26 pass, 0 fail",1,"CP04,CP09,CP19","P2,P3",True,20.9
-W02,pes,pes del cultiu 3 -> 2,"26 pass, 0 fail",0,CP05,P3,True,21.5
-W03,pes,pes de l'energia 3 -> 4,"26 pass, 0 fail",0,CP05,P3,True,21.0
-R01,operador,vent critic: >= maxim -> > maxim,"26 pass, 0 fail",2,CP04,"P2,P3",True,20.8
-R02,operador,vent alt: >= avis -> > avis,"26 pass, 0 fail",2,,P2,True,20.9
-R03,operador,calor: <= optima -> < optima,"26 pass, 0 fail",3,,P2,True,21.1
-R04,operador,aigua: <= p -> < p (sense el marge),"26 pass, 0 fail",2,,P2,True,22.4
-S01,salience,transicions de fase: salience -10 -> 0,"26 pass, 0 fail",17,"CP05,CP09,CP12,CP13,CP14,CP15,CP16,CP17","P2,P3",True,21.8
-D01,regla esborrada,sense la regla epmem-emmagatzema,"22 pass, 4 fail",0,CP19,"P1,P3",True,21.0
-D02,regla esborrada,sense la regla epmem-valora-resultat,"24 pass, 2 fail",0,CP19,"P1,P3",True,21.1
-D03,regla esborrada,sense la regla epmem-processa-query,"26 pass, 0 fail",0,CP19,P3,True,21.1
-D04,regla esborrada,sense la regla epmem-processa-temporal,"26 pass, 0 fail",0,,,False,20.9
-D05,regla esborrada,sense la regla epmem-neteja-consultes,"26 pass, 0 fail",0,,,False,21.2
-D06,regla esborrada,sense la regla epmem-neteja-resultats,"26 pass, 0 fail",0,,,False,21.6
-D07,regla esborrada,sense la regla epmem-persisteix,"25 pass, 1 fail",0,,P1,True,21.7
-D08,regla esborrada,sense la regla percep-lectura-absent,"19 pass, 7 fail",3,"CP06,CP07,CP15,CP16","P1,P2,P3",True,21.9
-D09,regla esborrada,sense la regla percep-sensor-no-valid,"26 pass, 0 fail",0,CP16,P3,True,21.1
-D10,regla esborrada,sense la regla percep-lectura-incoherent,"26 pass, 0 fail",0,CP16,P3,True,21.6
-D11,regla esborrada,sense la regla percep-ultima-lectura,"26 pass, 0 fail",0,"CP15,CP16",P3,True,21.1
-D12,regla esborrada,sense la regla percep-recorda-lectura,"26 pass, 0 fail",0,"CP15,CP16",P3,True,21.0
-D13,regla esborrada,sense la regla percep-reg-correcte,"26 pass, 0 fail",0,,,False,20.7
-D14,regla esborrada,sense la regla percep-fallada-reg,"26 pass, 0 fail",0,CP17,P3,True,20.7
-D15,regla esborrada,sense la regla percep-sense-observacio,"26 pass, 0 fail",0,,,False,21.2
-D16,regla esborrada,sense la regla percep-accio-correcta,"22 pass, 4 fail",0,CP19,"P1,P3",True,21.2
-D17,regla esborrada,sense la regla percep-fallada-actuador,"26 pass, 0 fail",0,"CP08,CP18",P3,True,21.2
-D18,regla esborrada,sense la regla percepcio-a-elaboracio,"4 pass, 22 fail",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,20.8
-D19,regla esborrada,sense la regla elabora-risc-mecanic,"23 pass, 3 fail",7,"CP02,CP03,CP04,CP07,CP09,CP18,CP19","P1,P2,P3",True,21.6
-D20,regla esborrada,sense la regla elabora-risc-mecanic-per-previsio,"26 pass, 0 fail",0,,,False,22.3
-D21,regla esborrada,sense la regla elabora-risc-temperatura,"26 pass, 0 fail",20,"CP05,CP11","P2,P3",True,21.9
-D22,regla esborrada,sense la regla elabora-risc-hidric,"26 pass, 0 fail",11,"CP10,CP14","P2,P3",True,21.7
-D23,regla esborrada,sense la regla elabora-risc-radiacio,"26 pass, 0 fail",9,CP11,"P2,P3",True,21.8
-D24,regla esborrada,sense la regla elabora-risc-per-sensibilitat,"26 pass, 0 fail",2,,P2,True,21.6
-D25,regla esborrada,sense la regla elabora-radiacio-amb-calor,"26 pass, 0 fail",1,CP11,"P2,P3",True,21.8
-D26,regla esborrada,sense la regla activa-objectius-base,"26 pass, 0 fail",0,"CP05,CP09",P3,True,21.2
-D27,regla esborrada,sense la regla activa-objectiu-per-risc,"26 pass, 0 fail",1,"CP04,CP05,CP09,CP11,CP19","P2,P3",True,22.0
-D28,regla esborrada,sense la regla elabora-necessitat-reg,"26 pass, 0 fail",10,"CP12,CP13,CP14,CP17","P2,P3",True,21.9
-D29,regla esborrada,sense la regla activa-objectiu-per-necessitat-reg,"26 pass, 0 fail",1,,P2,True,21.9
-D30,regla esborrada,sense la regla elaboracio-a-proposta,"4 pass, 22 fail",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,21.2
-D31,regla esborrada,sense la regla proposa-mantenir-posicio,"6 pass, 20 fail",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,21.2
-D32,regla esborrada,sense la regla proposa-orientar-produccio,"22 pass, 4 fail",1,"CP01,CP04,CP05,CP08,CP09","P1,P2,P3",True,21.8
-D33,regla esborrada,sense la regla proposa-orientar-ombra,"26 pass, 0 fail",3,"CP05,CP10,CP11","P2,P3",True,23.6
-D34,regla esborrada,sense la regla proposa-posicio-seguretat,"24 pass, 2 fail",7,"CP02,CP03,CP04,CP07,CP09,CP18,CP19","P1,P2,P3",True,24.1
-D35,regla esborrada,sense la regla proposa-sollicitar-dades,"21 pass, 5 fail, error",1,CP06,"P1,P2,P3",True,22.0
-D36,regla esborrada,sense la regla proposa-no-regar,"26 pass, 0 fail",11,"CP12,CP13,CP14,CP17","P2,P3",True,21.7
-D37,regla esborrada,sense la regla proposa-regar,"26 pass, 0 fail",5,"CP12,CP13,CP14,CP17","P2,P3",True,21.3
-D38,regla esborrada,sense la regla proposa-regar-anticipat,"26 pass, 0 fail",5,CP12,"P2,P3",True,21.2
-D39,regla esborrada,sense la regla proposta-a-avaluacio,"4 pass, 22 fail",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,21.1
-D40,regla esborrada,sense la regla avalua-rebuig-per-vent-critic,"24 pass, 2 fail",3,"CP02,CP03,CP04,CP07,CP09,CP18","P1,P2,P3",True,21.2
-D41,regla esborrada,sense la regla avalua-rebuig-fora-de-limits,"26 pass, 0 fail",0,,,False,20.9
-D42,regla esborrada,sense la regla avalua-rebuig-per-fallada,"26 pass, 0 fail",0,CP08,P3,True,21.5
-D43,regla esborrada,sense la regla avalua-seguretat,"26 pass, 0 fail",1,"CP04,CP09,CP19","P2,P3",True,21.0
-D44,regla esborrada,sense la regla avalua-cultiu,"26 pass, 0 fail",0,"CP05,CP11",P3,True,20.7
-D45,regla esborrada,sense la regla avalua-energia-produccio,"22 pass, 4 fail",0,"CP01,CP05,CP08,CP09","P1,P3",True,21.2
-D46,regla esborrada,sense la regla avalua-energia-mantenir,"26 pass, 0 fail",0,,,False,21.2
-D47,regla esborrada,sense la regla avalua-moviment,"26 pass, 0 fail",0,,,False,21.8
-D48,regla esborrada,sense la regla avalua-estabilitat,"26 pass, 0 fail",0,,,False,21.4
-D49,regla esborrada,sense la regla avalua-memoria-consulta,"26 pass, 0 fail",0,CP19,P3,True,22.2
-D50,regla esborrada,sense la regla avalua-memoria,"26 pass, 0 fail",1,CP19,"P2,P3",True,21.6
-D51,regla esborrada,sense la regla avalua-memoria-semantica,"26 pass, 0 fail",0,,,False,21.5
-D52,regla esborrada,sense la regla avalua-reg-pluja-forta,"26 pass, 0 fail",2,CP13,"P2,P3",True,21.2
-D53,regla esborrada,sense la regla avalua-reg-cultiu,"26 pass, 0 fail",6,CP13,"P2,P3",True,21.8
-D54,regla esborrada,sense la regla avalua-reg-sensibilitat,"26 pass, 0 fail",3,"CP12,CP17","P2,P3",True,20.9
-D55,regla esborrada,sense la regla avalua-reg-hora-fresca,"26 pass, 0 fail",0,,,False,20.9
-D56,regla esborrada,sense la regla avalua-reg-pluja-moderada,"26 pass, 0 fail",2,CP13,"P2,P3",True,20.8
-D57,regla esborrada,sense la regla avalua-reg-energia,"26 pass, 0 fail",0,,,False,21.8
-D58,regla esborrada,sense la regla avalua-reg-estalvi,"26 pass, 0 fail",0,,,False,21.8
-D59,regla esborrada,sense la regla avaluacio-a-seleccio,"4 pass, 22 fail",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,20.8
-D60,regla esborrada,sense la regla rl-registra,"26 pass, 0 fail",0,,,False,20.7
-D61,regla esborrada,sense la regla rl-recompensa-cicle-anterior,"26 pass, 0 fail",0,,,False,20.6
-D62,regla esborrada,sense la regla descarta-rebutjat,"17 pass, 9 fail",4,"CP02,CP03,CP04,CP07,CP08,CP09,CP18","P1,P2,P3",True,20.8
-D63,regla esborrada,sense la regla detecta-impas-dades,"20 pass, 6 fail",4,"CP06,CP07,CP16","P1,P2,P3",True,21.0
-D64,regla esborrada,sense la regla detecta-impas-restriccio-fallida,"26 pass, 0 fail",0,CP18,P3,True,21.0
-D65,regla esborrada,sense la regla detecta-impas-sense-candidat,"26 pass, 0 fail",0,,,False,21.1
-D66,regla esborrada,sense la regla desfa-empat-per-reforc,"26 pass, 0 fail",0,,,False,20.9
-D67,regla esborrada,sense la regla detecta-impas-empat,"26 pass, 0 fail",0,CP05,P3,True,21.0
-D68,regla esborrada,sense la regla selecciona-operador,"4 pass, 22 fail",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,21.0
-D69,regla esborrada,sense la regla descarta-reg-rebutjat,"26 pass, 0 fail",2,CP13,"P2,P3",True,21.2
-D70,regla esborrada,sense la regla selecciona-reg,"26 pass, 0 fail",17,"CP12,CP13,CP14,CP17","P2,P3",True,21.4
-D71,regla esborrada,sense la regla seleccio-a-impas,"20 pass, 6 fail",4,"CP05,CP06,CP07,CP16,CP18","P1,P2,P3",True,21.0
-D72,regla esborrada,sense la regla seleccio-a-aplicacio,"7 pass, 19 fail",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,20.9
-D73,regla esborrada,sense la regla smem-situacio-actual,"26 pass, 0 fail",0,,,False,21.4
-D74,regla esborrada,sense la regla smem-consolida-nou,"26 pass, 0 fail",0,,,False,21.4
-D75,regla esborrada,sense la regla smem-consolida,"26 pass, 0 fail",0,,,False,21.3
-D76,regla esborrada,sense la regla smem-arxiva,"26 pass, 0 fail",0,,,False,21.2
-D77,regla esborrada,sense la regla resol-empat,"26 pass, 0 fail",0,CP05,P3,True,20.7
-D78,regla esborrada,sense la regla resol-dades-insuficients,"20 pass, 6 fail",4,"CP06,CP07,CP16","P1,P2,P3",True,21.0
-D79,regla esborrada,sense la regla resol-sense-candidat,"26 pass, 0 fail",0,,,False,21.2
-D80,regla esborrada,sense la regla resol-restriccio-fallida,"26 pass, 0 fail",0,CP18,P3,True,21.5
-D81,regla esborrada,sense la regla impas-a-seleccio,"23 pass, 3 fail",4,"CP05,CP06,CP07,CP16,CP18","P1,P2,P3",True,20.6
-D82,regla esborrada,sense la regla aplica-operador,"18 pass, 8 fail",8,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP11,CP18,CP19","P1,P2,P3",True,20.7
-D83,regla esborrada,sense la regla aplica-reg,"26 pass, 0 fail",17,"CP12,CP13,CP14,CP17","P2,P3",True,21.6
-D84,regla esborrada,sense la regla aplicacio-a-explicacio,"8 pass, 18 fail",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,21.5
-D85,regla esborrada,sense la regla explica-decisio,"26 pass, 0 fail",0,,,False,21.3
-D86,regla esborrada,sense la regla explica-reg,"26 pass, 0 fail",0,,,False,20.7
-D87,regla esborrada,sense la regla explicacio-a-monitoratge,"8 pass, 18 fail",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,22.3
-D88,regla esborrada,sense la regla detecta-oscillacio,"26 pass, 0 fail",0,,,False,22.1
-D89,regla esborrada,sense la regla avisa-dades-pendents,"26 pass, 0 fail",0,,,False,22.6
-D90,regla esborrada,sense la regla avisa-fallada-actuador,"26 pass, 0 fail",0,,,False,22.1
-D91,regla esborrada,sense la regla avisa-fallada-reg,"26 pass, 0 fail",0,,,False,23.2
-D92,regla esborrada,sense la regla tanca-cicle,"10 pass, 16 fail",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,23.2
+L01,llindar,vent d'avis 12 -> 13 m/s,"90 pass, 0 fail",3,,P2,True,17.5
+L02,llindar,vent maxim 16 -> 17 m/s,"90 pass, 0 fail",2,CP04,"P2,P3",True,17.4
+L03,llindar,"p del tomaquet 0,40 -> 0,50","88 pass, 2 fail",5,CP12,"P1,P2,P3",True,17.6
+L04,llindar,"p de l'enciam 0,30 -> 0,40","87 pass, 3 fail",7,"CP10,CP13","P1,P2,P3",True,17.1
+L05,llindar,"p de la vinya 0,45 -> 0,55","88 pass, 2 fail",3,CP14,"P1,P2,P3",True,17.5
+L06,llindar,temperatura optima maxima del tomaquet 27 -> 29,"90 pass, 0 fail",5,,P2,True,17.7
+L07,llindar,temperatura optima maxima de l'enciam 21 -> 23,"90 pass, 0 fail",2,CP05,"P2,P3",True,17.9
+L08,llindar,temperatura optima maxima de la vinya 30 -> 32,"90 pass, 0 fail",2,,P2,True,18.1
+L09,llindar,radiacio optima maxima del tomaquet 350 -> 400,"90 pass, 0 fail",2,,P2,True,17.5
+L10,llindar,reg: anticipacio al 75 % -> 90 % de p,"90 pass, 0 fail",0,,,False,17.6
+L11,llindar,reg: pluja que anul.la el reg 10 -> 15 mm,"90 pass, 0 fail",0,,,False,18.5
+L12,llindar,reg: hora fresca del mati fins a les 8 -> 9 h,"90 pass, 0 fail",0,,,False,18.7
+W01,pes,pes de la seguretat 5 -> 1,"90 pass, 0 fail",1,"CP04,CP09,CP19","P2,P3",True,17.9
+W02,pes,pes del cultiu 3 -> 2,"90 pass, 0 fail",0,CP05,P3,True,18.1
+W03,pes,pes de l'energia 3 -> 4,"90 pass, 0 fail",0,CP05,P3,True,19.0
+R01,operador,vent critic: >= maxim -> > maxim,"90 pass, 0 fail",2,CP04,"P2,P3",True,18.5
+R02,operador,vent alt: >= avis -> > avis,"90 pass, 0 fail",2,,P2,True,17.7
+R03,operador,calor: <= optima -> < optima,"90 pass, 0 fail",3,,P2,True,18.1
+R04,operador,aigua: <= p -> < p (sense el marge),"90 pass, 0 fail",2,,P2,True,18.1
+S01,salience,transicions de fase: salience -10 -> 0,"73 pass, 17 fail",17,"CP05,CP09,CP12,CP13,CP14,CP15,CP16,CP17","P1,P2,P3",True,17.7
+D01,regla esborrada,sense la regla epmem-emmagatzema,"73 pass, 17 fail, error",0,CP19,"P1,P3",True,17.5
+D02,regla esborrada,sense la regla epmem-valora-resultat,"79 pass, 11 fail",0,CP19,"P1,P3",True,17.6
+D03,regla esborrada,sense la regla epmem-processa-query,"88 pass, 2 fail",0,CP19,"P1,P3",True,17.8
+D04,regla esborrada,sense la regla epmem-processa-temporal,"89 pass, 1 fail",0,,P1,True,18.3
+D05,regla esborrada,sense la regla epmem-neteja-consultes,"90 pass, 0 fail",0,,,False,17.7
+D06,regla esborrada,sense la regla epmem-neteja-resultats,"90 pass, 0 fail",0,,,False,17.4
+D07,regla esborrada,sense la regla epmem-persisteix,"85 pass, 5 fail",0,,P1,True,18.1
+D08,regla esborrada,sense la regla percep-lectura-absent,"78 pass, 12 fail",3,"CP06,CP07,CP15,CP16","P1,P2,P3",True,17.8
+D09,regla esborrada,sense la regla percep-sensor-no-valid,"90 pass, 0 fail",0,CP16,P3,True,17.6
+D10,regla esborrada,sense la regla percep-lectura-incoherent,"90 pass, 0 fail",0,CP16,P3,True,17.6
+D11,regla esborrada,sense la regla percep-ultima-lectura,"90 pass, 0 fail",0,"CP15,CP16",P3,True,17.4
+D12,regla esborrada,sense la regla percep-recorda-lectura,"90 pass, 0 fail",0,"CP15,CP16",P3,True,17.4
+D13,regla esborrada,sense la regla percep-reg-correcte,"90 pass, 0 fail",0,,,False,16.9
+D14,regla esborrada,sense la regla percep-fallada-reg,"90 pass, 0 fail",0,CP17,P3,True,16.6
+D15,regla esborrada,sense la regla percep-sense-observacio,"90 pass, 0 fail",0,,,False,17.0
+D16,regla esborrada,sense la regla percep-accio-correcta,"76 pass, 14 fail",0,CP19,"P1,P3",True,17.5
+D17,regla esborrada,sense la regla percep-fallada-actuador,"90 pass, 0 fail",0,"CP08,CP18",P3,True,16.9
+D18,regla esborrada,sense la regla percepcio-a-elaboracio,"22 pass, 68 fail, error",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,16.5
+D19,regla esborrada,sense la regla elabora-risc-mecanic,"81 pass, 9 fail",7,"CP02,CP03,CP04,CP07,CP09,CP18,CP19","P1,P2,P3",True,17.1
+D20,regla esborrada,sense la regla elabora-risc-mecanic-per-previsio,"90 pass, 0 fail",0,,,False,17.0
+D21,regla esborrada,sense la regla elabora-risc-temperatura,"90 pass, 0 fail",20,"CP05,CP11","P2,P3",True,16.9
+D22,regla esborrada,sense la regla elabora-risc-hidric,"90 pass, 0 fail",11,"CP10,CP14","P2,P3",True,17.0
+D23,regla esborrada,sense la regla elabora-risc-radiacio,"90 pass, 0 fail",9,CP11,"P2,P3",True,16.9
+D24,regla esborrada,sense la regla elabora-risc-per-sensibilitat,"90 pass, 0 fail",2,,P2,True,17.0
+D25,regla esborrada,sense la regla elabora-radiacio-amb-calor,"90 pass, 0 fail",1,CP11,"P2,P3",True,17.1
+D26,regla esborrada,sense la regla activa-objectius-base,"90 pass, 0 fail",0,"CP05,CP09",P3,True,17.1
+D27,regla esborrada,sense la regla activa-objectiu-per-risc,"90 pass, 0 fail",1,"CP04,CP05,CP09,CP11,CP19","P2,P3",True,17.3
+D28,regla esborrada,sense la regla elabora-necessitat-reg,"79 pass, 11 fail",10,"CP12,CP13,CP14,CP17","P1,P2,P3",True,17.3
+D29,regla esborrada,sense la regla activa-objectiu-per-necessitat-reg,"90 pass, 0 fail",1,,P2,True,17.5
+D30,regla esborrada,sense la regla elaboracio-a-proposta,"23 pass, 67 fail, error",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,17.1
+D31,regla esborrada,sense la regla proposa-mantenir-posicio,"45 pass, 45 fail, error",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,17.1
+D32,regla esborrada,sense la regla proposa-orientar-produccio,"83 pass, 7 fail",1,"CP01,CP04,CP05,CP08,CP09","P1,P2,P3",True,17.2
+D33,regla esborrada,sense la regla proposa-orientar-ombra,"90 pass, 0 fail",3,"CP05,CP10,CP11","P2,P3",True,17.7
+D34,regla esborrada,sense la regla proposa-posicio-seguretat,"87 pass, 3 fail",7,"CP02,CP03,CP04,CP07,CP09,CP18,CP19","P1,P2,P3",True,17.4
+D35,regla esborrada,sense la regla proposa-sollicitar-dades,"83 pass, 6 fail",1,CP06,"P1,P2,P3",True,18.0
+D36,regla esborrada,sense la regla proposa-no-regar,"82 pass, 8 fail",11,"CP12,CP13,CP14,CP17","P1,P2,P3",True,18.5
+D37,regla esborrada,sense la regla proposa-regar,"81 pass, 9 fail",5,"CP12,CP13,CP14,CP17","P1,P2,P3",True,17.8
+D38,regla esborrada,sense la regla proposa-regar-anticipat,"89 pass, 1 fail",5,CP12,"P1,P2,P3",True,18.0
+D39,regla esborrada,sense la regla proposta-a-avaluacio,"23 pass, 67 fail, error",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,18.0
+D40,regla esborrada,sense la regla avalua-rebuig-per-vent-critic,"87 pass, 3 fail",3,"CP02,CP03,CP04,CP07,CP09,CP18","P1,P2,P3",True,18.0
+D41,regla esborrada,sense la regla avalua-rebuig-fora-de-limits,"90 pass, 0 fail",0,,,False,18.1
+D42,regla esborrada,sense la regla avalua-rebuig-per-fallada,"90 pass, 0 fail",0,CP08,P3,True,17.8
+D43,regla esborrada,sense la regla avalua-seguretat,"90 pass, 0 fail",1,"CP04,CP09,CP19","P2,P3",True,17.9
+D44,regla esborrada,sense la regla avalua-cultiu,"90 pass, 0 fail",0,"CP05,CP11",P3,True,17.9
+D45,regla esborrada,sense la regla avalua-energia-produccio,"83 pass, 7 fail",0,"CP01,CP05,CP08,CP09","P1,P3",True,18.1
+D46,regla esborrada,sense la regla avalua-energia-mantenir,"90 pass, 0 fail",0,,,False,17.5
+D47,regla esborrada,sense la regla avalua-moviment,"90 pass, 0 fail",0,,,False,17.7
+D48,regla esborrada,sense la regla avalua-estabilitat,"90 pass, 0 fail",0,,,False,17.8
+D49,regla esborrada,sense la regla avalua-memoria-consulta,"88 pass, 2 fail",0,CP19,"P1,P3",True,17.6
+D50,regla esborrada,sense la regla avalua-memoria,"89 pass, 1 fail",1,CP19,"P1,P2,P3",True,17.6
+D51,regla esborrada,sense la regla avalua-memoria-semantica,"88 pass, 2 fail",0,,P1,True,17.6
+D52,regla esborrada,sense la regla avalua-reg-pluja-forta,"87 pass, 3 fail",2,CP13,"P1,P2,P3",True,17.6
+D53,regla esborrada,sense la regla avalua-reg-cultiu,"86 pass, 4 fail",6,CP13,"P1,P2,P3",True,17.6
+D54,regla esborrada,sense la regla avalua-reg-sensibilitat,"86 pass, 4 fail",3,"CP12,CP17","P1,P2,P3",True,17.5
+D55,regla esborrada,sense la regla avalua-reg-hora-fresca,"90 pass, 0 fail",0,,,False,20.3
+D56,regla esborrada,sense la regla avalua-reg-pluja-moderada,"88 pass, 2 fail",2,CP13,"P1,P2,P3",True,20.9
+D57,regla esborrada,sense la regla avalua-reg-energia,"90 pass, 0 fail",0,,,False,18.5
+D58,regla esborrada,sense la regla avalua-reg-estalvi,"90 pass, 0 fail",0,,,False,18.0
+D59,regla esborrada,sense la regla avaluacio-a-seleccio,"23 pass, 67 fail, error",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,17.3
+D60,regla esborrada,sense la regla rl-registra,"87 pass, 3 fail",0,,P1,True,17.8
+D61,regla esborrada,sense la regla rl-recompensa-cicle-anterior,"88 pass, 2 fail",0,,P1,True,17.7
+D62,regla esborrada,sense la regla descarta-rebutjat,"73 pass, 17 fail",4,"CP02,CP03,CP04,CP07,CP08,CP09,CP18","P1,P2,P3",True,17.2
+D63,regla esborrada,sense la regla detecta-impas-dades,"76 pass, 14 fail",4,"CP06,CP07,CP16","P1,P2,P3",True,17.8
+D64,regla esborrada,sense la regla detecta-impas-restriccio-fallida,"90 pass, 0 fail",0,CP18,P3,True,17.5
+D65,regla esborrada,sense la regla detecta-impas-sense-candidat,"90 pass, 0 fail",0,,,False,17.1
+D66,regla esborrada,sense la regla desfa-empat-per-reforc,"90 pass, 0 fail",0,,,False,17.5
+D67,regla esborrada,sense la regla detecta-impas-empat,"90 pass, 0 fail",0,CP05,P3,True,17.6
+D68,regla esborrada,sense la regla selecciona-operador,"23 pass, 67 fail, error",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,17.7
+D69,regla esborrada,sense la regla descarta-reg-rebutjat,"87 pass, 3 fail",2,CP13,"P1,P2,P3",True,18.1
+D70,regla esborrada,sense la regla selecciona-reg,"73 pass, 17 fail",17,"CP12,CP13,CP14,CP17","P1,P2,P3",True,17.5
+D71,regla esborrada,sense la regla seleccio-a-impas,"76 pass, 14 fail",4,"CP05,CP06,CP07,CP16,CP18","P1,P2,P3",True,18.3
+D72,regla esborrada,sense la regla seleccio-a-aplicacio,"27 pass, 63 fail, error",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,18.0
+D73,regla esborrada,sense la regla smem-situacio-actual,"87 pass, 3 fail",0,,P1,True,17.5
+D74,regla esborrada,sense la regla smem-consolida-nou,"82 pass, 8 fail",0,,P1,True,17.5
+D75,regla esborrada,sense la regla smem-consolida,"85 pass, 5 fail",0,,P1,True,17.6
+D76,regla esborrada,sense la regla smem-arxiva,"88 pass, 2 fail",0,,P1,True,17.9
+D77,regla esborrada,sense la regla resol-empat,"90 pass, 0 fail",0,CP05,P3,True,18.0
+D78,regla esborrada,sense la regla resol-dades-insuficients,"76 pass, 14 fail",4,"CP06,CP07,CP16","P1,P2,P3",True,18.1
+D79,regla esborrada,sense la regla resol-sense-candidat,"90 pass, 0 fail",0,,,False,18.0
+D80,regla esborrada,sense la regla resol-restriccio-fallida,"90 pass, 0 fail",0,CP18,P3,True,18.2
+D81,regla esborrada,sense la regla impas-a-seleccio,"80 pass, 10 fail",4,"CP05,CP06,CP07,CP16,CP18","P1,P2,P3",True,17.6
+D82,regla esborrada,sense la regla aplica-operador,"60 pass, 30 fail, error",8,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP11,CP18,CP19","P1,P2,P3",True,17.6
+D83,regla esborrada,sense la regla aplica-reg,"73 pass, 17 fail",17,"CP12,CP13,CP14,CP17","P1,P2,P3",True,17.4
+D84,regla esborrada,sense la regla aplicacio-a-explicacio,"34 pass, 56 fail, error",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,17.3
+D85,regla esborrada,sense la regla explica-decisio,"90 pass, 0 fail",0,,,False,17.4
+D86,regla esborrada,sense la regla explica-reg,"89 pass, 1 fail",0,,P1,True,17.5
+D87,regla esborrada,sense la regla explicacio-a-monitoratge,"35 pass, 55 fail, error",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,17.4
+D88,regla esborrada,sense la regla detecta-oscillacio,"90 pass, 0 fail",0,,,False,17.6
+D89,regla esborrada,sense la regla avisa-dades-pendents,"90 pass, 0 fail",0,,,False,17.1
+D90,regla esborrada,sense la regla avisa-fallada-actuador,"90 pass, 0 fail",0,,,False,17.4
+D91,regla esborrada,sense la regla avisa-fallada-reg,"90 pass, 0 fail",0,,,False,17.3
+D92,regla esborrada,sense la regla tanca-cicle,"40 pass, 50 fail",85,"CP01,CP02,CP03,CP04,CP05,CP06,CP07,CP08,CP09,CP10,CP11,CP12,CP13,CP14,CP15,CP16,CP17,CP18,CP19","P1,P2,P3",True,17.0

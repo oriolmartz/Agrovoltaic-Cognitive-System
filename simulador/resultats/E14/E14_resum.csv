@@ -1,15 +1,15 @@
 ,escenari,fix,seguidor,soar
 n_dies,calor,60,60,60
-h_estres_calor,calor,39.30 ± 1.63,39.50 ± 1.44,39.50 ± 1.44
-h_calor_critica,calor,30.90 ± 2.51,31.30 ± 2.43,31.00 ± 2.55
-h_estres_rad,calor,14.10 ± 1.23,16.30 ± 1.89,14.25 ± 1.46
-energia_kwh,calor,371.52 ± 22.14,433.62 ± 25.88,383.69 ± 24.03
+h_estres_calor,calor,29.00 ± 4.03,29.45 ± 4.28,29.50 ± 4.34
+h_calor_critica,calor,16.50 ± 4.84,18.05 ± 4.21,16.65 ± 4.84
+h_estres_rad,calor,14.10 ± 1.23,16.30 ± 1.89,14.90 ± 1.48
+energia_kwh,calor,371.52 ± 22.14,433.62 ± 25.88,394.13 ± 22.23
 n_dies,vent,60,60,60
 violacions,vent,0.00 ± 0.00,1.13 ± 1.42,0.00 ± 0.00
-exposicions,vent,0.00 ± 0.00,3.07 ± 4.96,0.03 ± 0.18
-energia_kwh,vent,243.86 ± 87.23,252.19 ± 91.56,247.47 ± 88.30
+exposicions,vent,0.00 ± 0.00,3.07 ± 4.96,0.07 ± 0.25
+energia_kwh,vent,243.86 ± 87.23,252.19 ± 91.56,247.17 ± 88.21
 n_blocs,sequera (per mes),12,12,12
-h_estres_aigua,sequera (per mes),616.75 ± 268.74,660.25 ± 267.45,628.25 ± 266.42
-aigua_final_pct,sequera (per mes),58.77 ± 14.88,56.27 ± 14.71,58.21 ± 14.57
-percolacio_mm,sequera (per mes),9.76 ± 17.66,8.91 ± 16.11,9.09 ± 16.44
-energia_kwh,sequera (per mes),10114.04 ± 1355.72,11802.64 ± 1542.89,10517.10 ± 1229.97
+h_estres_aigua,sequera (per mes),529.25 ± 317.41,569.50 ± 317.84,541.92 ± 318.60
+aigua_final_pct,sequera (per mes),62.74 ± 16.73,60.43 ± 16.69,62.15 ± 16.58
+percolacio_mm,sequera (per mes),16.15 ± 25.82,14.72 ± 23.97,15.36 ± 24.55
+energia_kwh,sequera (per mes),10114.04 ± 1355.72,11802.64 ± 1542.89,10598.36 ± 1157.23

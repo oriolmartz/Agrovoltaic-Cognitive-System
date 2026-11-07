@@ -128,7 +128,7 @@ búsqueda y puede verse afectado por la carga de ejecución.
 - [`E23_per_dia.csv`](./E23_per_dia.csv) y [`E23_horari.csv.gz`](./E23_horari.csv.gz):
   métricas agregadas por día y por hora.
 - `E23_oblit_auditoria.csv`: auditoría de episodios retirados.
-- `arxiu/`: episodios archivados por las políticas de olvido.
+- `arxiu/`: episodios archivados por las políticas de olvido (no se versiona: se regenera con `experiments.py E23`).
 
 ## Reproducir o ampliar el experimento
 
