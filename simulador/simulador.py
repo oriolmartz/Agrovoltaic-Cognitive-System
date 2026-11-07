@@ -117,6 +117,7 @@ class ControladorSOAR:
     nom = "soar"
 
     def __init__(self, cfg: dict, domini: dict):
+        self.cfg = cfg
         cc = cfg["controlador"]
         self.clp = os.path.join(ARREL, cfg["clp"])
         self.c = ControladorCLIPS(self.clp, fitxer_ontologia=ontologia_per_clp(cfg),
@@ -125,8 +126,8 @@ class ControladorSOAR:
                                   smem=cc.get("smem"), smem_finestra=cc.get("smem_finestra", 0),
                                   smem_arxiu=cc.get("smem_arxiu", ""),
                                   estrategia=cc.get("estrategia"),
-                                  vigila_regles=cc.get("vigila_regles", False),
-                                  conserva_sortida=bool(cfg.get("traca_dir")),
+                                  vigila_regles=cc.get("vigila_regles", False) or bool(cfg.get("demo_trace")),
+                                  conserva_sortida=bool(cfg.get("traca_dir")) or bool(cfg.get("demo_trace")),
                                   oblit=cc.get("oblit"))
         if cc.get("llavor_clips") is not None:     # per a l'estrategia 'random' de l'agenda
             self.c.env.eval(f"(seed {int(cc['llavor_clips'])})")
@@ -175,6 +176,24 @@ class ControladorSOAR:
                 "reg": (r.reg[s][0][0], r.reg[s][0][1]) if r.reg.get(s) else None,
                 "reg_motiu": r.reg[s][0][2] if r.reg.get(s) else "",
                 "invariants": self._invariants(e, r, s),
+                "demo": {
+                    "observacions": e.obs[s], "prediccio": e.pred.get(s),
+                    "riscos": r.riscos.get(s, []),
+                    "candidats": [{"nom": op, "estat": estat} for op, estat in r.candidats.get(s, {}).items()],
+                    "preferencies": [{"op": op, "tipus": tipus, "font": font} for font, tipus, op in sorted(r.fonts_pref.get(s, set()))],
+                    "seleccio": r.seleccionat.get(s, []),
+                    "ordre": r.ordres.get(s, []),
+                    "explicacio": r.explicacio.get(s, ""),
+                    "impasses": [t for t, sector in r.impasses if sector == s],
+                    "reg_candidats": [],
+                    "reg_preferencies": [],
+                    "reg_ordres": r.reg.get(s, []),
+                    "reg_explicacio": r.reg_explicacio.get(s, ""),
+                    "regles_disparades": r.regles,
+                    "regles_total": r.regles_disparades,
+                    "fase_final": r.fase_final,
+                    "invariants_ko": self._invariants(e, r, s),
+                } if self.cfg.get("demo_trace") else None,
             }
         out["_cicle"] = {"regles": r.regles_disparades, "ms": ms, "sortida": r.sortida,
                          "chunks_nous": [n for n, _ in r.chunks_nous],
@@ -646,6 +665,7 @@ class Simulacio:
     def _registres(self, dia, t, fila, ent, dec, fis, mov, ctrl, etiqueta):
         files = []
         info = dec["_cicle"]
+        oblit = info.get("oblit") or {}
         for s in SECTORS:
             pan = next(p for p in self.pan0.values() if p["sector"] == s)
             ll = self.ll[s]
@@ -686,6 +706,7 @@ class Simulacio:
                 "us_memoria": d.get("us_memoria", False),
                 "us_smem": d.get("us_smem", False),
                 "motiu": d["motiu"], "invariants_ko": d["invariants"],
+                "demo": d.get("demo"),
                 "reg_mode": self.mode_reg(dec), "reg_accio": reg[0] if reg else None,
                 "reg_dosi_pct": reg[1] if reg else None, "reg_motiu": d.get("reg_motiu", ""),
                 "reg_net_mm": acc["net"], "reg_brut_mm": acc["brut"],
@@ -696,15 +717,15 @@ class Simulacio:
                 "regles": info["regles"] if s == SECTORS[0] else 0,
                 "ms": info["ms"] if s == SECTORS[0] else 0.0,
                 "fets_mt": info["fets"],
-                "epmem_episodis": info["oblit"].get("n_epmem", 0) if s == SECTORS[0] else 0,
-                "smem_resums": info["oblit"].get("n_smem", 0) if s == SECTORS[0] else 0,
-                "epmem_oblidats": info["oblit"].get("oblidats", 0) if s == SECTORS[0] else 0,
-                "epmem_escanejats": info["oblit"].get("escanejats", 0) if s == SECTORS[0] else 0,
-                "epmem_consultes": info["oblit"].get("consultes", 0) if s == SECTORS[0] else 0,
-                "epmem_consultes_encertades": info["oblit"].get("encerts", 0) if s == SECTORS[0] else 0,
-                "epmem_similitud_mitjana": info["oblit"].get("similitud_mitjana", 0.0)
+                "epmem_episodis": oblit.get("n_epmem", 0) if s == SECTORS[0] else 0,
+                "smem_resums": oblit.get("n_smem", 0) if s == SECTORS[0] else 0,
+                "epmem_oblidats": oblit.get("oblidats", 0) if s == SECTORS[0] else 0,
+                "epmem_escanejats": oblit.get("escanejats", 0) if s == SECTORS[0] else 0,
+                "epmem_consultes": oblit.get("consultes", 0) if s == SECTORS[0] else 0,
+                "epmem_consultes_encertades": oblit.get("encerts", 0) if s == SECTORS[0] else 0,
+                "epmem_similitud_mitjana": oblit.get("similitud_mitjana", 0.0)
                     if s == SECTORS[0] else 0.0,
-                "epmem_ids_oblidats": info["oblit"].get("ids_oblidats", "") if s == SECTORS[0] else "",
+                "epmem_ids_oblidats": oblit.get("ids_oblidats", "") if s == SECTORS[0] else "",
             })
         return files
 

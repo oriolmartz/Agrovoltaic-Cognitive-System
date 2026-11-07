@@ -97,6 +97,7 @@ def build_cfg(params: dict, controlador: str) -> dict:
     if controlador not in CONTROLADORS_WEB:
         raise WebError("Controlador desconegut")
     cfg["controlador"]["tipus"] = controlador
+    cfg["demo_trace"] = bool(params.get("demo", False)) and controlador == "soar"
     # La UI no escriu traces per defecte. Les traces completes continuen amb el CLI i els experiments.
     cfg.pop("traca_dir", None)
     mode = params.get("mode")

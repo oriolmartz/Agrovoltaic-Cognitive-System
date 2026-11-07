@@ -67,6 +67,10 @@
               <option value="config">Valor de configuració</option>
             </select>
           </label>
+          <label class="switch" title="Activa la captura de candidats, preferències i regles per a un dia amb SOAR">
+            <input id="demoMode" type="checkbox" /><i></i><span>Mode defensa · traça CLIPS</span>
+          </label>
+          <p class="adv-hint">El mode defensa és per a un dia: exposa els fets i les regles del motor real. No activa cap política alternativa.</p>
           <label class="field narrow-field">
             <span>Llavor</span>
             <input id="seed" type="number" min="0" step="1" value="0" />
@@ -81,6 +85,8 @@
           </fieldset>
         </div>
       </details>
+      <button id="catalogLaunch" class="defense-launch impasse-top-launch" type="button" title="Catàleg únic de simulacions i casos de prova">◈ Experiments</button>
+      <button id="demoLaunch" class="defense-launch" type="button" title="Activa el Mode Defensa i obre el laboratori de decisions"><span aria-hidden="true">◈</span><span>Mode Defensa</span></button>
       <button id="runButton" class="btn-run" type="button">Executar simulació</button>
     </form>
 
@@ -236,6 +242,7 @@
 
     <section class="analysis" aria-label="Anàlisi">
       <div class="tabs" role="tablist" aria-label="Anàlisi del dia">
+        <button role="tab" id="tab-catalog" aria-controls="panel-catalog" aria-selected="false" data-tab="catalog" type="button" tabindex="-1">Experiments</button>
         <button role="tab" id="tab-period" aria-controls="panel-period" aria-selected="false" data-tab="period" type="button" tabindex="-1" hidden>Període</button>
         <button role="tab" id="tab-balance" aria-controls="panel-balance" aria-selected="true" data-tab="balance" type="button">Balanç del dia</button>
         <button role="tab" id="tab-charts" aria-controls="panel-charts" aria-selected="false" data-tab="charts" type="button" tabindex="-1">Gràfics</button>
@@ -243,6 +250,16 @@
         <button role="tab" id="tab-arch" aria-controls="panel-arch" aria-selected="false" data-tab="arch" type="button" tabindex="-1">Arquitectura</button>
       </div>
 
+      <div class="tabpanel" id="panel-catalog" role="tabpanel" aria-labelledby="tab-catalog" hidden>
+        <section class="catalog-shell">
+          <div class="catalog-intro"><span class="demo-overline">LABORATORI REPRODUÏBLE · PROTOCOLS ORIGINALS</span>
+            <h2>Catàleg d'experiments</h2><p>Executa el protocol oficial, inspecciona què verifica i consulta la procedència de cada dada. Els impasses provenen directament de casos CLIPS; no són simulacions meteorològiques històriques.</p></div>
+          <div class="catalog-toolbar"><label class="catalog-search-field"><span>Cerca per experiment o objectiu</span><input id="catalogSearch" type="search" placeholder="E15, vent, memòria, impasse…" /></label><div id="catalogFilters" class="catalog-filters"><button type="button" class="active" data-cat-filter="all">Tots</button><button type="button" data-cat-filter="validacio">Validació</button><button type="button" data-cat-filter="verificacio">Verificació</button><button type="button" data-cat-filter="impasse">Impasses</button></div></div>
+          <div id="catalogStatus" class="catalog-note">Carregant catàleg…</div>
+          <div class="catalog-grid" id="catalogGrid"></div>
+          <section id="catalogDetail" class="catalog-detail" hidden></section>
+        </section>
+      </div>
       <div class="tabpanel" id="panel-period" role="tabpanel" aria-labelledby="tab-period" hidden>
         <div id="periodView"></div>
       </div>
@@ -266,6 +283,21 @@
       </div>
 
       <div class="tabpanel" id="panel-trace" role="tabpanel" aria-labelledby="tab-trace" hidden>
+        <section class="defense-guided" id="defenseGuided" aria-label="Guia de la demostració">
+          <div class="defense-guided-copy"><span class="defense-guided-kicker">DEMOSTRACIÓ · RAONAMENT SIMBÒLIC</span><h3>Del sensor a la decisió</h3><p id="defenseGuideText">Activa el Mode Defensa, executa un dia amb SOAR i inspecciona una decisió real.</p></div>
+          <div class="defense-guided-actions">
+            <span class="defense-mode-status" id="defenseModeStatus">Mode inactiu</span>
+            <button type="button" id="defenseRun" class="defense-main-action">Activar i executar</button>
+          </div>
+        </section>
+        <div class="defense-filters" id="defenseFilters">
+          <span>CASOS PER EXPLICAR</span>
+          <button type="button" data-demo-filter="all" class="active">Totes les decisions</button>
+          <button type="button" data-demo-filter="safety">Seguretat</button>
+          <button type="button" data-demo-filter="impasse">Impasses</button>
+          <button type="button" data-demo-filter="irrigation">Reg actiu</button>
+          <span id="defenseFilterCount" class="defense-filter-count"></span>
+        </div>
         <div class="trace-tools">
           <label class="field inline"><span>Sector</span>
             <select id="sectorFilter"><option value="all">Tots els sectors</option></select>
@@ -281,6 +313,18 @@
             <tbody id="decisionRows"><tr><td colspan="8" class="empty-cell">Sense decisions encara.</td></tr></tbody>
           </table>
         </div>
+        <section class="demo-inspector" id="demoInspector" aria-label="Laboratori de decisions CLIPS">
+          <div class="defense-inspector-controls"><span>DECISIÓ INSPECCIONADA</span><div><button id="defensePrev" type="button" title="Decisió anterior">← Anterior</button><button id="defenseNext" type="button" title="Decisió següent">Següent →</button><button id="defenseCopy" type="button" title="Copia el resum de la decisió">Copiar resum</button></div></div>
+          <div class="demo-heading">
+            <div>
+              <span class="demo-overline"><span class="demo-live-dot"></span> SOAR / CLIPS · EVIDÈNCIA DEL MOTOR</span>
+              <h3>Laboratori de decisions</h3>
+              <p id="demoHint">Explora una decisió real de CLIPS: escull una fila de la taula per inspeccionar el cicle deliberatiu. Activa «Mode defensa» a Opcions i executa un dia SOAR.</p>
+            </div>
+            <div class="demo-heading-mark" aria-hidden="true">CLIPS<span>→</span> ACTUADOR</div>
+          </div>
+          <div id="demoDetails" aria-live="polite"><div class="demo-empty"><span>◈</span><h4>Selecciona una decisió</h4><p>Executa un dia amb «Mode defensa» activat i prem una fila de traçabilitat.</p></div></div>
+        </section>
       </div>
 
       <div class="tabpanel" id="panel-arch" role="tabpanel" aria-labelledby="tab-arch" hidden>

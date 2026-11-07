@@ -259,7 +259,7 @@ def _apliqua(base, extra):
     return out
 
 
-def executa_cas(clp, cas):
+def executa_cas(clp, cas, captura=None):
     c = ControladorCLIPS(clp, conserva_sortida=True)
     a0 = cas.get("angle_inicial", 30.0)
     opt = cas.get("angle_optim", 30.0)
@@ -281,6 +281,8 @@ def executa_cas(clp, cas):
         c.escriu_moment(n, cy["hora"])
         r = c.executa_cicle()
         traca.append((k, r.sortida))
+        if captura is not None:
+            captura(k, obs, pred, ene, r)
         cicle_ko = r.fase_final != "espera" or r.regles_disparades >= LIMIT_REGLES
         for s, esp in cy["esperat"].items():
             accio = r.ordres[s][0][0] if r.ordres.get(s) else None

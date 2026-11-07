@@ -1,4 +1,5 @@
 import { DigitalTwin3D } from './twin3d.js';
+import { initCatalog } from './catalog.js';
 import { LineChart } from './charts.js';
 import { Ribbon } from './timeline.js';
 import { startJob, waitForJob, cancelJob, jobResult, jobDay } from './jobs.js';
@@ -25,6 +26,8 @@ let charts = [];
 const cards = new Map();
 const hud = {};
 let trace = { rows: [], cycleIdx: -1 };
+let defenseFilter = "all";
+let defenseSelected = -1;
 
 /* ================= Dades ================= */
 async function api(url, options = {}) {
@@ -502,6 +505,77 @@ function buildCharts(run) {
   charts = [energy, power, angle, water, climate, wind];
 }
 
+/* ================= Laboratori de decisions: evidència real de CLIPS ================= */
+function renderDemoDetail(r) {
+  const target = $('demoDetails');
+  if (!target) return;
+  const d = r?.demo;
+  if (!d) {
+    target.innerHTML = `<div class="demo-empty"><span aria-hidden="true">◈</span><h4>Traça detallada no disponible</h4><p>Activa <b>Mode defensa · traça CLIPS</b>, selecciona el controlador SOAR i executa una simulació d'un sol dia.</p></div>`;
+    return;
+  }
+  const safe = (x) => esc(x === null || x === undefined ? '—' : String(x));
+  const items = (x) => Array.isArray(x) ? x : x === null || x === undefined ? [] : [x];
+  const has = (x) => x !== null && x !== undefined && x !== '';
+  const human = (x) => String(x ?? '').replaceAll('_',' ').replaceAll('-',' ');
+  const readable = (x) => typeof x === 'object' ? JSON.stringify(x, null, 2) : String(x ?? '—');
+  const kv = (name, val) => `<div class="demo-kv"><dt>${safe(human(name))}</dt><dd>${safe(readable(val))}</dd></div>`;
+  const json = (v) => `<pre class="demo-raw">${safe(JSON.stringify(v ?? null, null, 2))}</pre>`;
+  const tags = (arr, kind='base') => items(arr).map(v => `<span class="demo-tag demo-tag-${kind}">${safe(v)}</span>`).join('');
+  const choice = items(d.seleccio)[0];
+  const selected = Array.isArray(choice) ? choice[0] : choice?.op || choice?.nom || (typeof choice === 'string' ? choice : r.accio);
+  const choiceText = actionLabel(selected || r.accio);
+  const isSafety = actionCategory(r.accio) === 'safety';
+  const riskEntries = items(d.riscos).map(v => Array.isArray(v) ? `${v[0]} · ${v[1]}` : readable(v));
+  const imp = items(d.impasses);
+  const prefs = items(d.preferencies);
+  const candidates = items(d.candidats);
+  const regCandidates = items(d.reg_candidats);
+  const regPrefs = items(d.reg_preferencies);
+  const regOrders = items(d.reg_ordres);
+  const rules = items(d.regles_disparades);
+  const invalid = items(d.invariants_ko).filter(Boolean);
+  const observation = d.observacions && typeof d.observacions === 'object' && !Array.isArray(d.observacions) ? d.observacions : {};
+  const obsEntries = Object.entries(observation);
+  const candidateRows = candidates.map((c) => {
+    const name = c?.nom || '—';
+    const state = c?.estat || '—';
+    const isChosen = String(name) === String(selected || r.accio);
+    const matching = prefs.filter(p => p.op === name);
+    const rejected = matching.some(p => String(p.tipus).toLowerCase() === 'rebuig') || /rebutj|descart|no-aplic/i.test(state);
+    return `<div class="demo-candidate ${isChosen ? 'is-selected' : ''} ${rejected ? 'is-rejected' : ''}">
+      <div class="demo-candidate-main"><span class="demo-candidate-symbol" aria-hidden="true">${isChosen ? '✓' : rejected ? '×' : '↗'}</span>
+        <div><b>${safe(actionLabel(name))}</b><small>${safe(name)}</small></div></div>
+      <div class="demo-candidate-extra"><span class="demo-state ${isChosen ? 'chosen' : rejected ? 'rejected' : ''}">${isChosen ? 'Seleccionat' : rejected ? 'Rebuig registrat' : safe(state)}</span><span class="demo-angle">${safe(c?.['angle-objectiu'])}°</span></div>
+      ${matching.length ? `<div class="demo-pref-list">${matching.map(p=>`<span><b>${safe(p.tipus)}</b> · ${safe(p.font)}${p.valor !== undefined ? ` <strong>${safe(p.valor)}</strong>` : ''}${p.op2 && p.op2 !== 'cap' ? ` vs ${safe(p.op2)}` : ''}</span>`).join('')}</div>` : '<div class="demo-pref-list muted">Sense preferències registrades per a aquest operador</div>'}
+    </div>`;
+  }).join('');
+  const dataCard = (id, numeral, title, subtitle, html, icon) => `<section id="${id}" class="demo-panel"><div class="demo-panel-head"><span class="demo-numeral">${numeral}</span><div><h4>${title}</h4><p>${subtitle}</p></div><span class="demo-panel-icon" aria-hidden="true">${icon}</span></div><div class="demo-panel-body">${html}</div></section>`;
+  const obsHtml = obsEntries.length ? `<dl class="demo-metrics">${obsEntries.map(([a,b])=>`<div><dt>${safe(human(a))}</dt><dd>${safe(readable(b))}</dd></div>`).join('')}</dl>` : json(d.observacions);
+  const riskHtml = `<div class="demo-risk-grid"><div class="demo-context-card"><span>Predicció del model</span>${json(d.prediccio)}</div><div class="demo-context-card"><span>Riscos elaborats</span><div class="demo-risk-tags">${riskEntries.length ? tags(riskEntries,'risk') : '<span class="demo-soft">Cap risc registrat</span>'}</div></div></div>`;
+  const prefsHtml = prefs.length ? `<div class="demo-pref-table"><div class="demo-pref-head"><span>Operador</span><span>Tipus</span><span>Valor</span><span>Font de la preferència</span></div>${prefs.map(p=>`<div class="demo-pref-row"><span>${safe(actionLabel(p.op))}${p.op2 && p.op2 !== 'cap' ? `<small>vs ${safe(actionLabel(p.op2))}</small>` : ''}</span><span><em>${safe(p.tipus)}</em></span><strong>${safe(p.valor)}</strong><span class="demo-source">${safe(p.font)}</span></div>`).join('')}</div>` : '<p class="demo-soft">No consten preferències explícites en aquest registre.</p>';
+  const regHtml = `<div class="demo-reg-stats"><div><small>Alternatives de reg</small><strong>${regCandidates.length}</strong></div><div><small>Preferències</small><strong>${regPrefs.length}</strong></div><div><small>Ordres emeses</small><strong>${regOrders.length}</strong></div></div><div class="demo-reg-columns"><div><h5>Operadors candidats</h5>${regCandidates.length ? regCandidates.map(c=>`<div class="demo-mini-row"><b>${safe(c.nom)}</b><span>${safe(c.estat)} · dosi ${safe(c.dosi)}</span></div>`).join('') : '<p class="demo-soft">Sense dades</p>'}</div><div><h5>Preferències de reg</h5>${regPrefs.length ? regPrefs.map(p=>`<div class="demo-mini-row"><b>${safe(p.op)}</b><span>${safe(p.tipus)} · ${safe(p.valor)} · ${safe(p.font)}</span></div>`).join('') : '<p class="demo-soft">Sense dades</p>'}</div></div><details class="demo-native-details"><summary>Ordres i explicació originals del reg</summary>${json({ordres:d.reg_ordres,explicacio:d.reg_explicacio})}</details>`;
+  target.innerHTML = `
+    <div class="demo-summary">
+      <div class="demo-summary-top"><div><span class="demo-eyebrow">DECISIÓ SELECCIONADA · CICLE ${safe(r.cicle)}</span><h4>${safe(sectorLabel(r.sector))} <span>·</span> ${safe(clock(r.hora))}</h4></div><span class="demo-clips-badge">● CLIPS real</span></div>
+      <div class="demo-summary-main"><div class="demo-decision-icon ${isSafety ? 'safety' : ''}" aria-hidden="true">${isSafety ? '◇' : '↗'}</div><div><small>Operador escollit</small><strong>${safe(choiceText)}</strong><p>${safe(prettyReason(r.motiu) || d.explicacio || 'Sense explicació textual disponible')}</p></div><div class="demo-angle-display"><span>ANGLE</span><b>${safe(r.angle_ordre ?? r.angle_real)}°</b></div></div>
+      <div class="demo-summary-bottom"><span><b>${candidates.length}</b> candidats de panell</span><span><b>${prefs.length}</b> preferències</span><span><b>${imp.length}</b> impasses</span><span><b>${rules.length}</b> activacions de regles · 3 sectors</span></div>
+    </div>
+    <nav class="demo-phase-nav" aria-label="Fases del raonament"><a href="#demo-perception">01 Percepció</a><a href="#demo-risk">02 Elaboració</a><a href="#demo-operators">03 Proposta</a><a href="#demo-evaluation">04 Avaluació</a><a href="#demo-result">05 Selecció</a><a href="#demo-irrigation">06 Reg</a><a href="#demo-monitor">07 Control</a></nav>
+    <div class="demo-section-label"><span>CADENA DE RAONAMENT</span><span>Fets i decisions del cicle seleccionat</span></div>
+    <div class="demo-panels">
+      ${dataCard('demo-perception','01','Percepció','Lectures originals del sector',obsHtml,'◉')}
+      ${dataCard('demo-risk','02','Elaboració','Predicció i valoració de riscos',riskHtml,'◈')}
+      ${dataCard('demo-operators','03','Proposta','Alternatives creades per les regles CLIPS',candidateRows || '<p class="demo-soft">No s’han capturat candidats en aquest cicle.</p>','◇')}
+      ${dataCard('demo-evaluation','04','Avaluació','Preferències explícites i fonts de decisió',prefsHtml,'≋')}
+      ${dataCard('demo-result','05','Deliberació i selecció',imp.length ? 'Hi ha impasses registrats' : 'Cicle sense impasse registrat',`<div class="demo-result-grid"><div><span>IMPASSES</span>${imp.length ? tags(imp,'risk') : '<strong class="demo-ok">Cap impasse</strong>'}</div><div><span>SELECCIÓ DEL MOTOR</span>${json(d.seleccio)}</div><div><span>ORDRE EMESA</span>${json(d.ordre)}</div></div><details class="demo-native-details"><summary>Explicació original CLIPS</summary>${json(d.explicacio)}</details>`,'◎')}
+      ${dataCard('demo-irrigation','06','Actuador de reg','Candidats, preferències i ordre de reg',regHtml,'≈')}
+      ${dataCard('demo-monitor','07','Monitoratge i seguretat','Estat final i invariants del cicle',`<div class="demo-monitor-grid"><div><small>Invariants vulnerats</small><strong class="${invalid.length ? 'demo-bad' : 'demo-ok'}">${invalid.length ? safe(invalid.length) : '0 · Sense violacions'}</strong></div><div><small>Fase final</small><strong>${safe(d.fase_final)}</strong></div><div><small>Regles disparades al cicle</small><strong>${safe(d.regles_total ?? rules.length)}</strong></div></div>${invalid.length ? json(invalid) : ''}`,'✓')}
+    </div>
+    <details class="demo-rules"><summary><span><b>Traça tècnica completa</b><small>Regles disparades durant el cicle global · inclou els tres sectors, no només el seleccionat</small></span><span class="demo-rule-count">${rules.length} activacions <span class="demo-chevron">⌄</span></span></summary><div class="demo-rules-body"><div class="demo-rules-notice">L’ordre d’aquesta llista reflecteix la traça del motor. No s’atribueix automàticament cada regla al sector seleccionat.</div>${rules.length ? `<ol class="demo-rule-lines">${rules.map((name,i)=>`<li><span>${String(i+1).padStart(3,'0')}</span><code>${safe(name)}</code></li>`).join('')}</ol>` : '<p class="demo-soft">No hi ha noms de regles disponibles.</p>'}</div></details>
+    <div class="demo-disclaimer"><span aria-hidden="true">ⓘ</span><p>Les dades provenen de les estructures del motor CLIPS capturades per la integració Python. Els elements visuals agrupen aquesta evidència; no calculen ni alteren les decisions. Les regles disparades corresponen al cicle complet.</p></div>`;
+}
+
 /* ================= Traçabilitat ================= */
 function buildTrace(run) {
   const idxOf = new Map(state.frames.map((f, i) => [f.cicle, i]));
@@ -523,8 +597,31 @@ function buildTrace(run) {
       <td class="why">${esc(prettyReason(r.motiu))}${r.reg_accio && r.reg_accio !== 'no-regar' && r.reg_motiu ? `<br><span class="reg-why">Reg: ${esc(prettyReason(r.reg_motiu))}</span>` : ''}</td></tr>`;
   }).join('');
   trace = { rows: [...body.querySelectorAll('tr')], cycleIdx: -1 };
-  trace.rows.forEach((tr) => tr.addEventListener('click', () => { stopPlayback(); renderPosition(Number(tr.dataset.c)); }));
+  defenseSelected = -1;
+  trace.rows.forEach((tr) => {
+    tr.tabIndex = 0;
+    tr.setAttribute('aria-label', `Inspeccionar decisió del sector ${sectorLabel(recs[Number(tr.dataset.i)].sector)} a les ${clock(recs[Number(tr.dataset.i)].hora)}`);
+    const inspect = () => {
+      stopPlayback();
+      trace.rows.forEach(row => { row.classList.remove('demo-inspected'); row.removeAttribute('aria-current'); });
+      tr.classList.add('demo-inspected'); tr.setAttribute('aria-current', 'true');
+      defenseSelected = Number(tr.dataset.i);
+      renderPosition(Number(tr.dataset.c)); renderDemoDetail(recs[Number(tr.dataset.i)]);
+      updateDefenseGuide();
+      $('demoInspector').scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    tr.addEventListener('click', inspect);
+    tr.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inspect(); } });
+  });
+  $('demoDetails').innerHTML = '<div class="demo-empty"><span aria-hidden="true">◈</span><h4>Selecciona una decisió</h4><p>Prem una fila de traçabilitat per explorar la seva cadena de raonament.</p></div>';
   applyTraceFilter();
+  updateDefenseGuide();
+  if ($('demoMode').checked && state.controller === 'soar' && trace.rows.length) {
+    const best = trace.rows.find(tr => state.run.records[Number(tr.dataset.i)]?.impas)
+      || trace.rows.find(tr => actionCategory(state.run.records[Number(tr.dataset.i)]?.accio) === 'safety')
+      || trace.rows[0];
+    best.click();
+  }
 }
 
 function applyTraceFilter() {
@@ -532,11 +629,18 @@ function applyTraceFilter() {
   const only = $('onlyIncidents').checked;
   let shown = 0;
   trace.rows.forEach((tr) => {
-    const ok = (sec === 'all' || tr.dataset.s === sec) && (!only || tr.dataset.inc === '1');
+    const rec = state.run?.records?.[Number(tr.dataset.i)];
+    const kindOk = defenseFilter === 'all'
+      || (defenseFilter === 'safety' && actionCategory(rec?.accio) === 'safety')
+      || (defenseFilter === 'impasse' && Boolean(rec?.impas))
+      || (defenseFilter === 'irrigation' && Number(rec?.reg_mm) > 0.05);
+    const ok = kindOk && (sec === 'all' || tr.dataset.s === sec) && (!only || tr.dataset.inc === '1');
     tr.hidden = !ok;
     if (ok) shown += 1;
   });
   $('traceCount').textContent = `${shown} de ${trace.rows.length} registres`;
+  $('defenseFilterCount').textContent = shown ? `${shown} casos` : 'Cap cas; prova un altre filtre';
+  updateDefenseGuide();
 }
 
 function updateTraceHighlight(idx) {
@@ -667,6 +771,7 @@ function buildPayload() {
   return {
     scenario: $('scenario').value, controller: state.controller, compare: $('compare').checked,
     seed: Number($('seed').value || 0), mode: $('mode').value || null, soil_init: $('soilInit').value || null,
+    demo: $('demoMode').checked,
     modifiers: readModifiers(),
   };
 }
@@ -708,6 +813,7 @@ function applyRun(run, runs, { play = true, keepSelection = false } = {}) {
   buildCharts(run);
   buildTrace(run);
   renderPosition(0);
+  updateDefenseGuide();
   if (prevSel && cards.has(prevSel)) {          // en canviar de dia es manté el sector seguit
     state.selected = prevSel;
     cards.get(prevSel).el.classList.add('selected');
@@ -725,7 +831,8 @@ async function runDay() {
   teardownPeriod();
   history.replaceState(null, '', location.pathname);
   const primary = data.runs.find((r) => r.controller === payload.controller) || data.runs[0];
-  applyRun(primary, data.runs);
+  applyRun(primary, data.runs, {play: !payload.demo});
+  if (payload.demo && payload.controller === "soar") { stopPlayback(); setTab("trace"); $("panel-trace").scrollIntoView({behavior:"smooth",block:"start"}); }
 }
 
 async function run() {
@@ -735,6 +842,106 @@ async function run() {
   if (days.length > 1) { await runPeriod(days); return; }
   setBusy(true);
   try { await runDay(); } catch (err) { showError(err.message || String(err)); } finally { setBusy(false); }
+}
+
+/* ================= Laboratori de casos CLIPS CP05 / CP06 ================= */
+let impasseLoadSerial = 0;
+function renderImpasseLab(result) {
+  const host = $('impasseLabResult');
+  const code = (v) => esc(String(v ?? '—'));
+  const verdict = result.ok ? 'Cas superat' : 'Hi ha discrepàncies';
+  const cards = result.cicles.map((c) => {
+    const imp = c.impasse ? `<span class="impasse-state found">IMPASSE: ${code(c.impasse)}</span>` : '<span class="impasse-state resolved">Sense impasse en aquest cicle</span>';
+    const obs = Object.entries(c.observacions).map(([k,v])=>`<div><dt>${code(k.replaceAll('-',' '))}</dt><dd>${code(v)}</dd></div>`).join('');
+    const risks = (c.riscos || []).map(r=>`<span class="impasse-pill">${code(r[0])}: ${code(r[1])}</span>`).join('') || '<span class="impasse-muted">Sense riscos</span>';
+    const selected = c.seleccio?.[0]?.[0] || c.ordres?.[0]?.[0] || '—';
+    const candidates = (c.candidats || []).map(x=>`<div class="impasse-choice ${x.operador === selected ? 'chosen' : ''}"><b>${code(x.operador)}</b><small>${code(x.estat)}</small>${x.operador === selected ? '<em>SELECCIONAT</em>' : ''}${(c.rebutjats||[]).includes(x.operador) ? '<em>REBUTJAT</em>' : ''}</div>`).join('') || '<p class="impasse-muted">No es registren candidats</p>';
+    const sources = (c.fonts_preferencia || []).map(x=>`<span class="impasse-pill">${code(x.join(' · '))}</span>`).join('') || '<span class="impasse-muted">Sense fonts registrades</span>';
+    const chunks = c.chunks_nous.length ? c.chunks_nous.map(x=>x.join(' · ')).join(', ') : 'Cap chunk nou';
+    const verdictText = c.correcte ? '✓ Verificat' : `⚠ ${(c.discrepancies||[]).map(code).join(' · ') || 'Resultat no verificat'}`;
+    return `<article class="impasse-cycle"><header><span class="impasse-cycle-number">CICLE ${c.numero}</span>${imp}<span class="impasse-cycle-ok ${c.correcte?'':'bad'}">${verdictText}</span></header>
+    <div class="impasse-cycle-head"><div><small>Operador seleccionat</small><h4>${code(selected)}</h4><p>${code(c.explicacio || c.seleccio?.[0]?.[1] || 'Sense explicació')}</p></div><div><small>Chunking</small><strong>${c.chunk_utilitzat ? 'Chunk reutilitzat' : chunks !== 'Cap chunk nou' ? 'Chunk creat' : 'Sense reutilització'}</strong><p>${code(chunks)}</p></div></div>
+    <div class="impasse-subgrid"><section><h5>01 · Observacions</h5><dl>${obs}</dl><h5>Riscos elaborats</h5><div class="impasse-pill-group">${risks}</div></section><section><h5>02 · Operadors candidats</h5><div class="impasse-choices">${candidates}</div></section><section><h5>03 · Fonts de preferència</h5><div class="impasse-pill-group">${sources}</div><h5>04 · Decisió i aplicació</h5><p>${code(JSON.stringify(c.ordres))}</p></section></div>
+    <details class="impasse-technical"><summary>Traça CLIPS original · ${c.regles_disparades} activacions · fase ${code(c.fase_final)}</summary><pre>${code(c.traca_clips || 'Sense sortida del motor')}</pre></details></article>`;
+  }).join('');
+  host.innerHTML = `<div class="impasse-result-head"><div><span class="demo-overline">${code(result.id)} · EXECUCIÓ AÏLLADA</span><h4>${code(result.titol)}</h4><p>${code(result.objectiu)}</p></div><span class="impasse-result-status ${result.ok ? 'ok':'bad'}">${verdict}</span></div><div class="impasse-cycle-grid">${cards}</div><p class="impasse-source">Font de les entrades i de les expectatives: <code>${code(result.font)}</code>. Les dades mostrades són de l'execució actual del motor, no d'una traça pregravada.</p>`;
+}
+async function runImpasseCase(caseId) {
+  const host = $('impasseLabResult');
+  const serial = ++impasseLoadSerial;
+  document.querySelectorAll('[data-impasse-case]').forEach(b=>{b.disabled=true;b.classList.toggle('selected',b.dataset.impasseCase===caseId)});
+  host.innerHTML = `<div class="impasse-working"><span class="impasse-spinner"></span>Executant ${esc(caseId)} amb el motor CLIPS…</div>`;
+  try {
+    const result = await api(`/api/defensa/impasses/${encodeURIComponent(caseId)}`);
+    if (serial === impasseLoadSerial) renderImpasseLab(result);
+  } catch(err) {
+    if (serial === impasseLoadSerial) host.innerHTML = `<p class="impasse-error">No s'ha pogut executar ${esc(caseId)}: ${esc(err.message || String(err))}</p>`;
+  } finally {
+    if (serial === impasseLoadSerial) document.querySelectorAll('[data-impasse-case]').forEach(b=>b.disabled=false);
+  }
+}
+
+/* ================ Mode Defensa: guia de presentació ================ */
+function updateDefenseGuide() {
+  const enabled = $('demoMode').checked;
+  const valid = Boolean(state.run && state.controller === 'soar' && state.run.records?.some(r => r.demo));
+  $('defenseModeStatus').textContent = enabled ? (valid ? '● Traça CLIPS disponible' : '◉ Preparat per capturar') : '○ Mode inactiu';
+  $('defenseModeStatus').classList.toggle('is-ready', valid);
+  $('demoLaunch').classList.toggle('is-active', enabled);
+  $('defenseRun').textContent = enabled ? 'Tornar a executar amb traça' : 'Activar i executar';
+  if (defenseSelected >= 0 && state.run?.records?.[defenseSelected]) {
+    const r = state.run.records[defenseSelected];
+    $('defenseGuideText').textContent = `${sectorLabel(r.sector)} · ${clock(r.hora)} · ${actionLabel(r.accio)}. Segueix les set fases i obre les regles disparades al final.`;
+  } else {
+    $('defenseGuideText').textContent = enabled ? 'Executa un dia amb SOAR; després selecciona una fila per veure els fets, candidats, preferències i regles.' : 'Activa el Mode Defensa, executa un dia amb SOAR i inspecciona una decisió real.';
+  }
+  $('defensePrev').disabled = !trace.rows.some(tr => !tr.hidden && Number(tr.dataset.i) < defenseSelected);
+  $('defenseNext').disabled = !trace.rows.some(tr => !tr.hidden && Number(tr.dataset.i) > defenseSelected);
+  $('defenseCopy').disabled = defenseSelected < 0;
+}
+function navigateDefense(delta) {
+  const visible = trace.rows.filter(tr => !tr.hidden);
+  if (!visible.length) return;
+  const pos = visible.findIndex(tr => Number(tr.dataset.i) === defenseSelected);
+  const next = visible[Math.min(visible.length-1,Math.max(0,pos+delta))];
+  next?.click();
+}
+function activateDefense() {
+  if (state.busy) return;
+  $('demoMode').checked = true;
+  state.controller = 'soar';
+  document.querySelectorAll('#controller button').forEach(btn => {
+    const active = btn.dataset.id === 'soar';
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-checked', String(active));
+  });
+  if (state.scope !== 'day') setScope('day');
+  $('advanced').open = false;
+  updateDefenseGuide();
+  run();
+}
+function copyDefenseSummary() {
+  const r = state.run?.records?.[defenseSelected];
+  if (!r) return;
+  const d = r.demo || {};
+  const body = [
+    'DEMOSTRACIÓ SOAR–CLIPS',
+    `Sector: ${sectorLabel(r.sector)} · Hora: ${clock(r.hora)}`,
+    `Acció: ${actionLabel(r.accio)}`,
+    `Motiu: ${prettyReason(r.motiu)}`,
+    `Candidats: ${JSON.stringify(d.candidats || [])}`,
+    `Preferències: ${JSON.stringify(d.preferencies || [])}`,
+    `Impasses: ${JSON.stringify(d.impasses || [])}`,
+    `Selecció: ${JSON.stringify(d.seleccio || [])}`,
+    `Regles de tot el cicle: ${JSON.stringify(d.regles_disparades || [])}`
+  ].join('\n');
+  navigator.clipboard?.writeText(body).then(() => {
+    $('defenseCopy').textContent = '✓ Copiat';
+  }).catch(() => {
+    const blob = new Blob([body],{type:'text/plain'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='traca-clips.txt';a.click();URL.revokeObjectURL(url);
+  });
 }
 
 /* ================= Períodes llargs ================= */
@@ -929,6 +1136,17 @@ function bindUi() {
   setRail(railOpen);
   $('scenario').addEventListener('change', () => loadScenario().catch((e) => showError(e.message)));
   $('runButton').addEventListener('click', () => (state.busy && state.job ? cancelPeriod() : run()));
+  $('demoLaunch').addEventListener('click', activateDefense);
+  $('defenseRun').addEventListener('click', activateDefense);
+  $('demoMode').addEventListener('change', updateDefenseGuide);
+  $('defensePrev').addEventListener('click', () => navigateDefense(-1));
+  $('defenseNext').addEventListener('click', () => navigateDefense(1));
+  $('defenseCopy').addEventListener('click', copyDefenseSummary);
+  document.querySelectorAll('[data-demo-filter]').forEach(btn => btn.addEventListener('click', () => {
+    defenseFilter = btn.dataset.demoFilter;
+    document.querySelectorAll('[data-demo-filter]').forEach(b=>b.classList.toggle('active',b===btn));
+    applyTraceFilter(); updateDefenseGuide();
+  }));
   $('emptyRun').addEventListener('click', run);
   $('jobCancel').addEventListener('click', cancelPeriod);
 
@@ -996,6 +1214,8 @@ async function init() {
   buildRibbonLegend();
   ribbon = new Ribbon($('ribbon'), { onSeek: (p) => { stopPlayback(); renderPosition(p); } });
   bindUi();
+  $('catalogLaunch').addEventListener('click', () => { setTab('catalog'); $('panel-catalog').scrollIntoView({behavior:'smooth',block:'start'}); });
+  initCatalog();
   try {
     twin = new DigitalTwin3D($('scene3d'), $('sceneTooltip'));
     twin.onPick = (id) => selectSector(id && id !== state.selected ? id : null);
