@@ -299,7 +299,8 @@ def main():
     json.dump({"versio": versio, "casos": len(df), "pass": int(len(df) - len(ko)), "fail": int(len(ko)),
                "fallades": ko[["id", "descripcio", "discrepancia"]].to_dict("records")},
               open(os.path.join(ARREL, "resultats", "E3", f"e3_llindars_{versio}.json"), "w"), indent=2, ensure_ascii=False)
+    return 0 if len(ko) == 0 and len(df) == len(CASOS) else 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

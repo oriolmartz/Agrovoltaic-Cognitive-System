@@ -98,7 +98,10 @@ def main():
         for e in r["errors_clips"]:
             print("    CLIPS:", e)
     os.makedirs(os.path.join(ARREL, "resultats", "E1"), exist_ok=True)
-    json.dump(res, open(os.path.join(ARREL, "resultats", "E1", "e1_regressio.json"), "w"), indent=2, ensure_ascii=False)
+    # Les comprovacions parcials no han de substituir el resum de tota la regressio.
+    sufix = "" if not sys.argv[1:] else "_" + "_".join(versions)
+    json.dump(res, open(os.path.join(ARREL, "resultats", "E1", f"e1_regressio{sufix}.json"), "w"),
+              indent=2, ensure_ascii=False)
     sys.exit(1 if not al_dia or any(r["fail"] or r["errors_clips"] for r in res) else 0)
 
 

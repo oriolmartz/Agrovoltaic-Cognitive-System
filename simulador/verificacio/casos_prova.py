@@ -418,12 +418,16 @@ def main():
     md += ["", f"**{n_ok} de {len(resum)} casos correctes.** Hi ha un cas més amb dades reals de dies que no "
            "es van fer servir durant el desenvolupament: és `escenaris/cas_no_vist_tramuntana.json` "
            "(vegeu el README).", ""] + detall
-    with open(os.path.join(d, "CASOS_PROVA.md"), "w", encoding="utf-8") as f:
-        f.write("\n".join(md))
+    informe = "\n".join(md)
+    # Tant el document resum de simulador/ com el de resultats/ descriuen la mateixa execucio.
+    for dest in (os.path.join(d, "CASOS_PROVA.md"), os.path.join(ARREL, "CASOS_PROVA.md")):
+        with open(dest, "w", encoding="utf-8") as f:
+            f.write(informe)
     for cas, ok, n in resum:
         print(f"{cas['id']} {'OK ' if ok else 'KO '} {cas['titol']}")
     print(f"\n{n_ok}/{len(resum)} casos correctes -> {os.path.join(d, 'CASOS_PROVA.md')}")
+    return 0 if n_ok == len(resum) else 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

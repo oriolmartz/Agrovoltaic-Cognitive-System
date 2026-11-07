@@ -5,36 +5,35 @@ Sistema basat en regles per a una instal·lació agrovoltaica, amb un nucli cogn
 ## Arquitectura
 
 ```text
-ontologia_domini.rdf
-        │  esquema autoritatiu: classes, propietats, domain/range
-        │
-        └──── owl:imports ◄──── ontologia_model.rdf
-                              │  ABox: només instàncies de planta
-                              ▼
-simulador/ontology_loader.py
-        │  RDFLib: validació TBox→ABox + projecció
-        ▼
-fets CLIPS de topologia
-(sector, cultiu, panell, estat-sensor)
+ontologia_domini.rdf     (TBox, vocabulari i objectius)
+        ↑ owl:imports
+ontologia_reg.rdf        (mòdul de reg, llindars i prioritats)
+        ↑ owl:imports
+ontologia_model.rdf      (ABox, sectors, panells i sensors)
         │
         ▼
-clips_core/soar.clp
-        │  elaboració, candidats, preferències,
-        │  impasses, selecció, aplicació i memòria
+simulador/ontology_loader.py (RDFLib: validació i projecció)
+        │
         ▼
-ordre-actuador + explicació
+fets CLIPS de topologia, objectius i reg
+        │
+        ▼
+simulador/clips_core/soar.clp
+        │  elaboració, candidats, preferències, impasses,
+        │  selecció, aplicació i memòria
+        ▼
+ordre-actuador + ordre-reg + explicacions
 ```
 
-`ontologia_domini.rdf` és el **contracte conceptual autoritatiu**: té un IRI propi (`OntologiaDomini`), defineix classes, propietats, jerarquies i `domain/range`, i conserva només cinc individus canònics d'objectiu que formen part del vocabulari del domini. `ontologia_model.rdf` té un IRI diferent (`OntologiaModel`), l'importa explícitament amb `owl:imports` i conté només les instàncies concretes de la planta. `ontology_loader.py` valida aquesta separació i només després projecta l'ABox a fets CLIPS. Python no avalua candidats ni selecciona accions: **la decisió continua íntegrament dins de CLIPS**.
-
-Els llindars agronòmics i els objectius de control continuen explícits a CLIPS perquè l'ontologia actual encara no n'instancia els valors operacionals.
+`ontologia_domini.rdf` defineix el vocabulari general, `ontologia_reg.rdf` n'estén el coneixement del reg (amb IRI propi) i `ontologia_model.rdf` conté les instàncies de la planta. Els mòduls es vinculen amb `owl:imports`; `ontology_loader.py` valida la coherència abans de projectar-ne els fets a CLIPS. Els llindars del reg s'obtenen de `ontologia_reg.rdf`; alguns llindars mecànics i heurístics del controlador continuen definits a CLIPS. Python no avalua candidats ni selecciona accions: **la decisió simbòlica de panell i reg continua dins de CLIPS**.
 
 ## Estructura
 
 ```text
 .
 ├── ontologia_domini.rdf       # esquema del domini + objectius canònics
-├── ontologia_model.rdf        # ABox: instàncies de planta; importa el domini
+├── ontologia_reg.rdf          # reg: configuració, prioritats i conflictes
+├── ontologia_model.rdf        # ABox: instàncies de planta; importa domini i reg
 ├── history/                   # snapshots CLIPS monolítics congelats
 └── simulador/
     ├── ontology_loader.py     # RDF -> model Python -> fets CLIPS
@@ -119,7 +118,7 @@ python verificacio/e3_llindars.py
 python verificacio/e1_regressio.py
 ```
 
-Amb la v1_9, E1 ha de donar fail 0: també la versió canònica (`actual`, 90 proves), que es prova amb la topologia de `ontologia_model.rdf` (E1 la projecta a `clips_core/topologia_rdf.clp`, un fitxer generat). Les snapshots històriques es reprodueixen sense injectar l'ontologia. E0 ha de sortir OK, E3 75/75 i els casos de prova 14/14: 
+E1 ha de registrar `fail = 0` a totes les versions (nucli canònic `actual`: 90/90); les snapshots històriques es proven amb la seva topologia original. E0 ha de sortir OK, E3 **85/85** i els casos CP **19/19**. Les execucions ràpides d'E2 no substitueixen la campanya completa (24.500 casos i 73.500 decisions): els resultats complets es conserven a `resultats/E2/`, i la graella ràpida del 07/11 es conserva amb el sufix `_rapid_20261107`. Des d'ara, `--rapid` escriu fitxers `_rapid` separats i `e1_regressio.py actual` escriu `e1_regressio_actual.json`, sense sobreescriure el resum general. `casos_prova.py` sincronitza els dos informes CP; les proves CP/E2/E3 retornen codi de sortida diferent de zero quan detecten fallades.
 
 ## Regla d'iteració
 
@@ -139,7 +138,7 @@ python -m pip install -r requirements.txt
 python webapp.py        # http://127.0.0.1:8000
 ```
 
-La web és només una capa de presentació: l'angle dels panells i, des de la v1_9, també el reg es decideixen dins de CLIPS; `webapp.py` només executa el simulador i serveix les dades.
+La web és només una capa de presentació: l'angle dels panells i el reg es decideixen dins de CLIPS; `webapp.py` només executa el simulador i serveix les dades. El **Mode Defensa** activa la captura de les regles disparades i mostra les alternatives i preferències (amb valor) de panell i reg; el mode habitual no activa `watch rules`, per evitar-ne el cost. La comprovació interactiva final s'ha de fer al navegador sobre l'entorn d'execució.
 
 ### Simular dies o mesos
 

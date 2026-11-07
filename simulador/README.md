@@ -56,7 +56,7 @@ python verificacio/e0_ontologia.py          # E0  domini -> validació model -> 
 python verificacio/e1_regressio.py          # E1  regressió: la versió canònica i totes les històriques
 python verificacio/e2_graella.py            # E2  graella exhaustiva (--rapid: versió reduïda)
 python verificacio/e3_llindars.py           # E3  75 casos als llindars (18 de reg)
-python verificacio/casos_prova.py           # 14 casos de prova documentats -> CASOS_PROVA.md
+python verificacio/casos_prova.py           # 19 casos de prova documentats -> resultats/casos_prova/CASOS_PROVA.md
 python simulador.py escenaris/dia_normal.json                  # un dia, amb la traça del CLIPS
 python simulador.py escenaris/cas_no_vist_tramuntana.json      # cas no vist (dades reals)
 python experiments.py E4                    # seguretat amb vent real (Cantallops)
@@ -199,13 +199,15 @@ TKDE), dona el marc general amb què encaixen totes les proves:
 - **"Tot el sistema, no només la base de coneixement"**: l'agenda (el motor d'inferència, E11), l'explicació i les fases (invariants i E18), i la interfície amb l'ontologia (E0).
 - **Mutation testing** per mesurar com de bones són les proves (E17).
 
-## Resultats (06/11/2026, versió final)
+## Resultats conservats (07/11/2026; campanyes identificades per versió)
 
 Detalls a `resultats/<E>/`. El catàleg complet (pregunta, perspectiva, disseny i test de cada
-experiment) és a `EXPERIMENTS.md`, i les iteracions a `REGISTRE_ITERACIONS.md`. **Tot s'ha tornat a
-executar amb la versió final congelada** (iteració 36: blocs 1–3, amb el model físic nou, el calendari
-de cultiu, la percepció robusta i l'índex de la memòria episòdica). E9 i E10 continuen comparant les
-versions antigues a propòsit.
+experiment) és a `EXPERIMENTS.md`, i les iteracions a `REGISTRE_ITERACIONS.md`.
+Les campanyes s'han executat en diferents iteracions; les històriques no s'han de presentar com
+si totes s'haguessin tornat a executar sobre el mateix commit. E1 conserva la regressió completa
+(`actual` i snapshots històriques); E2 conserva la graella completa de 24.500 casos i, amb nom
+diferenciat, una execució ràpida posterior. E9 i E10 comparen versions anteriors intencionadament.
+Les xifres següents descriuen els resultats emmagatzemats, no una nova execució d'aquesta entrega.
 
 ### Verificació
 
@@ -233,7 +235,7 @@ Les regles que E2 no dispara mai són de tres menes:
 Els **23 mutants d'E17 que sobreviuen** (iteració 37) són de cinc menes:
 - **Llindars del reg que l'ontologia sobreescriu** (anticipació, pluja i hora fresca: L10–L12). El mutant canvia el valor per defecte de la plantilla, però `reg-config` es carrega de l'ontologia de reg: són mutants **equivalents**.
 - **Regles que només escriuen o netegen** (`explica-decisio`, `detecta-oscillacio`, `avisa-dades-pendents`, `avisa-fallada-actuador`, `avisa-fallada-reg`, `percep-reg-correcte`, `epmem-neteja-consultes`, `epmem-neteja-resultats`): les proves miren la decisió, no el text de la traça ni els fets temporals que s'esborren.
-- **Preferències numèriques petites** del panell (`avalua-energia-mantenir`, `-moviment`, `-estabilitat`) i del reg (`avalua-reg-hora-fresca`, `-energia`, `-estalvi`): desempaten casos que cap prova no fixa (vegeu la discrepància de CP01).
+- **Preferències numèriques petites** del panell (`avalua-energia-mantenir`, `-moviment`, `-estabilitat`) i del reg (`avalua-reg-hora-fresca`, `-energia`, `-estalvi`): desempaten casos que cap prova no fixa (CP01 és un exemple històric de discrepància, resolta a la iteració 30).
 - **Desempat pel reforç** (`desfa-empat-per-reforc`): les proves amb reforç no generen cap empat real.
 - **Camins redundants de seguretat** (`percep-sense-observacio`, `elabora-risc-mecanic-per-previsio`, `avalua-rebuig-fora-de-limits`, `detecta-impas-sense-candidat`, `resol-sense-candidat`): una altra regla pren la mateixa decisió (p. ex., sense lectura de vent, l'impasse de dades també fa servir la previsió). Són redundàncies volgudes en seguretat.
 
@@ -250,8 +252,10 @@ cada cas.
 - **Els casos fallen si un cicle no acaba** (iteració 35): sense aquesta comprovació, un bucle de
   regles podia fer passar un cas que esperava "cap risc". Va passar dues vegades (CP16 i CP18) i
   totes dues es van corregir.
-- **CP01 tenia una discrepància analitzada:** al segon cicle el sistema repetia `orientar-produccio`
-  en lloc de `mantenir-posicio`. Des de la iteració 30, `orientar-produccio` només es proposa fora de l'angle òptim.
+- **CP01 resolt i documents sincronitzats:** inicialment, al segon cicle, el sistema repetia `orientar-produccio`
+  en lloc de `mantenir-posicio`. La iteració 30 va limitar la proposta de producció quan el panell ja és a l'angle òptim.
+  La traça actual registra `mantenir-posicio`, i tant `CASOS_PROVA.md` com `resultats/casos_prova/CASOS_PROVA.md`
+  recullen **19/19**. L'informe anterior queda arxivat a `historic/CASOS_PROVA_13_de_14_historic.md`.
 - **Cas no vist (tramuntana del 27/03/2023 a Cantallops):** SOAR, 0 violacions i 2 h d'exposició.
   Seguidor comercial, 5 violacions i 11 h d'exposició.
 

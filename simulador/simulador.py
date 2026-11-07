@@ -131,6 +131,7 @@ class ControladorSOAR:
                           smem_arxiu=cc.get("smem_arxiu", ""),
                           estrategia=cc.get("estrategia"),
                           vigila_regles=cc.get("vigila_regles", False),
+                          captura_demo=bool(cfg.get("demo_trace", False)),
                           conserva_sortida=bool(cfg.get("traca_dir")),
                           oblit=cc.get("oblit"), reg_config=cc.get("reg_config"))
         self.c = ControladorCLIPS(self.clp, **self._args)
@@ -202,14 +203,14 @@ class ControladorSOAR:
                 "demo": {
                     "observacions": e.obs[s], "prediccio": e.pred.get(s),
                     "riscos": r.riscos.get(s, []),
-                    "candidats": [{"nom": op, "estat": estat} for op, estat in r.candidats.get(s, {}).items()],
-                    "preferencies": [{"op": op, "tipus": tipus, "font": font} for font, tipus, op in sorted(r.fonts_pref.get(s, set()))],
+                    "candidats": sorted(r.candidats_detall.get(s, []), key=lambda x: x["nom"]),
+                    "preferencies": sorted(r.preferencies_detall.get(s, []), key=lambda x: (x["op"], x["tipus"], x["font"])),
                     "seleccio": r.seleccionat.get(s, []),
                     "ordre": r.ordres.get(s, []),
                     "explicacio": r.explicacio.get(s, ""),
                     "impasses": [t for t, sector in r.impasses if sector == s],
-                    "reg_candidats": [],
-                    "reg_preferencies": [],
+                    "reg_candidats": sorted(r.reg_candidats.get(s, []), key=lambda x: x["nom"]),
+                    "reg_preferencies": sorted(r.reg_preferencies.get(s, []), key=lambda x: (x["op"], x["tipus"], x["font"])),
                     "reg_ordres": r.reg.get(s, []),
                     "reg_explicacio": r.reg_explicacio.get(s, ""),
                     "regles_disparades": r.regles,

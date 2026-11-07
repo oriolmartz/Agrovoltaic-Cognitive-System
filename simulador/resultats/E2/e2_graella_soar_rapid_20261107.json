@@ -1,0 +1,70 @@
+{
+  "versio": "soar",
+  "casos": 1890,
+  "decisions": 5670,
+  "segons": 363.3,
+  "violacions_per_propietat": {},
+  "violacions_monotonia_vent": 0,
+  "regles_total": 88,
+  "regles_disparades": 52,
+  "cobertura_regles_pct": 59.1,
+  "regles_no_disparades": [
+    "ACCIO::avisa-fallada-actuador",
+    "ACCIO::avisa-fallada-reg",
+    "ACCIO::detecta-oscillacio",
+    "DECISIO::desfa-empat-per-reforc",
+    "DECISIO::detecta-impas-empat",
+    "DECISIO::detecta-impas-restriccio-fallida",
+    "DECISIO::detecta-impas-sense-candidat",
+    "DELIBERACIO::avalua-energia-produccio",
+    "DELIBERACIO::avalua-estabilitat",
+    "DELIBERACIO::avalua-memoria",
+    "DELIBERACIO::avalua-memoria-consulta",
+    "DELIBERACIO::avalua-memoria-semantica",
+    "DELIBERACIO::avalua-rebuig-fora-de-limits",
+    "DELIBERACIO::avalua-rebuig-per-fallada",
+    "DELIBERACIO::elabora-risc-per-sensibilitat",
+    "DELIBERACIO::percep-accio-correcta",
+    "DELIBERACIO::percep-fallada-actuador",
+    "DELIBERACIO::percep-fallada-reg",
+    "DELIBERACIO::percep-lectura-incoherent",
+    "DELIBERACIO::percep-reg-correcte",
+    "DELIBERACIO::percep-sense-observacio",
+    "DELIBERACIO::percep-sensor-no-valid",
+    "DELIBERACIO::percep-ultima-lectura",
+    "DELIBERACIO::proposa-orientar-produccio",
+    "IMPAS::resol-empat",
+    "IMPAS::resol-restriccio-fallida",
+    "IMPAS::resol-sense-candidat",
+    "MEMORIA::epmem-emmagatzema",
+    "MEMORIA::epmem-neteja-consultes",
+    "MEMORIA::epmem-neteja-resultats",
+    "MEMORIA::epmem-persisteix",
+    "MEMORIA::epmem-processa-query",
+    "MEMORIA::epmem-processa-temporal",
+    "MEMORIA::epmem-valora-resultat",
+    "REFORC::rl-recompensa-cicle-anterior",
+    "REFORC::rl-registra"
+  ],
+  "decisions_per_accio": {
+    "posicio-seguretat": 4514,
+    "mantenir-posicio": 508,
+    "sollicitar-dades": 324,
+    "orientar-ombra": 324
+  },
+  "impasses": {
+    "cap": 4860,
+    "dades-insuficients": 810
+  },
+  "reg": {
+    "casos": 1680,
+    "decisions": 5040,
+    "violacions_per_propietat": {},
+    "violacions_monotonia_dosi": 0,
+    "decisions_per_accio": {
+      "no-regar": 2960,
+      "regar-parcial": 1306,
+      "regar-complet": 774
+    }
+  }
+}

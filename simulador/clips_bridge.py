@@ -91,6 +91,10 @@ class ResultatCicle:
     chunks_nous: list = field(default_factory=list)   # [(nom, impas-origen)]
     fonts_pref: dict = field(default_factory=dict)    # sector -> {font, ...} (chunk-*, RL...)
     candidats: dict = field(default_factory=dict)     # sector -> {op: estat}
+    candidats_detall: dict = field(default_factory=dict)   # sector -> llista de candidats (mode defensa)
+    preferencies_detall: dict = field(default_factory=dict)  # sector -> llista de preferencies (mode defensa)
+    reg_candidats: dict = field(default_factory=dict)  # sector -> llista d'alternatives (mode defensa)
+    reg_preferencies: dict = field(default_factory=dict)  # sector -> llista de preferencies (mode defensa)
     rebutjats: dict = field(default_factory=dict)     # sector -> {op}
     reg: dict = field(default_factory=dict)           # sector -> [(accio, dosi %, motiu)]   (v1_9)
     reg_explicacio: dict = field(default_factory=dict)
@@ -113,7 +117,8 @@ class ControladorCLIPS:
                  chunking: bool | None = None, epmem: bool | None = None,
                  smem: bool | None = None, smem_finestra: int = 0, smem_arxiu: str = "",
                  estrategia: str | None = None, vigila_regles: bool = False,
-                 conserva_sortida: bool = False, neteja: bool = True, oblit: dict | None = None,
+                 captura_demo: bool = False, conserva_sortida: bool = False,
+                 neteja: bool = True, oblit: dict | None = None,
                  reg_config: dict | None = None):
         self.fitxer = os.path.abspath(fitxer_clp)
         # Per compatibilitat, el CLP actiu usa automàticament l'ontologia de model.
@@ -127,6 +132,7 @@ class ControladorCLIPS:
         self._plantilles = None   # nom -> MODUL::nom, per a _fets
         self.env.add_router(self.cap)
         self.vigila_regles = vigila_regles
+        self.captura_demo = bool(captura_demo)
         self.conserva_sortida = conserva_sortida
         self.neteja = neteja
         self._chunks_coneguts: set[str] = set()
@@ -420,13 +426,15 @@ class ControladorCLIPS:
 
     def _llegeix(self, c: int) -> ResultatCicle:
         r = ResultatCicle(cicle=c)
+        # La captura visual no afegeix lectures ni cost als experiments habituals (E2, E11, E23...).
+        llegits = self.LLEGITS + (("operador-reg",) if self.captura_demo else ())
         # cada plantilla omple les seves pròpies estructures: llegir-les plantilla per plantilla dona el
         # mateix resultat que recorrer tota la llista de fets
-        for f in (f for t in self.LLEGITS for f in self._fets(t)):
+        for f in (f for t in llegits for f in self._fets(t)):
             t = f.template.name
             if t in ("ordre-actuador", "operador-seleccionat", "explicacio", "risc", "impas",
                      "preferencia", "operador", "ordre-reg", "explicacio-reg",
-                     "preferencia-reg") and int(f["cicle"]) != c:
+                     "preferencia-reg", "operador-reg") and int(f["cicle"]) != c:
                 continue
             if t == "ordre-actuador":
                 r.ordres.setdefault(str(f["sector"]), []).append((str(f["accio"]), float(f["angle-objectiu"])))
@@ -444,8 +452,24 @@ class ControladorCLIPS:
                 r.fonts_pref.setdefault(str(f["sector"]), set()).add((str(f["font"]), str(f["tipus"]), str(f["op"])))
                 if str(f["tipus"]) == "rebuig":
                     r.rebutjats.setdefault(str(f["sector"]), set()).add(str(f["op"]))
+                if self.captura_demo:
+                    r.preferencies_detall.setdefault(str(f["sector"]), []).append({
+                        "op": str(f["op"]), "op2": str(f["op2"]), "tipus": str(f["tipus"]),
+                        "valor": float(f["valor"]), "font": str(f["font"]),
+                    })
             elif t == "operador":
                 r.candidats.setdefault(str(f["sector"]), {})[str(f["nom"])] = str(f["estat"])
+                if self.captura_demo:
+                    r.candidats_detall.setdefault(str(f["sector"]), []).append({
+                        "nom": str(f["nom"]), "estat": str(f["estat"]),
+                        "angle-objectiu": float(f["angle-objectiu"]),
+                    })
+            elif t == "operador-reg":
+                if self.captura_demo:
+                    r.reg_candidats.setdefault(str(f["sector"]), []).append({
+                        "nom": str(f["nom"]), "estat": str(f["estat"]),
+                        "dosi": float(f["dosi"]),
+                    })
             elif t == "ordre-reg":
                 r.reg.setdefault(str(f["sector"]), []).append((str(f["accio"]), float(f["dosi"]), str(f["motiu"])))
             elif t == "explicacio-reg":
@@ -453,6 +477,11 @@ class ControladorCLIPS:
             elif t == "preferencia-reg":
                 if str(f["tipus"]) == "rebuig":
                     r.reg_rebutjats.setdefault(str(f["sector"]), set()).add(str(f["op"]))
+                if self.captura_demo:
+                    r.reg_preferencies.setdefault(str(f["sector"]), []).append({
+                        "op": str(f["op"]), "tipus": str(f["tipus"]),
+                        "valor": float(f["valor"]), "font": str(f["font"]),
+                    })
             elif t == "epmem-consulta":
                 if int(f["cicle"]) == c and str(f["tipus"]) == "query":
                     r.consultes_epmem[str(f["sector"])] = r.consultes_epmem.get(str(f["sector"]), 0) + 1

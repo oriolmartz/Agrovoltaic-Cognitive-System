@@ -211,7 +211,8 @@ def main():
     files = [f for fs in resultats for f in fs]
     df = pd.DataFrame(files)
     versio = os.path.splitext(os.path.basename(a.clp))[0]
-    out = os.path.join(ARREL, "resultats", "E2", f"e2_graella_{versio}.csv")
+    sufix = "_rapid" if a.rapid else ""
+    out = os.path.join(ARREL, "resultats", "E2", f"e2_graella_{versio}{sufix}.csv")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     df.to_csv(out, index=False)
 
@@ -231,7 +232,7 @@ def main():
         res_reg = paralel.mapa(_un_cas_reg, casos_reg, a.processos, initializer=_init,
                                initargs=(os.path.abspath(a.clp),), titol="E2 graella del reg")
         df_reg = pd.DataFrame([f for fs in res_reg for f in fs])
-        df_reg.to_csv(os.path.join(ARREL, "resultats", "E2", f"e2_reg_{versio}.csv"), index=False)
+        df_reg.to_csv(os.path.join(ARREL, "resultats", "E2", f"e2_reg_{versio}{sufix}.csv"), index=False)
         ko_r = df_reg[df_reg["ko"] != ""]
         mono_r = monotonia_reg(df_reg)
         resum_reg = {"casos": len(casos_reg), "decisions": len(df_reg),
@@ -264,7 +265,7 @@ def main():
     }
     if resum_reg is not None:
         resum["reg"] = resum_reg
-    json.dump(resum, open(os.path.join(ARREL, "resultats", "E2", f"e2_graella_{versio}.json"), "w"),
+    json.dump(resum, open(os.path.join(ARREL, "resultats", "E2", f"e2_graella_{versio}{sufix}.json"), "w"),
               indent=2, ensure_ascii=False, default=str)
     print(json.dumps(resum, indent=2, ensure_ascii=False, default=str))
     if len(ko):
@@ -272,7 +273,10 @@ def main():
         print("\nExemples de violacions:\n", ex.to_string())
     if len(mono):
         print("\nExemples de no-monotonia:\n", mono.drop(columns=["regles"]).head(10).to_string())
+    # Una execucio amb errors no pot aparèixer com a satisfactoria a un script de regressio.
+    reg_ko = bool(resum_reg and (resum_reg["violacions_per_propietat"] or resum_reg["violacions_monotonia_dosi"]))
+    return 1 if len(ko) or len(mono) or reg_ko else 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

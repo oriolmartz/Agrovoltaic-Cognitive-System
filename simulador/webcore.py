@@ -98,7 +98,10 @@ def build_cfg(params: dict, controlador: str) -> dict:
         raise WebError("Controlador desconegut")
     cfg["controlador"]["tipus"] = controlador
     cfg["demo_trace"] = bool(params.get("demo", False)) and controlador == "soar"
-    # La UI no escriu traces per defecte. Les traces completes continuen amb el CLI i els experiments.
+    # Captura de regles exclusivament per a la demostracio, no per a simulacions habituals.
+    if cfg["demo_trace"]:
+        cfg["controlador"]["vigila_regles"] = True
+    # La UI no escriu fitxers de traça per defecte; les traces del CLI continuen separades.
     cfg.pop("traca_dir", None)
     mode = params.get("mode")
     if mode:
