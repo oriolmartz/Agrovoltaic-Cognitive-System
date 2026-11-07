@@ -1,0 +1,10 @@
+variant,k_condicions_neutres,estrategia,ordre_parella,posicio_vent_critic,dispars_avaluacio,activacions_totals,activacions_vent_critic,activacions_moviment,regles_disparades_cicle,cicle_complet,decisio_Sector_1,decisio_Sector_2,decisio_Sector_3,mateixes_regles_que_original
+original,0,simplicity,moviment > moviment > moviment > vent-critic,4,18,115,1,3,98,True,posicio-seguretat 0,mantenir-posicio 30,mantenir-posicio 30,True
+original,0,complexity,vent-critic > moviment > moviment > moviment,1,18,115,1,3,98,True,posicio-seguretat 0,mantenir-posicio 30,mantenir-posicio 30,True
+original,0,depth,vent-critic > moviment > moviment > moviment,1,18,115,1,3,98,True,posicio-seguretat 0,mantenir-posicio 30,mantenir-posicio 30,True
+especificitat igualada,2,simplicity,moviment > moviment > moviment > vent-critic,4,18,115,1,3,98,True,posicio-seguretat 0,mantenir-posicio 30,mantenir-posicio 30,True
+especificitat igualada,2,complexity,moviment > moviment > moviment > vent-critic,4,18,115,1,3,98,True,posicio-seguretat 0,mantenir-posicio 30,mantenir-posicio 30,True
+especificitat igualada,2,depth,vent-critic > moviment > moviment > moviment,1,18,115,1,3,98,True,posicio-seguretat 0,mantenir-posicio 30,mantenir-posicio 30,True
+especificitat invertida,3,simplicity,vent-critic > moviment > moviment > moviment,1,18,115,1,3,98,True,posicio-seguretat 0,mantenir-posicio 30,mantenir-posicio 30,True
+especificitat invertida,3,complexity,moviment > moviment > moviment > vent-critic,4,18,115,1,3,98,True,posicio-seguretat 0,mantenir-posicio 30,mantenir-posicio 30,True
+especificitat invertida,3,depth,vent-critic > moviment > moviment > moviment,1,18,115,1,3,98,True,posicio-seguretat 0,mantenir-posicio 30,mantenir-posicio 30,True
