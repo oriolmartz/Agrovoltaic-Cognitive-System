@@ -214,7 +214,7 @@ versions antigues a propòsit.
 | **E3** llindars (85 casos) | **85/85**: els de la v1_8 i del reg, F01–F08 (fase fenològica) i M01–M02 (memòria amb vent) |
 | **E11** agenda (20 dies) | Estratègies `depth`, `breadth`, `lex` i `mea`, especificitat (`simplicity` i `complexity`) i `random` amb 5 llavors: **0 decisions diferents** de 840 (ni del panell ni del reg). **Salience:** si les transicions de fase passen de −10 a 0 (o se'n treu tota la salience), **no es tanca cap cicle** amb cap estratègia: 0 decisions de 840. La salience −10 de les transicions és imprescindible |
 | **E13** coneixement après (5 execucions × 20 dies) | 0 problemes a les 9 restriccions (K1–K8), en 100 fotos. En acabar: 1–4 chunks, 70–76 rajoles Q (\|Q\| ≤ 0,54) i 840 episodis (exactament 1 per sector i cicle) |
-| **E17** mutacions (112 mutants, iteració 36) | **80 detectats (71,4 %)**: totes les substitucions d'operador, pes i salience; 9 de 12 llindars; 63 de 92 regles esborrades. **Totes les regles noves dels blocs 1–3 que canvien una decisió moren** (fase fenològica, sensors avariats, lectures impossibles, historial, fallada del reg, memòria limitada amb vent, restriccions incompatibles). El percentatge baixa respecte del 80,8 % de la v1_9 perquè hi ha 13 regles noves de memòria semàntica i de monitoratge que no canvien cap decisió observable. Els 32 que sobreviuen, a sota |
+| **E17** mutacions (112 mutants, iteració 36) | *Pendent de repetir amb les proves d'E1 arreglades (en una còpia a part: 89/112, 79 %).* **80 detectats (71,4 %)**: totes les substitucions d'operador, pes i salience; 9 de 12 llindars; 63 de 92 regles esborrades. **Totes les regles noves dels blocs 1–3 que canvien una decisió moren** (fase fenològica, sensors avariats, lectures impossibles, historial, fallada del reg, memòria limitada amb vent, restriccions incompatibles). El percentatge baixa respecte del 80,8 % de la v1_9 perquè hi ha 13 regles noves de memòria semàntica i de monitoratge que no canvien cap decisió observable. Els 32 que sobreviuen, a sota |
 | **E18** cicle SOAR (280 cicles, 17 amb impasse) | **0 cicles amb l'ordre de fases incorrecte, 0 regles fora de la seva fase, 0 cicles amb més o menys d'una decisió** per sector. Només surten dos recorreguts: el normal (263) i el que passa una vegada per l'impasse (17). **Control negatiu** (transicions a salience 0): detectats 28 de 28 cicles, tots per decisions que falten (C3). L'ordre de fases no es pot trencar perquè cada regla demana el fet `(fase (nom X))`: el que passa és que hi ha regles que ja no arriben a disparar-se. És la resposta a "fer dues accions seguides": el motor no ho permet, i ho comprova cada cicle |
 | **Invariants** | 0 violacions en totes les simulacions, també les del reg (I10–I12) |
 
@@ -462,6 +462,8 @@ Amb el calendari de cultiu (bloc 1), fora de temporada no es rega, i per això t
 
 **E20 – memòria semàntica** (iteració 29; Ribera de Sió, tot el 2023, dies seguits; 2 execucions × 12 mesos = 24 blocs; versió final):
 
+> **Pendent de repetir:** la clau nova de la memòria semàntica (fase del cultiu i sol que puja o baixa) i la finestra amb mínim de casos canvien les dues columnes de semàntica. Les de sense memòria i episòdica no canvien: s'ha comprovat que 30 dies donen decisions idèntiques amb la versió anterior i amb la nova.
+
 | Per mes (3 sectors) | Sense memòria | Episòdica | Episòdica + semàntica | Semàntica amb finestra |
 |---|---|---|---|---|
 | Energia (kWh) | 8.969 | 8.885 | 8.979 | 8.979 |
@@ -491,6 +493,8 @@ Amb el calendari de cultiu (bloc 1), fora de temporada no es rega, i per això t
 | Creixement (ms per cicle i dia) | 0,60 | 1,53 | 1,22 | 1,07 |
 | Segons de paret per dia (mitjana) | 3,6 | 10,1 | 8,5 | 6,8 |
 | Minuts de paret, 1 any | 22 | 61 | 52 | 41 |
+
+Les dues columnes de semàntica són d'abans de la clau nova i s'han de tornar a mesurar.
 | Episodis a la MT al final | 0 | 15.288 | 15.288 | 294 |
 
 - **Extrapolació:** el cost per cicle creix de manera aproximadament lineal amb els dies, de manera que el temps total creix amb el quadrat de la durada. Si el creixement es manté, 2 anys costarien unes 4 vegades el temps d'1 any i 3 anys unes 9 vegades. Per exemple, sense memòria serien ~1,5 h i ~3,3 h, i amb l'episòdica ~4 h i ~9 h. És una estimació, no una mesura.
