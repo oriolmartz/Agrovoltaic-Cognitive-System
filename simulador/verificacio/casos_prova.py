@@ -38,7 +38,7 @@ PRED = {"radiacio": 300.0, "temperatura": 20.0, "vent": 3.0, "pluja": 0.0}
 ENERGIA = {"produccio": 15.0, "demanda": 12.0}
 
 
-def cicle(obs=None, pred=None, energia=None, falla=(), hora=12, avariat=None, **esperat):
+def cicle(obs=None, pred=None, energia=None, falla=(), hora=12, avariat=None, sense_obs=(), **esperat):
     """obs/pred/energia: {sector: {camp: valor}} que sobreescriuen la base.
     falla: panells que NO es mouen despres d'aquest cicle (fallada d'actuador).
     avariat: {sector: {sensors}} que es diagnostiquen avariats (envien valor, pero operatiu = no).
@@ -46,7 +46,7 @@ def cicle(obs=None, pred=None, energia=None, falla=(), hora=12, avariat=None, **
     esperat: {sector: {accio, accio_no, riscos{tipus: nivell|None}, impas, chunk, candidat, rebutjat,
                        reg, dosi, reg_rebutjat}}"""
     return {"obs": obs or {}, "pred": pred or {}, "energia": energia or {}, "falla": set(falla), "hora": hora,
-            "avariat": avariat or {}, "esperat": esperat}
+            "avariat": avariat or {}, "sense_obs": set(sense_obs), "esperat": esperat}
 
 
 CASOS = [
@@ -60,7 +60,8 @@ CASOS = [
                 "especificada (fixava el nom de l'operador). El que mostra és interessant: l'estabilitat i la "
                 "memòria episòdica fan que el sistema repeteixi el que li ha anat bé.",
      "cicles": [
-         cicle(**{S1: {"accio": "orientar-produccio", "riscos": {"mecanic": None, "temperatura": None}},
+         cicle(**{S1: {"accio": "orientar-produccio", "riscos": {"mecanic": None, "temperatura": None},
+                       "explicacio": True},
                   S3: {"accio": "orientar-produccio"}}),
          cicle(**{S1: {"accio": "mantenir-posicio"}, S3: {"accio": "mantenir-posicio"}}),
      ]},
@@ -111,7 +112,7 @@ CASOS = [
                  "dades i mantenir l'angle. Al cicle següent, el chunk ho ha de resoldre sense impasse.",
      "cicles": [
          cicle(obs={S2: {"vent": ABS}}, **{S2: {"accio": "sollicitar-dades", "impas": "dades-insuficients",
-                                                 "riscos": {"dades": "critic"}}}),
+                                                 "riscos": {"dades": "critic"}, "traca": ["peticio de dades"]}}),
          cicle(obs={S2: {"vent": ABS}}, **{S2: {"accio": "sollicitar-dades", "impas": None, "chunk": True}}),
      ]},
     {"id": "CP07", "titol": "Sensor de vent caigut després d'una ratxa crítica (historial)", "cobertura": "dades absents + historial",
@@ -129,7 +130,7 @@ CASOS = [
      "cicles": [
          cicle(falla={"Panell_3_1", "Panell_3_2"}, **{S3: {"accio": "orientar-produccio"}}),
          cicle(**{S3: {"riscos": {"fallada-actuador": "alt"}, "rebutjat": "orientar-produccio",
-                       "accio_no": "orientar-produccio"}}),
+                       "accio_no": "orientar-produccio", "traca": ["avis de manteniment"]}}),
      ]},
     {"id": "CP09", "titol": "Vent que puja i baixa al llarg de 5 hores", "cobertura": "canvis temporals",
      "objectiu": "El vent fa 6 → 13 → 18 → 18 → 8 m/s, amb la previsió de l'hora següent. El sistema ha d'anar "
@@ -162,8 +163,9 @@ CASOS = [
                  "amb el sòl ple, ja no s'ha de regar.",
      "cicles": [
          cicle(hora=7, obs={S1: {"humitat-sol": 66.0}, S2: {"humitat-sol": 65.0}, S3: {"humitat-sol": 62.0}},
-               **{S1: {"reg": "regar-complet", "dosi": 34.0}, S2: {"reg": "regar-complet", "dosi": 35.0},
-                  S3: {"reg": "no-regar"}}),
+               **{S1: {"reg": "regar-complet", "dosi": 34.0}, S2: {"reg": "regar-complet", "dosi": 35.0,
+                                                                    "font_reg": ["AVR4-hora"]},
+                  S3: {"reg": "no-regar", "font_reg": ["AVR7-estalvi"]}}),
          cicle(hora=8, obs={S1: {"humitat-sol": 100.0}, S2: {"humitat-sol": 100.0}, S3: {"humitat-sol": 62.0}},
                **{S1: {"reg": "no-regar"}, S2: {"reg": "no-regar"}, S3: {"reg": "no-regar"}}),
      ]},
@@ -222,8 +224,10 @@ CASOS = [
      "cicles": [
          cicle(hora=7, obs={S2: {"humitat-sol": 65.0}}, **{S2: {"reg": "regar-complet", "dosi": 35.0}}),
          cicle(hora=8, obs={S2: {"humitat-sol": 64.0}}, **{S2: {"riscos": {"fallada-reg": "alt"},
-                                                                "reg": "regar-complet"}}),
-         cicle(hora=9, obs={S2: {"humitat-sol": 99.0}}, **{S2: {"riscos": {"fallada-reg": None}, "reg": "no-regar"}}),
+                                                                "reg": "regar-complet",
+                                                                "traca": ["reg sense efecte"]}}),
+         cicle(hora=9, obs={S2: {"humitat-sol": 99.0}}, **{S2: {"riscos": {"fallada-reg": None}, "reg": "no-regar",
+                                                                "traca": ["efecte del reg confirmat"]}}),
      ]},
     {"id": "CP18", "titol": "Vent crític amb l'actuador avariat (restriccions incompatibles)",
      "cobertura": "seguretat + fallades + impasse",
@@ -246,8 +250,78 @@ CASOS = [
      "cicles": [
          cicle(**{S3: {"font_no": "AV10-memoria"}}),
          cicle(**{S3: {}}),
-         cicle(**{S3: {"font": "AV10-memoria"}}),
+         cicle(**{S3: {"font": "AV10-memoria", "sense_restes_epmem": True}}),
          cicle(obs={S3: {"vent": 13.0}}, **{S3: {"font_no": "AV10-memoria", "accio": "posicio-seguretat"}}),
+     ]},
+    # --- Casos afegits a la iteracio 43 (forats que va trobar E17) ---
+    {"id": "CP20", "titol": "Empat desfet pel reforç", "cobertura": "conflicte + aprenentatge",
+     "objectiu": "La mateixa situació que el primer cicle de CP05 (empat entre fer ombra i seguir el sol a "
+                 "l'enciam), però el reforç ja ha après que fer ombra va millor (Q = 0,5 contra 0). Com a Soar, "
+                 "el reforç desfà l'empat abans que hi hagi impasse: s'ha de fer ombra sense impasse, amb la "
+                 "preferència del reforç i la traça corresponent.",
+     "angle_inicial": 0.0, "angle_optim": -55.0,
+     "fets": ["(rl-valor (tret tot) (op orientar-ombra) (q 0.5) (n 5))"],
+     "cicles": [
+         cicle(obs={S: {"radiacio": 30.0, "temperatura-aire": 18.0, "temperatura-cultiu": 19.0, "humitat-sol": 84.0,
+                        "vent": 2.0} for S in SECTORS} | {S2: {"radiacio": 30.0, "temperatura-aire": 18.0,
+                                                               "temperatura-cultiu": 26.5, "humitat-sol": 84.0, "vent": 2.0}},
+               energia={S: {"produccio": 0.5, "demanda": 6.6} for S in SECTORS},
+               **{S2: {"accio": "orientar-ombra", "impas": None, "font": ["RL"],
+                       "traca": ["desfet pel reforç"]}}),
+     ]},
+    {"id": "CP21", "titol": "Oscil·lació entre seguretat i producció", "cobertura": "canvis temporals + monitoratge",
+     "objectiu": "El vent del tomàquet fa 13 → 3 → 13 m/s: el panell va a seguretat, torna a producció i torna a "
+                 "seguretat. Al tercer cicle el monitoratge ha de detectar l'oscil·lació i registrar-la. A la vinya, "
+                 "que ja és a l'angle òptim i no es mou, mantenir la posició ha de rebre les preferències "
+                 "d'energia, de no moure's i d'estabilitat.",
+     "cicles": [
+         cicle(obs={S1: {"vent": 13.0}}, **{S1: {"accio": "posicio-seguretat"}}),
+         cicle(**{S1: {"accio_no": "posicio-seguretat"},
+                  S3: {"font": ["AV6-energia", "AV7-moviment", "AV8-estabilitat"]}}),
+         cicle(obs={S1: {"vent": 13.0}}, **{S1: {"accio": "posicio-seguretat", "traca": ["oscil.lacio"]}}),
+     ]},
+    {"id": "CP22", "titol": "Reg quan la producció no cobreix la demanda", "cobertura": "conflicte cultiu contra energia (reg)",
+     "reg": True,
+     "objectiu": "A les 7 h l'enciam és al 65 % (estrès) i la producció no cobreix la demanda. La bomba gasta "
+                 "energia (preferència en contra del reg), però l'estrès pesa més: s'ha de regar igualment.",
+     "cicles": [
+         cicle(hora=7, obs={S2: {"humitat-sol": 65.0}}, energia={S2: {"produccio": 0.5, "demanda": 6.6}},
+               **{S2: {"reg": "regar-complet", "font_reg": ["AVR6-bomba"]}}),
+     ]},
+    {"id": "CP23", "titol": "Panell mal configurat: angle òptim fora dels límits", "cobertura": "seguretat (límits del panell)",
+     "objectiu": "L'angle òptim de producció és de 30°, però el panell només pot anar fins a 25°. Seguir el sol "
+                 "portaria el panell fora dels seus límits: s'ha de rebutjar com a restricció dura.",
+     "angle_inicial": 20.0, "panell": {"angle-maxim": 25.0},
+     "cicles": [
+         cicle(**{S1: {"rebutjat": "orientar-produccio", "accio_no": "orientar-produccio",
+                       "font": ["AV2-limits"], "traca": ["fora de limits"]}}),
+     ]},
+    {"id": "CP24", "titol": "Vent crític i posició de seguretat fora dels límits (sense candidat)",
+     "cobertura": "seguretat + impasse",
+     "objectiu": "Ratxa de 18 m/s al tomàquet, però la posició de seguretat del panell està mal configurada "
+                 "(70°, fora de [−55°, 55°]). El vent crític rebutja tota la resta i els límits rebutgen la "
+                 "seguretat: no queda cap candidat. Impasse sense candidat: es manté la posició i es demana "
+                 "supervisió.",
+     "panell": {"angle-seguretat": 70.0},
+     "cicles": [
+         cicle(obs={S1: {"vent": 18.0}}, pred={S1: {"vent": 18.0}},
+               **{S1: {"accio": "mantenir-posicio", "impas": "sense-canvi",
+                       "traca": ["impasse sense candidat", "es demana supervisio"]}}),
+     ]},
+    {"id": "CP25", "titol": "No arriba cap observació d'un sector", "cobertura": "dades absents",
+     "objectiu": "Aquest cicle no arriba cap observació de la vinya (ni una lectura). El sistema ho ha de "
+                 "detectar com a risc de dades crític i demanar dades.",
+     "cicles": [
+         cicle(sense_obs={S3}, **{S3: {"riscos": {"dades": "critic"}, "accio": "sollicitar-dades",
+                                       "traca": ["sense observacio"]}}),
+     ]},
+    {"id": "CP26", "titol": "Sense lectura de vent però amb previsió crítica", "cobertura": "dades absents + seguretat",
+     "objectiu": "No arriba la lectura de vent de l'enciam, però la previsió és de 18 m/s. El risc mecànic s'ha "
+                 "de calcular amb la previsió (crític) i el panell ha d'anar a seguretat.",
+     "cicles": [
+         cicle(obs={S2: {"vent": ABS}}, pred={S2: {"vent": 18.0}},
+               **{S2: {"accio": "posicio-seguretat", "riscos": {"mecanic": "critic"},
+                       "traca": ["sense lectura de vent, previsio"]}}),
      ]},
 ]
 
@@ -265,6 +339,10 @@ def executa_cas(clp, cas, captura=None):
     opt = cas.get("angle_optim", 30.0)
     for pid in c.panells():
         c.escriu_panell(pid, angle=a0, **{"angle-optim-produccio": opt})
+    for slot, valor in cas.get("panell", {}).items():   # p. ex. un panell mal configurat
+        c.env.eval(f"(do-for-all-facts ((?p panell)) TRUE (modify ?p ({slot} {valor})))")
+    for fet in cas.get("fets", ()):                      # coneixement previ (p. ex. valors Q del reforc)
+        c.env.assert_string(fet)
     files, traca, ok_total = [], [], True
     for k, cy in enumerate(cas["cicles"], 1):
         n = c.cicle_actual()
@@ -272,6 +350,8 @@ def executa_cas(clp, cas, captura=None):
         pred = _apliqua({s: PRED for s in SECTORS}, cy["pred"])
         ene = _apliqua({s: ENERGIA for s in SECTORS}, cy["energia"])
         for s in SECTORS:
+            if s in cy["sense_obs"]:   # no arriba cap observacio del sector
+                continue
             o = {kk: (None if v == ABS else v) for kk, v in obs[s].items()}
             p = {kk: (None if v == ABS else v) for kk, v in pred[s].items()}
             for tp in SENSORS:
@@ -284,6 +364,9 @@ def executa_cas(clp, cas, captura=None):
         if captura is not None:
             captura(k, obs, pred, ene, r)
         cicle_ko = r.fase_final != "espera" or r.regles_disparades >= LIMIT_REGLES
+        tr = [str(t["missatge"]) for t in c._fets("traca") if int(t["pas"]) == n]
+        prefs_reg = {(str(p["sector"]), str(p["font"])) for p in c._fets("preferencia-reg") if int(p["cicle"]) == n}
+        restes_epmem = sum(int(f["cicle"]) < n for t in ("epmem-consulta", "epmem-resultat") for f in c._fets(t))
         for s, esp in cy["esperat"].items():
             accio = r.ordres[s][0][0] if r.ordres.get(s) else None
             angle = r.ordres[s][0][1] if r.ordres.get(s) else None
@@ -315,8 +398,19 @@ def executa_cas(clp, cas, captura=None):
             if "dosi" in esp and (reg[1] is None or abs(reg[1] - esp["dosi"]) > 1e-6):
                 disc.append(f"dosi esperada {esp['dosi']} %, obtinguda {reg[1]}")
             fonts = {f for f, _, _ in r.fonts_pref.get(s, set())}
-            if "font" in esp and esp["font"] not in fonts:
-                disc.append(f"havia d'haver-hi una preferència de {esp['font']}")
+            for ft in ([esp["font"]] if isinstance(esp.get("font"), str) else esp.get("font", [])):
+                if ft not in fonts:
+                    disc.append(f"havia d'haver-hi una preferència de {ft}")
+            for ft in esp.get("font_reg", []):
+                if (s, ft) not in prefs_reg:
+                    disc.append(f"havia d'haver-hi una preferència de reg de {ft}")
+            for txt in esp.get("traca", []):   # el que el sistema registra (avisos, traça del raonament)
+                if not any(s in m and txt in m for m in tr):
+                    disc.append(f"a la traça hi havia de ser «{txt}»")
+            if esp.get("explicacio") and not r.explicacio.get(s):
+                disc.append("no hi ha explicació de la decisió")
+            if esp.get("sense_restes_epmem") and restes_epmem:
+                disc.append(f"queden {restes_epmem} consultes o resultats de memòria episòdica de cicles anteriors")
             if "font_no" in esp and esp["font_no"] in fonts:
                 disc.append(f"no havia d'haver-hi cap preferència de {esp['font_no']}")
             if "reg_rebutjat" in esp and esp["reg_rebutjat"] not in r.reg_rebutjats.get(s, set()):

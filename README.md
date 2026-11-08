@@ -118,7 +118,7 @@ python verificacio/e3_llindars.py
 python verificacio/e1_regressio.py
 ```
 
-E1 ha de registrar `fail = 0` a totes les versions (nucli canònic `actual`: 90/90); les snapshots històriques es proven amb la seva topologia original. E0 ha de sortir OK, E3 **85/85** i els casos CP **19/19**. Les execucions ràpides d'E2 no substitueixen la campanya completa (24.500 casos i 73.500 decisions): els resultats complets es conserven a `resultats/E2/`, i la graella ràpida del 07/11 es conserva amb el sufix `_rapid_20261107`. Des d'ara, `--rapid` escriu fitxers `_rapid` separats i `e1_regressio.py actual` escriu `e1_regressio_actual.json`, sense sobreescriure el resum general. `casos_prova.py` sincronitza els dos informes CP; les proves CP/E2/E3 retornen codi de sortida diferent de zero quan detecten fallades.
+E1 ha de registrar `fail = 0` a totes les versions (nucli canònic `actual`: 90/90); les snapshots històriques es proven amb la seva topologia original. E0 ha de sortir OK, E3 **85/85** i els casos CP **26/26**. Les execucions ràpides d'E2 no substitueixen la campanya completa (24.500 casos i 73.500 decisions): els resultats complets es conserven a `resultats/E2/`, i la graella ràpida del 07/11 es conserva amb el sufix `_rapid_20261107`. Des d'ara, `--rapid` escriu fitxers `_rapid` separats i `e1_regressio.py actual` escriu `e1_regressio_actual.json`, sense sobreescriure el resum general. `casos_prova.py` sincronitza els dos informes CP; les proves CP/E2/E3 retornen codi de sortida diferent de zero quan detecten fallades.
 
 ## Regla d'iteració
 

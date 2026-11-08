@@ -23,8 +23,15 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 | CP17 | Reg que no arriba al sòl | fallades (reg) + efecte observat | 3 | ✅ correcte |
 | CP18 | Vent crític amb l'actuador avariat (restriccions incompatibles) | seguretat + fallades + impasse | 2 | ✅ correcte |
 | CP19 | La memòria episòdica recorda una situació repetida | historial (memòria) | 4 | ✅ correcte |
+| CP20 | Empat desfet pel reforç | conflicte + aprenentatge | 1 | ✅ correcte |
+| CP21 | Oscil·lació entre seguretat i producció | canvis temporals + monitoratge | 3 | ✅ correcte |
+| CP22 | Reg quan la producció no cobreix la demanda | conflicte cultiu contra energia (reg) | 1 | ✅ correcte |
+| CP23 | Panell mal configurat: angle òptim fora dels límits | seguretat (límits del panell) | 1 | ✅ correcte |
+| CP24 | Vent crític i posició de seguretat fora dels límits (sense candidat) | seguretat + impasse | 1 | ✅ correcte |
+| CP25 | No arriba cap observació d'un sector | dades absents | 1 | ✅ correcte |
+| CP26 | Sense lectura de vent però amb previsió crítica | dades absents + seguretat | 1 | ✅ correcte |
 
-**19 de 19 casos correctes.** Hi ha un cas més amb dades reals de dies que no es van fer servir durant el desenvolupament: és `escenaris/cas_no_vist_tramuntana.json` (vegeu el README).
+**26 de 26 casos correctes.** Hi ha un cas més amb dades reals de dies que no es van fer servir durant el desenvolupament: és `escenaris/cas_no_vist_tramuntana.json` (vegeu el README).
 
 ## CP01 – Operació normal
 
@@ -32,7 +39,7 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 
 | Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
 |---|---|---|---|---|---|
-| 1 | Sector_1 (tomàquet) | 3.0 / 3.0 / 22.0 / 90.0 / 300.0 | accio = orientar-produccio; risc mecanic = cap; risc temperatura = cap | orientar-produccio (30.0°) | ✅ |
+| 1 | Sector_1 (tomàquet) | 3.0 / 3.0 / 22.0 / 90.0 / 300.0 | accio = orientar-produccio; risc mecanic = cap; risc temperatura = cap; explicacio = True | orientar-produccio (30.0°) | ✅ |
 | 1 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 | accio = orientar-produccio | orientar-produccio (30.0°) | ✅ |
 | 2 | Sector_1 (tomàquet) | 3.0 / 3.0 / 22.0 / 90.0 / 300.0 | accio = mantenir-posicio | mantenir-posicio (30.0°) | ✅ |
 | 2 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 | accio = mantenir-posicio | mantenir-posicio (30.0°) | ✅ |
@@ -311,7 +318,7 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 
 | Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
 |---|---|---|---|---|---|
-| 1 | Sector_2 (enciam) | absent / 3.0 / 16.0 / 90.0 / 150.0 | accio = sollicitar-dades; impasse = dades-insuficients; risc dades = critic | sollicitar-dades (30.0°); riscos: dades=critic; impasse dades-insuficients | ✅ |
+| 1 | Sector_2 (enciam) | absent / 3.0 / 16.0 / 90.0 / 150.0 | accio = sollicitar-dades; impasse = dades-insuficients; risc dades = critic; traca = ['peticio de dades'] | sollicitar-dades (30.0°); riscos: dades=critic; impasse dades-insuficients | ✅ |
 | 2 | Sector_2 (enciam) | absent / 3.0 / 16.0 / 90.0 / 150.0 | accio = sollicitar-dades; impasse = cap; decideix un chunk | sollicitar-dades (30.0°); riscos: dades=critic; chunk | ✅ |
 
 **Explicació que dona el sistema** (fet `explicacio`):
@@ -437,7 +444,7 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 | Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
 |---|---|---|---|---|---|
 | 1 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 | accio = orientar-produccio | orientar-produccio (30.0°) | ✅ |
-| 2 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 | risc fallada-actuador = alt; rebutjat = orientar-produccio; acció ≠ orientar-produccio | mantenir-posicio (20.0°); riscos: fallada-actuador=alt | ✅ |
+| 2 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 | risc fallada-actuador = alt; rebutjat = orientar-produccio; acció ≠ orientar-produccio; traca = ['avis de manteniment'] | mantenir-posicio (20.0°); riscos: fallada-actuador=alt | ✅ |
 
 **Explicació que dona el sistema** (fet `explicacio`):
 
@@ -701,8 +708,8 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 | Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
 |---|---|---|---|---|---|
 | 1 | Sector_1 (tomàquet) | 3.0 / 3.0 / 22.0 / 66.0 / 300.0 (7 h) | reg = regar-complet; dosi = 34.0 | mantenir-posicio (30.0°); reg regar-complet (+34.0 %) | ✅ |
-| 1 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / 65.0 / 150.0 (7 h) | reg = regar-complet; dosi = 35.0 | mantenir-posicio (30.0°); riscos: estres-hidric=mitja; reg regar-complet (+35.0 %) | ✅ |
-| 1 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 62.0 / 400.0 (7 h) | reg = no-regar | mantenir-posicio (30.0°); reg no-regar | ✅ |
+| 1 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / 65.0 / 150.0 (7 h) | reg = regar-complet; dosi = 35.0; font_reg = ['AVR4-hora'] | mantenir-posicio (30.0°); riscos: estres-hidric=mitja; reg regar-complet (+35.0 %) | ✅ |
+| 1 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 62.0 / 400.0 (7 h) | reg = no-regar; font_reg = ['AVR7-estalvi'] | mantenir-posicio (30.0°); reg no-regar | ✅ |
 | 2 | Sector_1 (tomàquet) | 3.0 / 3.0 / 22.0 / 100.0 / 300.0 (8 h) | reg = no-regar | mantenir-posicio (30.0°); reg no-regar | ✅ |
 | 2 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / 100.0 / 150.0 (8 h) | reg = no-regar | mantenir-posicio (30.0°); reg no-regar | ✅ |
 | 2 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 62.0 / 400.0 (8 h) | reg = no-regar | mantenir-posicio (30.0°); reg no-regar | ✅ |
@@ -1194,8 +1201,8 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 | Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
 |---|---|---|---|---|---|
 | 1 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / 65.0 / 150.0 (7 h) | reg = regar-complet; dosi = 35.0 | mantenir-posicio (30.0°); riscos: estres-hidric=mitja; reg regar-complet (+35.0 %) | ✅ |
-| 2 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / 64.0 / 150.0 (8 h) | risc fallada-reg = alt; reg = regar-complet | mantenir-posicio (30.0°); riscos: estres-hidric=mitja, fallada-reg=alt; reg regar-complet (+36.0 %) | ✅ |
-| 3 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / 99.0 / 150.0 (9 h) | risc fallada-reg = cap; reg = no-regar | mantenir-posicio (30.0°); reg no-regar | ✅ |
+| 2 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / 64.0 / 150.0 (8 h) | risc fallada-reg = alt; reg = regar-complet; traca = ['reg sense efecte'] | mantenir-posicio (30.0°); riscos: estres-hidric=mitja, fallada-reg=alt; reg regar-complet (+36.0 %) | ✅ |
+| 3 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / 99.0 / 150.0 (9 h) | risc fallada-reg = cap; reg = no-regar; traca = ['efecte del reg confirmat'] | mantenir-posicio (30.0°); reg no-regar | ✅ |
 
 **Explicació que dona el sistema** (fet `explicacio`):
 
@@ -1359,7 +1366,7 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 |---|---|---|---|---|---|
 | 1 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 | font_no = AV10-memoria | mantenir-posicio (30.0°) | ✅ |
 | 2 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 |  | mantenir-posicio (30.0°) | ✅ |
-| 3 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 | font = AV10-memoria | mantenir-posicio (30.0°) | ✅ |
+| 3 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 | font = AV10-memoria; sense_restes_epmem = True | mantenir-posicio (30.0°) | ✅ |
 | 4 | Sector_3 (vinya) | 13.0 / 3.0 / 24.0 / 90.0 / 400.0 | font_no = AV10-memoria; accio = posicio-seguretat | posicio-seguretat (0.0°); riscos: mecanic=alt | ✅ |
 
 **Explicació que dona el sistema** (fet `explicacio`):
@@ -1437,6 +1444,356 @@ Generat per `python verificacio/casos_prova.py`. El resultat esperat de cada cas
 [APLICACIO] Sector_3: ORDRE posicio-seguretat -> 0.0 graus.
 [EXPLICACIO] Sector_3, cicle 4
 [EPMEM] NOU EPISODI #10: Sector_3, cicle 4, posicio-seguretat.
+```
+
+</details>
+
+## CP20 – Empat desfet pel reforç
+
+**Cobertura:** conflicte + aprenentatge. **Objectiu i resultat esperat:** La mateixa situació que el primer cicle de CP05 (empat entre fer ombra i seguir el sol a l'enciam), però el reforç ja ha après que fer ombra va millor (Q = 0,5 contra 0). Com a Soar, el reforç desfà l'empat abans que hi hagi impasse: s'ha de fer ombra sense impasse, amb la preferència del reforç i la traça corresponent.
+
+| Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
+|---|---|---|---|---|---|
+| 1 | Sector_2 (enciam) | 2.0 / 3.0 / 26.5 / 84.0 / 30.0 | accio = orientar-ombra; impasse = cap; font = ['RL']; traca = ['desfet pel reforç'] | orientar-ombra (0.0°); riscos: temperatura=alt | ✅ |
+
+**Explicació que dona el sistema** (fet `explicacio`):
+
+- Cicle 1, Sector_2: orientar-ombra a 0.0 graus. Riscos: temperatura=alt. Candidats: mantenir-posicio(1) orientar-produccio(6) orientar-ombra(6). Descartats: cap. Criteri: empat amb orientar-produccio desfet per RL.
+
+<details><summary>Traça rellevant del CLIPS</summary>
+
+```
+--- cicle 1 ---
+[ELABORACIO] Sector_2: enciam a 26.5 C (optim fins a 21.0, maxim 30.0). Risc de temperatura alt.
+[ELABORACIO] El risc temperatura de Sector_2 activa l'objectiu Obj_Produccio_Cultiu.
+[PROPOSTA] Sector_2: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_2: orientar-produccio (-55.0 graus).
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[AVALUACIO] Sector_2: orientar-ombra +6 (cultiu, risc temperatura alt).
+[AVALUACIO] Sector_2: orientar-produccio +6 (energia, produccio 0.5 / demanda 6.6).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_2: empat entre orientar-ombra i orientar-produccio desfet pel reforç: Q(orientar-ombra) = 0.5 > Q(orientar-produccio) = 0.0.
+[SELECCIO] Sector_2: es selecciona orientar-ombra. Criteri: empat amb orientar-produccio desfet per RL.
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE orientar-ombra -> 0.0 graus.
+[EXPLICACIO] Sector_2, cicle 1
+[EPMEM] NOU EPISODI #1: Sector_2, cicle 1, orientar-ombra.
+```
+
+</details>
+
+## CP21 – Oscil·lació entre seguretat i producció
+
+**Cobertura:** canvis temporals + monitoratge. **Objectiu i resultat esperat:** El vent del tomàquet fa 13 → 3 → 13 m/s: el panell va a seguretat, torna a producció i torna a seguretat. Al tercer cicle el monitoratge ha de detectar l'oscil·lació i registrar-la. A la vinya, que ja és a l'angle òptim i no es mou, mantenir la posició ha de rebre les preferències d'energia, de no moure's i d'estabilitat.
+
+| Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
+|---|---|---|---|---|---|
+| 1 | Sector_1 (tomàquet) | 13.0 / 3.0 / 22.0 / 90.0 / 300.0 | accio = posicio-seguretat | posicio-seguretat (0.0°); riscos: mecanic=alt | ✅ |
+| 2 | Sector_1 (tomàquet) | 3.0 / 3.0 / 22.0 / 90.0 / 300.0 | acció ≠ posicio-seguretat | orientar-produccio (30.0°) | ✅ |
+| 2 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 | font = ['AV6-energia', 'AV7-moviment', 'AV8-estabilitat'] | mantenir-posicio (30.0°) | ✅ |
+| 3 | Sector_1 (tomàquet) | 13.0 / 3.0 / 22.0 / 90.0 / 300.0 | accio = posicio-seguretat; traca = ['oscil.lacio'] | posicio-seguretat (0.0°); riscos: mecanic=alt | ✅ |
+
+**Explicació que dona el sistema** (fet `explicacio`):
+
+- Cicle 1, Sector_1: posicio-seguretat a 0.0 graus. Riscos: mecanic=alt. Candidats: mantenir-posicio(4) posicio-seguretat(10). Descartats: cap. Criteri: maxima valoracio (10 punts).
+- Cicle 2, Sector_1: orientar-produccio a 30.0 graus. Riscos: cap. Candidats: mantenir-posicio(1) orientar-produccio(3). Descartats: cap. Criteri: maxima valoracio (3 punts).
+- Cicle 2, Sector_3: mantenir-posicio a 30.0 graus. Riscos: cap. Candidats: mantenir-posicio(8.0). Descartats: cap. Criteri: maxima valoracio (8.0 punts).
+- Cicle 3, Sector_1: posicio-seguretat a 0.0 graus. Riscos: mecanic=alt. Candidats: mantenir-posicio(4) posicio-seguretat(10). Descartats: cap. Criteri: maxima valoracio (10 punts).
+
+<details><summary>Traça rellevant del CLIPS</summary>
+
+```
+--- cicle 1 ---
+[ELABORACIO] Sector_1: vent 13.0 m/s (previsio 3.0) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] El risc mecanic de Sector_1 activa l'objectiu Obj_Seguretat.
+[PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[AVALUACIO] Sector_1: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: maxima valoracio (10 punts).
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE mantenir-posicio -> 30.0 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[EXPLICACIO] Sector_1, cicle 1
+[EXPLICACIO] Sector_3, cicle 1
+[EPMEM] NOU EPISODI #1: Sector_1, cicle 1, posicio-seguretat.
+[EPMEM] NOU EPISODI #3: Sector_3, cicle 1, mantenir-posicio.
+--- cicle 2 ---
+[EPMEM] Sector_3: l'episodi #3 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #1 (posicio-seguretat) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (0.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: mantenir-posicio 2.0 (memoria: a l'episodi #3, cicle 1, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_1: es selecciona orientar-produccio. Criteri: maxima valoracio (3 punts).
+[REFORC] Sector_3: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 1.0, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 1 -> recompensa 1.0 (bona), error 0.85, 4 rajoles actualitzades.
+[REFORC] Sector_1: posicio-seguretat del cicle 1 -> recompensa 1.0 (bona), error 1.0, 5 rajoles actualitzades.
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE mantenir-posicio -> 30.0 graus.
+[APLICACIO] Sector_1: ORDRE orientar-produccio -> 30.0 graus.
+[EXPLICACIO] Sector_1, cicle 2
+[EXPLICACIO] Sector_3, cicle 2
+[EPMEM] NOU EPISODI #4: Sector_1, cicle 2, orientar-produccio.
+[EPMEM] NOU EPISODI #6: Sector_3, cicle 2, mantenir-posicio.
+--- cicle 3 ---
+[ELABORACIO] Sector_1: vent 13.0 m/s (previsio 3.0) >= 12.0 m/s. Risc mecanic alt.
+[ELABORACIO] El risc mecanic de Sector_1 activa l'objectiu Obj_Seguretat.
+[EPMEM] Sector_3: l'episodi #6 (mantenir-posicio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[EPMEM] Sector_1: l'episodi #4 (orientar-produccio) es valora 'bona' (resultat correcte, risc 0 -> 0).
+[PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+[AVALUACIO] Sector_1: posicio-seguretat +10 (seguretat, vent alt).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +2 (es el que es va fer el cicle anterior).
+[AVALUACIO] Sector_3: mantenir-posicio 2.0 (memoria: a l'episodi #6, cicle 2, va funcionar be, similitud 1.0).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: maxima valoracio (10 punts).
+[REFORC] Sector_3: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.57, 4 rajoles actualitzades.
+[REFORC] Sector_2: mantenir-posicio del cicle 2 -> recompensa 1.0 (bona), error 0.51, 4 rajoles actualitzades.
+[REFORC] Sector_1: orientar-produccio del cicle 2 -> recompensa 1.0 (bona), error 1.0, 4 rajoles actualitzades.
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (8.0 punts).
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE mantenir-posicio -> 30.0 graus.
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+[EXPLICACIO] Sector_1, cicle 3
+[EXPLICACIO] Sector_3, cicle 3
+[EPMEM] NOU EPISODI #7: Sector_1, cicle 3, posicio-seguretat.
+[EPMEM] NOU EPISODI #9: Sector_3, cicle 3, mantenir-posicio.
+[MONITORATGE] Sector_1: oscil.lacio posicio-seguretat -> orientar-produccio -> posicio-seguretat en tres cicles.
+```
+
+</details>
+
+## CP22 – Reg quan la producció no cobreix la demanda
+
+**Cobertura:** conflicte cultiu contra energia (reg). **Objectiu i resultat esperat:** A les 7 h l'enciam és al 65 % (estrès) i la producció no cobreix la demanda. La bomba gasta energia (preferència en contra del reg), però l'estrès pesa més: s'ha de regar igualment.
+
+| Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
+|---|---|---|---|---|---|
+| 1 | Sector_2 (enciam) | 3.0 / 3.0 / 16.0 / 65.0 / 150.0 (7 h) | reg = regar-complet; font_reg = ['AVR6-bomba'] | mantenir-posicio (30.0°); riscos: estres-hidric=mitja; reg regar-complet (+35.0 %) | ✅ |
+
+**Explicació que dona el sistema** (fet `explicacio`):
+
+- Cicle 1, Sector_2: mantenir-posicio a 30.0 graus. Riscos: estres-hidric=mitja. Candidats: mantenir-posicio(7) orientar-ombra(3). Descartats: cap. Criteri: maxima valoracio (7 punts).
+  - Reg: regar-complet (+35.0%). Necessitat: mitja (esgotat 35.0%). Candidats: no-regar(1) regar-complet(8) regar-parcial(6). Descartats: cap. Criteri: maxima valoracio (8 punts).
+
+<details><summary>Traça rellevant del CLIPS</summary>
+
+```
+--- cicle 1 ---
+[ELABORACIO] Sector_2: queda un 65.0% d'aigua disponible (enciam tolera esgotar fins al 30.0%). Estres hidric mitja.
+[ELABORACIO] El risc estres-hidric de Sector_2 activa l'objectiu Obj_Produccio_Cultiu.
+[ELABORACIO] Sector_2: s'ha gastat el 35.0% de l'aigua disponible (enciam tolera 30.0%). Necessitat de reg mitja.
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_2: orientar-ombra (0.0 graus), hi ha risc per al cultiu.
+[PROPOSTA] Sector_2: regar-complet (+35.0% de l'aigua disponible) i regar-parcial (+20.0%), hi ha estres hidric.
+[AVALUACIO] Sector_2: orientar-ombra +3 (cultiu, risc estres-hidric mitja).
+[AVALUACIO] Sector_2: mantenir-posicio +6 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: regar-parcial -1 (la bomba gasta energia i el sector no cobreix la demanda).
+[AVALUACIO] Sector_2: regar-complet -1 (la bomba gasta energia i el sector no cobreix la demanda).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: regar-parcial +6 (cultiu, necessitat de reg mitja).
+[AVALUACIO] Sector_2: regar-complet +6 (cultiu, necessitat de reg mitja).
+[AVALUACIO] Sector_2: regar-complet +2 (enciam, sensibilitat alt).
+[AVALUACIO] Sector_2: regar-parcial +1 (hora fresca).
+[AVALUACIO] Sector_2: regar-complet +1 (hora fresca).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (7 punts).
+[SELECCIO] Sector_2: reg regar-complet. Criteri: maxima valoracio (8 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 30.0 graus.
+[APLICACIO] Sector_2: ORDRE DE REG regar-complet -> +35.0% de l'aigua disponible.
+[EXPLICACIO] Sector_2, cicle 1
+[EXPLICACIO REG] Sector_2, cicle 1
+[EPMEM] NOU EPISODI #2: Sector_2, cicle 1, mantenir-posicio.
+```
+
+</details>
+
+## CP23 – Panell mal configurat: angle òptim fora dels límits
+
+**Cobertura:** seguretat (límits del panell). **Objectiu i resultat esperat:** L'angle òptim de producció és de 30°, però el panell només pot anar fins a 25°. Seguir el sol portaria el panell fora dels seus límits: s'ha de rebutjar com a restricció dura.
+
+| Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
+|---|---|---|---|---|---|
+| 1 | Sector_1 (tomàquet) | 3.0 / 3.0 / 22.0 / 90.0 / 300.0 | rebutjat = orientar-produccio; acció ≠ orientar-produccio; font = ['AV2-limits']; traca = ['fora de limits'] | mantenir-posicio (20.0°) | ✅ |
+
+**Explicació que dona el sistema** (fet `explicacio`):
+
+- Cicle 1, Sector_1: mantenir-posicio a 20.0 graus. Riscos: cap. Candidats: mantenir-posicio(1). Descartats: orientar-produccio. Criteri: unica opcio que compleix les restriccions dures.
+
+<details><summary>Traça rellevant del CLIPS</summary>
+
+```
+--- cicle 1 ---
+[PROPOSTA] Sector_1: mantenir-posicio (20.0 graus).
+[PROPOSTA] Sector_1: orientar-produccio (30.0 graus).
+[AVALUACIO] Sector_1: REBUIG de orientar-produccio (30.0 graus fora de [-55.0, 25.0]).
+[AVALUACIO] Sector_1: orientar-produccio +3 (energia, produccio 15.0 / demanda 12.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_1: orientar-produccio queda descartat (AV2-limits).
+[SELECCIO] Sector_1: es selecciona mantenir-posicio. Criteri: unica opcio que compleix les restriccions dures.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_1: ORDRE mantenir-posicio -> 20.0 graus.
+[EXPLICACIO] Sector_1, cicle 1
+[EPMEM] NOU EPISODI #1: Sector_1, cicle 1, mantenir-posicio.
+```
+
+</details>
+
+## CP24 – Vent crític i posició de seguretat fora dels límits (sense candidat)
+
+**Cobertura:** seguretat + impasse. **Objectiu i resultat esperat:** Ratxa de 18 m/s al tomàquet, però la posició de seguretat del panell està mal configurada (70°, fora de [−55°, 55°]). El vent crític rebutja tota la resta i els límits rebutgen la seguretat: no queda cap candidat. Impasse sense candidat: es manté la posició i es demana supervisió.
+
+| Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
+|---|---|---|---|---|---|
+| 1 | Sector_1 (tomàquet) | 18.0 / 18.0 / 22.0 / 90.0 / 300.0 | accio = mantenir-posicio; impasse = sense-canvi; traca = ['impasse sense candidat', 'es demana supervisio'] | mantenir-posicio (30.0°); riscos: mecanic=critic; impasse sense-canvi | ✅ |
+
+**Explicació que dona el sistema** (fet `explicacio`):
+
+- Cicle 1, Sector_1: mantenir-posicio a 30.0 graus. Riscos: mecanic=critic. Candidats: mantenir-posicio(1004). Descartats: posicio-seguretat. Criteri: preferencia requerida (IMPAS-sense-candidat).
+
+<details><summary>Traça rellevant del CLIPS</summary>
+
+```
+--- cicle 1 ---
+[ELABORACIO] Sector_1: vent 18.0 m/s (previsio 18.0) >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] El risc mecanic de Sector_1 activa l'objectiu Obj_Seguretat.
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: posicio-seguretat (70.0 graus).
+[AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_1: REBUIG de posicio-seguretat (70.0 graus fora de [-55.0, 55.0]).
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_1: posicio-seguretat queda descartat (AV2-limits).
+[SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_1: IMPAS SENSE CANDIDAT. Totes les opcions s'han descartat.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> IMPAS]
+[IMPAS] Sector_1: cap opcio valida. No es mou el panell i cal supervisio humana.
+[IMPAS -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona mantenir-posicio. Criteri: preferencia requerida (IMPAS-sense-candidat).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_1: ORDRE mantenir-posicio -> 30.0 graus.
+[EXPLICACIO] Sector_1, cicle 1
+   Criteri:    preferencia requerida (IMPAS-sense-candidat)
+[EPMEM] NOU EPISODI #3: Sector_1, cicle 1, mantenir-posicio.
+```
+
+</details>
+
+## CP25 – No arriba cap observació d'un sector
+
+**Cobertura:** dades absents. **Objectiu i resultat esperat:** Aquest cicle no arriba cap observació de la vinya (ni una lectura). El sistema ho ha de detectar com a risc de dades crític i demanar dades.
+
+| Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
+|---|---|---|---|---|---|
+| 1 | Sector_3 (vinya) | 3.0 / 3.0 / 24.0 / 90.0 / 400.0 | risc dades = critic; accio = sollicitar-dades; traca = ['sense observacio'] | sollicitar-dades (30.0°); riscos: dades=critic; impasse dades-insuficients | ✅ |
+
+**Explicació que dona el sistema** (fet `explicacio`):
+
+- Cicle 1, Sector_3: sollicitar-dades a 30.0 graus. Riscos: dades=critic. Candidats: mantenir-posicio(1) sollicitar-dades(1000). Descartats: cap. Criteri: preferencia requerida (IMPAS-dades).
+
+<details><summary>Traça rellevant del CLIPS</summary>
+
+```
+--- cicle 1 ---
+[PERCEPCIO] Sector_3: no ha arribat cap observacio aquest cicle. Risc de dades critic.
+[PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_3: sollicitar-dades (no es mou el panell).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_3: IMPAS DE DADES INSUFICIENTS. Sense lectura fiable de vent no es pot saber si moure el panell es segur.
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> IMPAS]
+[IMPAS] Sector_3: subobjectiu resoldre-dades. Falta la lectura de vent i ni la previsio ni l'historial indiquen vent fort. Es demanen dades i es mante la posicio.
+[CHUNKING] Nova regla chunk-1: sense lectura de vent i res no indica vent fort, sollicitar-dades requerida i panell en hold.
+[IMPAS -> SELECCIO]
+[SELECCIO] Sector_3: es selecciona sollicitar-dades. Criteri: preferencia requerida (IMPAS-dades).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE sollicitar-dades -> 30.0 graus.
+[EXPLICACIO] Sector_3, cicle 1
+   Criteri:    preferencia requerida (IMPAS-dades)
+[EPMEM] NOU EPISODI #3: Sector_3, cicle 1, sollicitar-dades.
+[MONITORATGE] Sector_3: cal demanar al simulador les lectures que falten (risc de dades critic).
+```
+
+</details>
+
+## CP26 – Sense lectura de vent però amb previsió crítica
+
+**Cobertura:** dades absents + seguretat. **Objectiu i resultat esperat:** No arriba la lectura de vent de l'enciam, però la previsió és de 18 m/s. El risc mecànic s'ha de calcular amb la previsió (crític) i el panell ha d'anar a seguretat.
+
+| Cicle | Sector | Entrada (vent / previsió / T cultiu / aigua / radiació) | Esperat | Obtingut | |
+|---|---|---|---|---|---|
+| 1 | Sector_2 (enciam) | absent / 18.0 / 16.0 / 90.0 / 150.0 | accio = posicio-seguretat; risc mecanic = critic; traca = ['sense lectura de vent, previsio'] | posicio-seguretat (0.0°); riscos: dades=critic, mecanic=critic; impasse dades-insuficients | ✅ |
+
+**Explicació que dona el sistema** (fet `explicacio`):
+
+- Cicle 1, Sector_2: posicio-seguretat a 0.0 graus. Riscos: dades=critic mecanic=critic. Candidats: posicio-seguretat(1000). Descartats: mantenir-posicio sollicitar-dades. Criteri: preferencia requerida (IMPAS-dades).
+
+<details><summary>Traça rellevant del CLIPS</summary>
+
+```
+--- cicle 1 ---
+[PERCEPCIO] Sector_2: falten lectures (vent=absent, temp-cultiu=16.0, humitat=90.0, radiacio=150.0). Risc de dades critic.
+[ELABORACIO] Sector_2: sense lectura de vent, pero la previsio es de 18.0 m/s >= 16.0 m/s. Risc mecanic critic.
+[ELABORACIO] El risc mecanic de Sector_2 activa l'objectiu Obj_Seguretat.
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_2: posicio-seguretat (0.0 graus).
+[PROPOSTA] Sector_2: sollicitar-dades (no es mou el panell).
+[AVALUACIO] Sector_2: REBUIG de sollicitar-dades (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[SELECCIO] Sector_2: sollicitar-dades queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: mantenir-posicio queda descartat (AV1-vent-critic).
+[SELECCIO] Sector_2: IMPAS DE DADES INSUFICIENTS. Sense lectura fiable de vent no es pot saber si moure el panell es segur.
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> IMPAS]
+[IMPAS] Sector_2: subobjectiu resoldre-dades. Falta la lectura de vent, pero la previsio de vent es de 18.0 m/s (avis a 12.0). Opcio segura: posicio de seguretat.
+[CHUNKING] Nova regla chunk-1: sense lectura de vent i previsio de vent fort, posicio-seguretat requerida.
+[IMPAS -> SELECCIO]
+[SELECCIO] Sector_2: es selecciona posicio-seguretat. Criteri: preferencia requerida (IMPAS-dades).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_2: ORDRE posicio-seguretat -> 0.0 graus.
+[EXPLICACIO] Sector_2, cicle 1
+   Criteri:    preferencia requerida (IMPAS-dades)
+[EPMEM] NOU EPISODI #3: Sector_2, cicle 1, posicio-seguretat.
+[MONITORATGE] Sector_2: cal demanar al simulador les lectures que falten (risc de dades critic).
 ```
 
 </details>

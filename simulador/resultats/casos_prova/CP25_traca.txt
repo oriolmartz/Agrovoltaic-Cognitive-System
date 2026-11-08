@@ -1,0 +1,67 @@
+
+######################################################################
+# CP25 - cicle 1
+######################################################################
+[PERCEPCIO] Sector_3: no ha arribat cap observacio aquest cicle. Risc de dades critic.
+[PERCEPCIO -> ELABORACIO]
+[ELABORACIO -> PROPOSTA]
+[PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+[PROPOSTA] Sector_3: sollicitar-dades (no es mou el panell).
+[PROPOSTA -> AVALUACIO]
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+[AVALUACIO -> SELECCIO]
+[SELECCIO] Sector_1: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+
+[SELECCIO] Sector_3: IMPAS DE DADES INSUFICIENTS. Sense lectura fiable de vent no es pot saber si moure el panell es segur.
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+[SELECCIO -> IMPAS]
+[IMPAS] Sector_3: subobjectiu resoldre-dades. Falta la lectura de vent i ni la previsio ni l'historial indiquen vent fort. Es demanen dades i es mante la posicio.
+[CHUNKING] Nova regla chunk-1: sense lectura de vent i res no indica vent fort, sollicitar-dades requerida i panell en hold.
+[IMPAS -> SELECCIO]
+[SELECCIO] Sector_3: es selecciona sollicitar-dades. Criteri: preferencia requerida (IMPAS-dades).
+[SELECCIO -> APLICACIO]
+[APLICACIO] Sector_3: ORDRE sollicitar-dades -> 30.0 graus.
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 30.0 graus.
+[APLICACIO] Sector_1: ORDRE mantenir-posicio -> 30.0 graus.
+[APLICACIO -> EXPLICACIO]
+
+[EXPLICACIO] Sector_1, cicle 1
+   Accio:      mantenir-posicio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4)
+   Descartats: cap
+   Criteri:    maxima valoracio (4 punts)
+
+[EXPLICACIO] Sector_2, cicle 1
+   Accio:      mantenir-posicio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4)
+   Descartats: cap
+   Criteri:    maxima valoracio (4 punts)
+
+[EXPLICACIO] Sector_3, cicle 1
+   Accio:      sollicitar-dades a 30.0 graus
+   Riscos:     dades=critic
+   Candidats:  mantenir-posicio(1) sollicitar-dades(1000)
+   Descartats: cap
+   Criteri:    preferencia requerida (IMPAS-dades)
+
+[EXPLICACIO -> MONITORATGE]
+[EPMEM] NOU EPISODI #1: Sector_1, cicle 1, mantenir-posicio.
+[EPMEM] NOU EPISODI #2: Sector_2, cicle 1, mantenir-posicio.
+[EPMEM] NOU EPISODI #3: Sector_3, cicle 1, sollicitar-dades.
+[MONITORATGE] Sector_3: cal demanar al simulador les lectures que falten (risc de dades critic).
+[FI DEL CICLE 1] Ordres enviades. Esperant les dades del cicle 2.
+
