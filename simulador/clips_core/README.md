@@ -31,9 +31,9 @@ clips_core/
 
 ## RDF i `domini.clp`
 
-La topologia concreta **no** s'instancia a `domini.clp`. `../../ontologia_model.rdf` importa `../../ontologia_domini.rdf` i només conté l'ABox de la planta; no redeclara classes ni propietats. Abans d'injectar res, `../ontology_loader.py` carrega les dues ontologies, valida l'import, el vocabulari i els `domain/range`. Després de `(reset)`, la instanciació del model es projecta a `sector`, `cultiu`, `panell` i `estat-sensor`.
+La topologia concreta **no** s'instancia a `domini.clp`. `../../ontologia_model.rdf` importa `../../ontologia_domini.rdf` i `../../ontologia_reg.rdf`; l'ontologia de reg importa el domini. El carregador `../ontology_loader.py` valida les **tres ontologies**, els imports, el vocabulari i els `domain/range`. Després de `(reset)` projecta els fets de topologia (`sector`, `cultiu`, `panell`, `estat-sensor`) i de reg (`reg-config`, objectius, prioritats i conflictes).
 
-`domini.clp` conserva els `deftemplate` i el coneixement operacional que el RDF actual encara no instancia: llindars agronòmics, objectius, prioritats, conflictes i activacions.
+`domini.clp` conserva els `deftemplate`, llindars agronòmics o mecànics que no provenen de RDF i les produccions de decisió. Les preferències i la selecció dels operadors continuen dins de CLIPS; RDF només aporta coneixement declaratiu estable.
 
 Això evita tenir dues fonts de veritat per a la planta sense traslladar cap decisió a Python.
 

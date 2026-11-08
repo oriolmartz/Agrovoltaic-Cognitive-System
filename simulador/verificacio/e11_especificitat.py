@@ -22,6 +22,8 @@ cap significat.
 Us: python verificacio/e11_especificitat.py  ->  resultats/E11/E11_especificitat.csv i .md
 """
 import collections
+import hashlib
+import json
 import os
 import re
 import sys
@@ -81,10 +83,29 @@ def executa(clp: str, estrategia: str):
 
 def main():
     files, ordres = [], {}
+    traces = []
+    dir_traces = os.path.join(DIR, "traces_watch")
+    os.makedirs(dir_traces, exist_ok=True)
+    clp_canonic = os.path.join(ARREL, "clips_core", "soar.clp")
+    with open(clp_canonic, "rb") as f:
+        hash_nucli = hashlib.sha256(f.read()).hexdigest()
     for k, nom in VARIANTS.items():
         clp = variant(k)
         for e in ESTRATEGIES:
             r = executa(clp, e)
+            # Guarda la sortida REAL de CLIPS: watch rules + watch activations.
+            # No es reconstrueix a partir del CSV, que només conserva agregats.
+            fitxer_traca = f"E11b_k{k}_{e}_watch.txt"
+            with open(os.path.join(dir_traces, fitxer_traca), "w", encoding="utf-8") as f:
+                f.write(r.sortida)
+            traces.append({
+                "variant_k": k, "estrategia": e,
+                "fitxer_traca": f"traces_watch/{fitxer_traca}",
+                "sha256_traca": hashlib.sha256(r.sortida.encode("utf-8")).hexdigest(),
+                "nombre_caracters": len(r.sortida),
+                "fitxer_variant": f"variants/especificitat_k{k}.clp",
+                "sha256_variant": hashlib.sha256(open(clp, "rb").read()).hexdigest(),
+            })
             i0 = r.regles.index("proposta-a-avaluacio")
             i1 = r.regles.index("avaluacio-a-seleccio")
             aval = r.regles[i0 + 1:i1]
@@ -110,12 +131,20 @@ def main():
     t = t.drop(columns="_multiset")
     os.makedirs(DIR, exist_ok=True)
     t.to_csv(os.path.join(DIR, "E11_especificitat.csv"), index=False)
+    with open(os.path.join(DIR, "E11b_manifest_traces.json"), "w", encoding="utf-8") as f:
+        json.dump({"script": "verificacio/e11_especificitat.py",
+                   "nucli_sha256": hash_nucli,
+                   "notes": "Generat per execució CLIPS; les traces completes no són reconstruccions del CSV.",
+                   "execucions": traces}, f, indent=2, ensure_ascii=False)
 
     with open(os.path.join(DIR, "E11_especificitat.md"), "w", encoding="utf-8") as f:
         f.write("# E11b: ablació de l'especificitat\n\n"
                 "Generat per `verificacio/e11_especificitat.py`. Un cicle amb vent de 18 m/s al sector "
                 "del tomàquet; k condicions neutres `(test (integerp ?c))` afegides a `avalua-moviment`.\n\n")
         f.write(t.to_markdown(index=False))
+        f.write("\n\nLes traces originals completes de `watch rules` i `watch activations`, quan \n"
+                "es torna a executar CLIPS, es desen a `traces_watch/` amb hashes \n"
+                "al fitxer `E11b_manifest_traces.json`.\n")
         f.write("\n\n## Ordre de dispar a la fase d'avaluació\n\n")
         for (k, e), seq in ordres.items():
             f.write(f"- **k = {k} ({VARIANTS[k]}), {e}:** " + ", ".join(seq) + "\n")

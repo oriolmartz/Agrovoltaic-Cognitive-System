@@ -19,7 +19,7 @@ python verificacio/e1_regressio.py      # snapshots històriques: fail 0
 
 ## Ontologies com a entrada executable
 
-`../ontologia_domini.rdf` i `../ontologia_model.rdf` formen part del runtime i són ontologies diferents. `ontologia_domini.rdf` és l'esquema autoritatiu (`OntologiaDomini`): defineix el vocabulari, les jerarquies i els `domain/range` i només conserva els cinc individus canònics d'objectiu necessaris per a algunes restriccions OWL. `ontologia_model.rdf` és l'ABox (`OntologiaModel`), importa explícitament el domini amb `owl:imports`, no redeclara l'esquema i aporta exclusivament les instàncies concretes de la planta. Només després d'aquesta validació RDFLib projecta els fets estàtics `sector`, `cultiu`, `panell` i `estat-sensor` a CLIPS. La capa Python no avalua candidats ni selecciona accions: aquesta responsabilitat continua dins de CLIPS.
+El runtime carrega **tres ontologies diferents**: `../ontologia_domini.rdf` (TBox: vocabulari, jerarquies, `domain/range` i objectius canònics), `../ontologia_reg.rdf` (mòdul independent de reg: paràmetres, prioritats, conflictes i fonts de preferència) i `../ontologia_model.rdf` (ABox: sectors, panells, sensors i cultius). El reg importa el domini; el model importa el domini i el reg mitjançant `owl:imports`. `ontology_loader.py` els valida amb RDFLib i projecta la topologia i el coneixement estable del reg a fets CLIPS. Python no avalua candidats ni selecciona accions: aquesta responsabilitat continua dins de CLIPS.
 
 `config.json` conserva els paràmetres físics del simulador per sector, però **no enumera els panells**. La llista de panells i la relació sector--cultiu provenen de `ontologia_model.rdf`; el vocabulari que pot utilitzar aquesta projecció queda governat per `ontologia_domini.rdf`.
 
@@ -30,7 +30,7 @@ python ontology_loader.py --fets
 python verificacio/e0_ontologia.py
 ```
 
-Els llindars agronòmics, objectius, prioritats i conflictes encara són coneixement operacional CLIPS perquè la versió actual del RDF no n'instancia els valors necessaris.
+Els **paràmetres i prioritats del reg** provenen de `ontologia_reg.rdf` i es projecten com `reg-config`, `objectiu`, `prioritat`, `conflicte` i fonts de preferència. Altres llindars agronòmics i mecànics i la lògica de decisió resten a les produccions CLIPS. RDF no genera automàticament regles ni substitueix la deliberació simbòlica.
 
 ## Nucli CLIPS modular
 
@@ -49,14 +49,14 @@ Les proves de la versió canònica són a `clips_core/run_proves.clp` (90 proves
 
 ## Executar-ho tot
 
-Amb 12 nuclis triga uns 15 minuts. Amb 2, més d'una hora (E2, E8, E9 i E15 són els més llargs):
+El cost total depèn del nombre de processos, les llavors, la campanya d'E23 i el maquinari; la bateria completa pot requerir diverses hores. Els comandos següents executen proves i experiments independents:
 
 ```
 python verificacio/e0_ontologia.py          # E0  domini -> validació model -> topologia CLIPS
 python verificacio/e1_regressio.py          # E1  regressió: la versió canònica i totes les històriques
 python verificacio/e2_graella.py            # E2  graella exhaustiva (--rapid: versió reduïda)
-python verificacio/e3_llindars.py           # E3  75 casos als llindars (18 de reg)
-python verificacio/casos_prova.py           # 19 casos de prova documentats -> resultats/casos_prova/CASOS_PROVA.md
+python verificacio/e3_llindars.py           # E3  85 casos als llindars (inclou reg, fenologia i seguretat)
+python verificacio/casos_prova.py           # 26 casos de prova documentats -> resultats/casos_prova/CASOS_PROVA.md
 python simulador.py escenaris/dia_normal.json                  # un dia, amb la traça del CLIPS
 python simulador.py escenaris/cas_no_vist_tramuntana.json      # cas no vist (dades reals)
 python experiments.py E4                    # seguretat amb vent real (Cantallops)
@@ -99,7 +99,7 @@ simulacions soltes a `resultats/simulacions/`.
 | `clips_core/run_proves.clp` | Proves de la versió canònica (90: 54 de la v1_6, 24 de reg i 12 de memòria semàntica, S1–S5). Les executa E1. |
 | `../history/clips/simulator/` | Versions monolítiques congelades: v1_5–v1_8 (per a E1, E9 i E10) i la v1_9 autònoma (amb la topologia al `deffacts`) amb el seu `run_soar_v1_9.clp`. |
 | `clips_core/build_clips.py` | Regenera `soar.clp`, comprova que correspon als mòduls i permet comparar amb v1.8 com a referència històrica. |
-| `ontology_loader.py` | Llegeix `../ontologia_domini.rdf` (TBox) i `../ontologia_model.rdf` (ABox), valida vocabulari + `domain/range` i projecta la instanciació a fets CLIPS. |
+| `ontology_loader.py` | Llegeix les tres ontologies (`domini`, `reg`, `model`); valida imports, vocabulari i `domain/range`, i projecta la topologia i el coneixement estable del reg a fets CLIPS. |
 | `clips_bridge.py` | Pont Python ↔ CLIPS. Injecta la projecció ontològica al `reset` i gestiona el contracte de memòria de treball. |
 | `dades.py` | Llegeix i fusiona Open-Meteo, XMS-Cat i PVGIS (vegeu `dades_reals/FONTS.md`). |
 | `fisica.py` | Model físic simplificat: sol, producció, llum i temperatura del cultiu, aigua al sòl. |
@@ -130,7 +130,7 @@ slot, cal tocar `clips_bridge.py`.
 | Control | `cicle` (el CLIPS l'incrementa a `tanca-cicle`), `fase` final ha de ser `espera` |
 | Interruptors | `REFORC::activa-reforc`, `REFORC::activa-parelles`, `APRENENTATGE::activa-chunking`, `MEMORIA::epmem-aprenentatge` |
 
-El `deffacts coneixement-inicial` ja no conté la topologia ni entrades sintètiques. Conserva el control inicial, els llindars agronòmics i els objectius/relacions de control que encara no estan instanciats al RDF. Les observacions, prediccions i energia les posa sempre el simulador.
+El `deffacts coneixement-inicial` ja no conté la topologia ni entrades sintètiques. Conserva control inicial i llindars operacionals propis, mentre que els objectius, prioritats, conflictes i configuració estables del reg es projecten des de RDF. Les observacions, prediccions i energia les posa sempre el simulador.
 
 El pont també **esborra els fets de cicles vells** (més de 3 cicles enrere): el CLIPS mai no mira
 més enllà de `c-2`, i així la memòria de treball no creix. La memòria a llarg termini
@@ -200,7 +200,11 @@ TKDE), dona el marc general amb què encaixen totes les proves:
 - **"Tot el sistema, no només la base de coneixement"**: l'agenda (el motor d'inferència, E11), l'explicació i les fases (invariants i E18), i la interfície amb l'ontologia (E0).
 - **Mutation testing** per mesurar com de bones són les proves (E17).
 
-## Resultats conservats (07/11/2026; campanyes identificades per versió)
+## Proveniència de les campanyes i traçabilitat E11b
+
+Consulteu [`PROCEDENCIA_CAMPANYES.md`](PROCEDENCIA_CAMPANYES.md): diferencia la campanya general de `8c6ad6a` dels experiments E11b (`cf24769`) i CP20--CP26/E17/E23 anual (`f00a619`), tot i compartir el **mateix hash del nucli CLIPS**. E11b té CSV i ordre de dispar conservats a `resultats/E11/`, però les nou traces originals completes de `watch rules`/`watch activations` **no formaven part del ZIP inicial**; el script `verificacio/e11_especificitat.py` incorpora ara l'opció de conservar-les en la següent execució real.
+
+## Resultats conservats (08/11/2026; campanyes identificades per versió)
 
 Detalls a `resultats/<E>/`. El catàleg complet (pregunta, perspectiva, disseny i test de cada
 experiment) és a `EXPERIMENTS.md`, i les iteracions a `REGISTRE_ITERACIONS.md`.
@@ -217,7 +221,7 @@ Les xifres següents descriuen els resultats emmagatzemats, no una nova execuci�
 | **E1** regressió | **canònica 90/90** (54 de la v1_6, 24 de reg i 12 de memòria semàntica) · v1_5 46/46 · v1_6 55/55 · v1_7 59/59 · v1_8 59/59 · snapshot v1_9 79/79 |
 | **E2** graella (24.500 casos × 3 sectors) | 0 violacions de seguretat, deficiència o conflicte · 0 casos no monòtons amb el vent · cobertura 56/88 regles (63,6 %; les regles noves dels blocs 1–3 necessiten més d'un cicle o la memòria, que a la graella no hi són). **Graella del reg** (1.680 casos × 3): 0 violacions de R1–R7 i 0 casos no monòtons de la dosi. Totes les regles que decideixen el reg es disparen |
 | **E3** llindars (85 casos) | **85/85**: els de la v1_8 i del reg, F01–F08 (fase fenològica) i M01–M02 (memòria amb vent) |
-| **E11** agenda (20 dies) | Estratègies `depth`, `breadth`, `lex` i `mea`, especificitat (`simplicity` i `complexity`) i `random` amb 5 llavors: **0 decisions diferents** de 840 (ni del panell ni del reg). **Salience:** si les transicions de fase passen de −10 a 0 (o se'n treu tota la salience), **no es tanca cap cicle** amb cap estratègia: 0 decisions de 840. La salience −10 de les transicions és imprescindible. **Especificitat (ablació, `verificacio/e11_especificitat.py`):** un cicle amb vent de 18 m/s, la parella `avalua-rebuig-per-vent-critic` / `avalua-moviment` (mateixa salience). A l'original, `simplicity` dispara primer `moviment` i `complexity` primer `vent-critic`. En una còpia s'afegeixen k condicions neutres `(test (integerp ?c))` a `avalua-moviment` (no canvien quins fets casen): amb k = 2 les dues estratègies donen el mateix ordre (especificitat igualada, desempat de CLIPS) i amb k = 3 l'ordre s'inverteix. `depth` no canvia en cap cas. Les activacions (115), les regles disparades (98) i la decisió dels tres sectors són idèntiques a les 9 execucions. Tres resultats: la salience governa les fases, l'especificitat governa l'ordre de dispar dins d'una fase i la decisió final no depèn de cap dels dos |
+| **E11** agenda (20 dies) | Estratègies `depth`, `breadth`, `lex` i `mea`, especificitat (`simplicity` i `complexity`) i `random` amb 5 llavors: **0 decisions diferents** de 840 (ni del panell ni del reg). **Salience:** si les transicions de fase passen de −10 a 0 (o se'n treu tota la salience), **no es tanca cap cicle** amb cap estratègia: 0 decisions de 840. La salience −10 de les transicions és imprescindible. **Especificitat (ablació, `verificacio/e11_especificitat.py`):** un cicle amb vent de 18 m/s, la parella `avalua-rebuig-per-vent-critic` / `avalua-moviment` (mateixa salience). A l'original, `simplicity` dispara primer `moviment` i `complexity` primer `vent-critic`. En una còpia s'afegeixen k condicions neutres `(test (integerp ?c))` a `avalua-moviment` (no canvien quins fets casen): amb k = 2 les dues estratègies donen el mateix ordre (especificitat igualada, desempat de CLIPS) i amb k = 3 l'ordre s'inverteix. `depth` no canvia en cap cas. Les activacions (115), les regles disparades (98) i la decisió dels tres sectors són idèntiques a les 9 execucions. Tres resultats: la salience governa les fases, l'especificitat governa l'ordre de dispar dins d'una fase i les decisions finals són estables entre les estratègies **vàlides** i variants d'especificitat d'E11b estudiades, però **sí depenen** d'una salience de transició correcta per completar el cicle |
 | **E13** coneixement après (5 execucions × 20 dies) | 0 problemes a les 9 restriccions (K1–K8), en 100 fotos. En acabar: 1–4 chunks, 70–76 rajoles Q (\|Q\| ≤ 0,54) i 840 episodis (exactament 1 per sector i cicle) |
 | **E17** mutacions (112 mutants; iteració 43) | **109 detectats (97,3 %)**, i **109 de 109 (100 %) sense els 3 equivalents** (L10–L12). Totes les regles esborrades (92/92), operadors, pesos i salience. Abans de la iteració 43 en sortien 89 (79,5 %): els 20 forats es van tancar amb els casos CP20–CP26 i les comprovacions noves dels casos (traça, avisos, explicació, preferències del reg i neteja de la memòria). A la iteració 37 en sortien 80 (71,4 %), perquè `run_proves.clp` s'aturava a mig camí |
 | **E18** cicle SOAR (280 cicles, 17 amb impasse) | **0 cicles amb l'ordre de fases incorrecte, 0 regles fora de la seva fase, 0 cicles amb més o menys d'una decisió** per sector. Només surten dos recorreguts: el normal (263) i el que passa una vegada per l'impasse (17). **Control negatiu** (transicions a salience 0): detectats 28 de 28 cicles, tots per decisions que falten (C3). L'ordre de fases no es pot trencar perquè cada regla demana el fet `(fase (nom X))`: el que passa és que hi ha regles que ja no arriben a disparar-se. És la resposta a "fer dues accions seguides": el motor no ho permet, i ho comprova cada cicle |

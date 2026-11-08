@@ -84,14 +84,21 @@ python verificacio/e0_ontologia.py
 
 `E0` comprova que:
 
-- `ontologia_domini.rdf` i `ontologia_model.rdf` tenen IRI propis i es poden interpretar;
-- `ontologia_model.rdf` importa explícitament `ontologia_domini.rdf` i no redeclara classes ni propietats;
+- les tres ontologies (`domini`, `reg` i `model`) tenen IRI diferenciats i es poden carregar;
+- `ontologia_reg.rdf` importa el domini i `ontologia_model.rdf` importa domini i reg, sense redeclarar l'esquema;
+- els paràmetres de reg, prioritats i conflictes projectats procedeixen de l'ontologia del reg;
 - el model utilitza el vocabulari operacional canònic del domini;
 - les relacions del model respecten els `domain/range` definits al domini;
 - hi ha almenys tres sectors;
 - sectors, cultius, panells i sensors es projecten als fets esperats;
 - `config.json` no duplica la llista de panells;
 - `clips_core/core/domini.clp` no torna a instanciar manualment la topologia.
+
+## Identitat de la versió i evidències
+
+El nucli `simulador/clips_core/soar.clp` té el mateix SHA-256 (`8fbb6ad664ddac8bbaf488d883cecd92830a88c473087c8cc2eaba825fd7bf46`) als commits `8c6ad6a`, `cf24769` i `f00a619`. Això **no implica** que tots els experiments s'hagin executat al mateix commit: E11b i els casos CP20--CP26 es van incorporar més tard. La traçabilitat per campanya és a [`simulador/PROCEDENCIA_CAMPANYES.md`](simulador/PROCEDENCIA_CAMPANYES.md), juntament amb les limitacions de les traces E11b.
+
+Per a la lliurança, el ZIP del projecte inclou els **resultats guardats** i el codi; el PDF de la memòria és un artefacte separat. L'execució dinàmica de CLIPS i l'assaig en navegador s'han de repetir a l'entorn de defensa.
 
 ## Nucli CLIPS
 
@@ -124,7 +131,7 @@ E1 ha de registrar `fail = 0` a totes les versions (nucli canònic `actual`: 90/
 
 1. Canviar el vocabulari/esquema general a `ontologia_domini.rdf` només si canvia el domini.
 2. Canviar la topologia o les instàncies estàtiques a `ontologia_model.rdf`, sempre usant el vocabulari canònic del domini.
-3. Canviar regles/plantilles/llindars operacionals als mòduls de `simulador/clips_core/`.
+3. Canviar els llindars i les prioritats del reg a `ontologia_reg.rdf`, la topologia a `ontologia_model.rdf`, i les regles/plantilles i la resta de llindars operacionals als mòduls de `simulador/clips_core/`.
 4. Regenerar `soar.clp` amb `build_clips.py`.
 5. Executar E0 + regressió + casos de prova.
 6. Documentar qualsevol canvi funcional a `simulador/REGISTRE_ITERACIONS.md`.

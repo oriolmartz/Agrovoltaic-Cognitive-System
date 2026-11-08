@@ -327,6 +327,7 @@ RECORD_COLUMNS = [
     "estres_rad", "estres_calor", "estres_aigua",
     "reg_mode", "reg_accio", "reg_dosi_pct", "reg_motiu", "reg_mm", "reg_brut_mm", "reg_m3", "bomba_kwh", "percolacio_mm",
     "riscos", "impas", "us_chunk", "us_rl", "motiu", "invariants_ko", "regles", "ms", "sensors_absents",
+    "demo",  # Mode Defensa: no descartar les evidències CLIPS abans d'enviar-les a la UI
 ]
 
 
