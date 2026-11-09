@@ -1,0 +1,254 @@
+modul,plantilla,slot,tipus_slot,tipus_valors,valors_permesos,rang,valor_per_defecte
+DOMINI,fase,nom,slot,SYMBOL,,,nil
+DOMINI,cicle,numero,slot,INTEGER,,,1
+DOMINI,traca,pas,slot,INTEGER,,,0
+DOMINI,traca,fase,slot,SYMBOL,,,nil
+DOMINI,traca,missatge,slot,STRING,,,
+DOMINI,sector,id,slot,SYMBOL,,,nil
+DOMINI,sector,cultiu,slot,SYMBOL,,,nil
+DOMINI,cultiu,id,slot,SYMBOL,,,nil
+DOMINI,cultiu,tipus,slot,qualsevol,tomaquet enciam vinya,,tomaquet
+DOMINI,cultiu,fase,slot,qualsevol,desconeguda vegetativa floracio fructificacio maduracio repos,,desconeguda
+DOMINI,cultiu,sensibilitat,slot,qualsevol,baix mitja alt critic,,baix
+DOMINI,llindars-cultiu,tipus,slot,qualsevol,tomaquet enciam vinya,,tomaquet
+DOMINI,llindars-cultiu,temp-optima-min,slot,FLOAT,,,0.0
+DOMINI,llindars-cultiu,temp-optima-max,slot,FLOAT,,,0.0
+DOMINI,llindars-cultiu,temp-absoluta-min,slot,FLOAT,,,0.0
+DOMINI,llindars-cultiu,temp-absoluta-max,slot,FLOAT,,,0.0
+DOMINI,llindars-cultiu,fraccio-esgotament-p,slot,FLOAT,,0.0 1.0,0.0
+DOMINI,llindars-cultiu,radiacio-optima-max,slot,FLOAT,,,0.0
+DOMINI,llindars-cultiu,radiacio-estres,slot,FLOAT,,,0.0
+DOMINI,panell,id,slot,SYMBOL,,,nil
+DOMINI,panell,sector,slot,SYMBOL,,,nil
+DOMINI,panell,angle,slot,FLOAT,,,0.0
+DOMINI,panell,angle-optim-produccio,slot,FLOAT,,,0.0
+DOMINI,panell,angle-ombra,slot,FLOAT,,,0.0
+DOMINI,panell,disponible,slot,qualsevol,si no,,si
+DOMINI,panell,estat-mecanic,slot,qualsevol,normal degradat avariat,,normal
+DOMINI,panell,angle-minim,slot,FLOAT,,,-55.0
+DOMINI,panell,angle-maxim,slot,FLOAT,,,55.0
+DOMINI,panell,angle-seguretat,slot,FLOAT,,,0.0
+DOMINI,panell,vent-avis,slot,FLOAT,,,12.0
+DOMINI,panell,vent-maxim,slot,FLOAT,,,16.0
+DOMINI,panell,tolerancia-angle,slot,FLOAT,,,2.0
+DOMINI,energia,sector,slot,SYMBOL,,,nil
+DOMINI,energia,cicle,slot,INTEGER,,,0
+DOMINI,energia,produccio-actual,slot,FLOAT,,,0.0
+DOMINI,energia,demanda,slot,FLOAT,,,0.0
+DOMINI,observacio,sector,slot,SYMBOL,,,nil
+DOMINI,observacio,cicle,slot,INTEGER,,,0
+DOMINI,observacio,radiacio,slot,FLOAT INTEGER SYMBOL,absent,,absent
+DOMINI,observacio,temperatura-aire,slot,FLOAT INTEGER SYMBOL,absent,,absent
+DOMINI,observacio,temperatura-cultiu,slot,FLOAT INTEGER SYMBOL,absent,,absent
+DOMINI,observacio,humitat-sol,slot,FLOAT INTEGER SYMBOL,absent,,absent
+DOMINI,observacio,vent,slot,FLOAT INTEGER SYMBOL,absent,,absent
+DOMINI,observacio,pluja,slot,FLOAT INTEGER SYMBOL,absent,,absent
+DOMINI,prediccio,sector,slot,SYMBOL,,,nil
+DOMINI,prediccio,cicle,slot,INTEGER,,,0
+DOMINI,prediccio,radiacio,slot,FLOAT INTEGER SYMBOL,absent,,absent
+DOMINI,prediccio,temperatura,slot,FLOAT INTEGER SYMBOL,absent,,absent
+DOMINI,prediccio,vent,slot,FLOAT INTEGER SYMBOL,absent,,absent
+DOMINI,prediccio,pluja,slot,FLOAT INTEGER SYMBOL,absent,,absent
+DOMINI,estat-sensor,sector,slot,SYMBOL,,,nil
+DOMINI,estat-sensor,tipus,slot,qualsevol,humitat-sol pluja radiacio temperatura-aire temperatura-cultiu vent,,humitat-sol
+DOMINI,estat-sensor,operatiu,slot,qualsevol,si no,,si
+DOMINI,estat-sensor,qualitat,slot,qualsevol,valida absent incoherent,,valida
+DOMINI,estat-sensor,cicle-ultima-lectura,slot,INTEGER,,,0
+DOMINI,estat-sensor,ultim-valor,slot,FLOAT INTEGER SYMBOL,cap,,cap
+DOMINI,estat-sensor,cicle-ultim-valor,slot,INTEGER,,,0
+DOMINI,dades-config,edat-maxima-humitat,slot,INTEGER,,,3
+DOMINI,dades-config,edat-maxima-altres,slot,INTEGER,,,1
+DOMINI,lectura-estimada,sector,slot,SYMBOL,,,nil
+DOMINI,lectura-estimada,cicle,slot,INTEGER,,,0
+DOMINI,lectura-estimada,tipus,slot,SYMBOL,,,nil
+DOMINI,lectura-estimada,valor,slot,FLOAT INTEGER,,,0
+DOMINI,lectura-estimada,edat,slot,INTEGER,,,0
+DOMINI,lectura-incoherent,sector,slot,SYMBOL,,,nil
+DOMINI,lectura-incoherent,cicle,slot,INTEGER,,,0
+DOMINI,lectura-incoherent,tipus,slot,SYMBOL,,,nil
+DOMINI,lectura-incoherent,valor,slot,FLOAT INTEGER,,,0
+DOMINI,risc,sector,slot,SYMBOL,,,nil
+DOMINI,risc,cicle,slot,INTEGER,,,0
+DOMINI,risc,tipus,slot,qualsevol,mecanic fallada-actuador fallada-reg dades estres-hidric exces-radiacio temperatura,,mecanic
+DOMINI,risc,nivell,slot,qualsevol,baix mitja alt critic,,baix
+DOMINI,risc,font,slot,SYMBOL,,,nil
+DOMINI,objectiu,id,slot,SYMBOL,,,nil
+DOMINI,objectiu,tipus,slot,qualsevol,seguretat produccio-cultiu produccio-energia estabilitat minimitzar-moviment estalvi-aigua,,seguretat
+DOMINI,objectiu,restriccio,slot,qualsevol,dura tova,,dura
+DOMINI,objectiu,estat,slot,qualsevol,inactiu actiu,,inactiu
+DOMINI,prioritat,major,slot,SYMBOL,,,nil
+DOMINI,prioritat,menor,slot,SYMBOL,,,nil
+DOMINI,conflicte,objectiu-1,slot,SYMBOL,,,nil
+DOMINI,conflicte,objectiu-2,slot,SYMBOL,,,nil
+DOMINI,activa,tipus-risc,slot,qualsevol,mecanic fallada-actuador dades estres-hidric exces-radiacio temperatura,,mecanic
+DOMINI,activa,objectiu,slot,SYMBOL,,,nil
+DOMINI,operador,id,slot,SYMBOL,,,nil
+DOMINI,operador,cicle,slot,INTEGER,,,0
+DOMINI,operador,sector,slot,SYMBOL,,,nil
+DOMINI,operador,nom,slot,qualsevol,orientar-produccio orientar-ombra posicio-seguretat mantenir-posicio sollicitar-dades,,orientar-produccio
+DOMINI,operador,angle-objectiu,slot,FLOAT INTEGER,,,0
+DOMINI,operador,estat,slot,qualsevol,proposat rebutjat seleccionat aplicat,,proposat
+DOMINI,preferencia,op,slot,SYMBOL,,,nil
+DOMINI,preferencia,sector,slot,SYMBOL,,,nil
+DOMINI,preferencia,cicle,slot,INTEGER,,,0
+DOMINI,preferencia,tipus,slot,qualsevol,acceptable rebuig requerida millor-que numerica rl,,acceptable
+DOMINI,preferencia,op2,slot,SYMBOL,,,cap
+DOMINI,preferencia,valor,slot,FLOAT INTEGER,,,0
+DOMINI,preferencia,font,slot,SYMBOL,,,nil
+DOMINI,operador-seleccionat,sector,slot,SYMBOL,,,nil
+DOMINI,operador-seleccionat,cicle,slot,INTEGER,,,0
+DOMINI,operador-seleccionat,nom,slot,SYMBOL,,,nil
+DOMINI,operador-seleccionat,motiu,slot,STRING,,,
+DOMINI,impas,tipus,slot,qualsevol,empat sense-canvi dades-insuficients restriccio-fallida,,empat
+DOMINI,impas,sector,slot,SYMBOL,,,nil
+DOMINI,impas,cicle,slot,INTEGER,,,0
+DOMINI,impas,operadors,multislot,qualsevol,,,
+DOMINI,impas,rao,slot,STRING,,,
+DOMINI,subobjectiu,id,slot,SYMBOL,,,nil
+DOMINI,subobjectiu,tipus,slot,SYMBOL,,,nil
+DOMINI,subobjectiu,sector,slot,SYMBOL,,,nil
+DOMINI,subobjectiu,estat,slot,qualsevol,actiu resolt,,actiu
+DOMINI,fragment-apres,nom,slot,SYMBOL,,,nil
+DOMINI,fragment-apres,impas-origen,slot,SYMBOL,,,nil
+DOMINI,fragment-apres,cicle,slot,INTEGER,,,0
+DOMINI,fragment-apres,descripcio,slot,STRING,,,
+DOMINI,fragment-apres,codi,slot,STRING,,,
+DOMINI,fragment-apres,signatura,slot,STRING,,,
+DOMINI,rl-config,aprenentatge,slot,qualsevol,on off,,on
+DOMINI,rl-config,alfa,slot,FLOAT INTEGER,,,0.3
+DOMINI,rl-config,prior,slot,FLOAT INTEGER,,,0.5
+DOMINI,rl-config,epsilon,slot,FLOAT INTEGER,,,0.05
+DOMINI,rl-valor,tret,slot,SYMBOL,,,nil
+DOMINI,rl-valor,op,slot,SYMBOL,,,nil
+DOMINI,rl-valor,q,slot,FLOAT,,,0.0
+DOMINI,rl-valor,n,slot,INTEGER,,,0
+DOMINI,rl-traca,sector,slot,SYMBOL,,,nil
+DOMINI,rl-traca,cicle,slot,INTEGER,,,0
+DOMINI,rl-traca,op,slot,SYMBOL,,,nil
+DOMINI,rl-traca,trets,multislot,qualsevol,,,
+DOMINI,rl-traca,risc,slot,INTEGER,,,0
+DOMINI,rl-traca,cobertura,slot,FLOAT,,,0.0
+DOMINI,rl-traca,estat,slot,qualsevol,pendent fet,,pendent
+DOMINI,dependencia,goal,slot,SYMBOL,,,nil
+DOMINI,dependencia,tipus,slot,qualsevol,positiva test negacio accio,,positiva
+DOMINI,dependencia,ordre,slot,INTEGER,,,0
+DOMINI,dependencia,text,slot,STRING,,,
+DOMINI,dependencia,vars,multislot,qualsevol,,,
+DOMINI,ordre-actuador,sector,slot,SYMBOL,,,nil
+DOMINI,ordre-actuador,cicle,slot,INTEGER,,,0
+DOMINI,ordre-actuador,accio,slot,qualsevol,orientar-produccio orientar-ombra posicio-seguretat mantenir-posicio sollicitar-dades,,orientar-produccio
+DOMINI,ordre-actuador,angle-objectiu,slot,FLOAT INTEGER,,,0
+DOMINI,ordre-actuador,motiu,slot,STRING,,,
+DOMINI,explicacio,sector,slot,SYMBOL,,,nil
+DOMINI,explicacio,cicle,slot,INTEGER,,,0
+DOMINI,explicacio,missatge,slot,STRING,,,
+DOMINI,episodi,cicle,slot,INTEGER,,,0
+DOMINI,episodi,sector,slot,SYMBOL,,,nil
+DOMINI,episodi,operador,slot,SYMBOL,,,nil
+DOMINI,episodi,angle,slot,FLOAT INTEGER,,,0
+DOMINI,episodi,riscos,multislot,qualsevol,,,
+DOMINI,episodi,resultat,slot,qualsevol,pendent correcte fallada,,pendent
+DOMINI,reg-pendent,sector,slot,SYMBOL,,,nil
+DOMINI,reg-pendent,cicle,slot,INTEGER,,,0
+DOMINI,reg-pendent,dosi,slot,FLOAT INTEGER,,,0
+DOMINI,reg-pendent,humitat-abans,slot,FLOAT INTEGER,,,0
+DOMINI,reg-pendent,resultat,slot,qualsevol,pendent correcte fallada,,pendent
+DOMINI,moment,cicle,slot,INTEGER,,,0
+DOMINI,moment,hora,slot,INTEGER,,0 23,0
+DOMINI,reg-config,anticipacio,slot,FLOAT,,,0.75
+DOMINI,reg-config,pluja-anulla,slot,FLOAT,,,10.0
+DOMINI,reg-config,pluja-minima,slot,FLOAT,,,2.0
+DOMINI,reg-config,hora-fresca-mati,slot,INTEGER,,,8
+DOMINI,reg-config,hora-fresca-tarda,slot,INTEGER,,,19
+DOMINI,necessitat-reg,sector,slot,SYMBOL,,,nil
+DOMINI,necessitat-reg,cicle,slot,INTEGER,,,0
+DOMINI,necessitat-reg,nivell,slot,qualsevol,anticipada mitja alt critic,,anticipada
+DOMINI,necessitat-reg,esgotament,slot,FLOAT,,,0.0
+DOMINI,necessitat-reg,p,slot,FLOAT,,,0.0
+DOMINI,operador-reg,id,slot,SYMBOL,,,nil
+DOMINI,operador-reg,cicle,slot,INTEGER,,,0
+DOMINI,operador-reg,sector,slot,SYMBOL,,,nil
+DOMINI,operador-reg,nom,slot,qualsevol,no-regar regar-parcial regar-complet,,no-regar
+DOMINI,operador-reg,dosi,slot,FLOAT INTEGER,,,0
+DOMINI,operador-reg,estat,slot,qualsevol,proposat rebutjat seleccionat aplicat,,proposat
+DOMINI,preferencia-reg,op,slot,SYMBOL,,,nil
+DOMINI,preferencia-reg,sector,slot,SYMBOL,,,nil
+DOMINI,preferencia-reg,cicle,slot,INTEGER,,,0
+DOMINI,preferencia-reg,tipus,slot,qualsevol,acceptable rebuig numerica,,acceptable
+DOMINI,preferencia-reg,valor,slot,FLOAT INTEGER,,,0
+DOMINI,preferencia-reg,font,slot,SYMBOL,,,nil
+DOMINI,reg-seleccionat,sector,slot,SYMBOL,,,nil
+DOMINI,reg-seleccionat,cicle,slot,INTEGER,,,0
+DOMINI,reg-seleccionat,nom,slot,SYMBOL,,,nil
+DOMINI,reg-seleccionat,dosi,slot,FLOAT INTEGER,,,0
+DOMINI,reg-seleccionat,motiu,slot,STRING,,,
+DOMINI,ordre-reg,sector,slot,SYMBOL,,,nil
+DOMINI,ordre-reg,cicle,slot,INTEGER,,,0
+DOMINI,ordre-reg,accio,slot,qualsevol,no-regar regar-parcial regar-complet,,no-regar
+DOMINI,ordre-reg,dosi,slot,FLOAT INTEGER,,,0
+DOMINI,ordre-reg,motiu,slot,STRING,,,
+DOMINI,explicacio-reg,sector,slot,SYMBOL,,,nil
+DOMINI,explicacio-reg,cicle,slot,INTEGER,,,0
+DOMINI,explicacio-reg,missatge,slot,STRING,,,
+DOMINI,epmem-config,aprenentatge,slot,qualsevol,on off,,on
+DOMINI,epmem-config,pes-memoria,slot,FLOAT INTEGER,,,2
+DOMINI,epmem-config,llindar-similitud,slot,FLOAT INTEGER,,,0.5
+DOMINI,epmem-config,exclusions,multislot,qualsevol,,,
+DOMINI,epmem-config,fitxer,slot,STRING,,,
+DOMINI,epmem-config,index,slot,qualsevol,si no,,si
+DOMINI,epmem-estat,seguent-id,slot,INTEGER,,,1
+DOMINI,epmem-estat,sessio-inici,slot,INTEGER,,,1
+DOMINI,epmem-estat,brut,slot,qualsevol,si no,,no
+DOMINI,epmem-episodi,id,slot,INTEGER,,,0
+DOMINI,epmem-episodi,cicle,slot,INTEGER,,,0
+DOMINI,epmem-episodi,sector,slot,SYMBOL,,,nil
+DOMINI,epmem-episodi,cultiu,slot,SYMBOL,,,desconegut
+DOMINI,epmem-episodi,operador,slot,SYMBOL,,,nil
+DOMINI,epmem-episodi,angle,slot,FLOAT INTEGER,,,0
+DOMINI,epmem-episodi,risc-total,slot,INTEGER,,,0
+DOMINI,epmem-episodi,cobertura,slot,FLOAT INTEGER,,,-1.0
+DOMINI,epmem-episodi,impas,slot,SYMBOL,,,cap
+DOMINI,epmem-episodi,motiu,slot,STRING,,,
+DOMINI,epmem-episodi,resultat,slot,qualsevol,pendent correcte fallada,,pendent
+DOMINI,epmem-episodi,valoracio,slot,qualsevol,pendent bona neutra dolenta,,pendent
+DOMINI,epmem-episodi,trets,multislot,qualsevol,,,
+DOMINI,epmem-episodi,clau,multislot,qualsevol,,,
+DOMINI,epmem-episodi,consolidat,slot,qualsevol,si no,,no
+DOMINI,epmem-consulta,id,slot,SYMBOL,,,nil
+DOMINI,epmem-consulta,sector,slot,SYMBOL,,,nil
+DOMINI,epmem-consulta,cicle,slot,INTEGER,,,0
+DOMINI,epmem-consulta,etiqueta,slot,SYMBOL,,,cap
+DOMINI,epmem-consulta,tipus,slot,qualsevol,query previous next,,query
+DOMINI,epmem-consulta,cue,multislot,qualsevol,,,
+DOMINI,epmem-consulta,requereix,multislot,qualsevol,,,
+DOMINI,epmem-consulta,exclou,multislot,qualsevol,,,
+DOMINI,epmem-consulta,prohibits,multislot,qualsevol,,,
+DOMINI,epmem-consulta,ref,slot,INTEGER,,,0
+DOMINI,epmem-consulta,estat,slot,qualsevol,pendent fet,,pendent
+DOMINI,epmem-resultat,consulta,slot,SYMBOL,,,nil
+DOMINI,epmem-resultat,sector,slot,SYMBOL,,,nil
+DOMINI,epmem-resultat,cicle,slot,INTEGER,,,0
+DOMINI,epmem-resultat,etiqueta,slot,SYMBOL,,,cap
+DOMINI,epmem-resultat,exit,slot,qualsevol,si no,,si
+DOMINI,epmem-resultat,memoria-id,slot,INTEGER,,,0
+DOMINI,epmem-resultat,cardinalitat,slot,INTEGER,,,0
+DOMINI,epmem-resultat,puntuacio,slot,FLOAT INTEGER,,,0
+DOMINI,epmem-resultat,normalitzada,slot,FLOAT INTEGER,,,0
+DOMINI,epmem-resultat,perfecte,slot,qualsevol,si no,,no
+DOMINI,smem-config,actiu,slot,qualsevol,on off,,off
+DOMINI,smem-config,minim-casos,slot,INTEGER,,,3
+DOMINI,smem-config,k,slot,FLOAT INTEGER,,,2
+DOMINI,smem-config,hora-migdia,slot,INTEGER,,,14
+DOMINI,smem-config,finestra,slot,INTEGER,,,0
+DOMINI,smem-config,arxiu,slot,STRING,,,
+DOMINI,smem-situacio,sector,slot,SYMBOL,,,nil
+DOMINI,smem-situacio,cicle,slot,INTEGER,,,0
+DOMINI,smem-situacio,clau,multislot,qualsevol,,,
+DOMINI,smem-resum,sector,slot,SYMBOL,,,nil
+DOMINI,smem-resum,operador,slot,SYMBOL,,,nil
+DOMINI,smem-resum,situacio,multislot,qualsevol,,,
+DOMINI,smem-resum,bona,slot,INTEGER,,,0
+DOMINI,smem-resum,neutra,slot,INTEGER,,,0
+DOMINI,smem-resum,dolenta,slot,INTEGER,,,0
+DOMINI,smem-resum,n,slot,INTEGER,,,0
+DOMINI,smem-resum,darrer-cicle,slot,INTEGER,,,0
