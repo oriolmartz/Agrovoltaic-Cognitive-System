@@ -1,0 +1,88 @@
+{
+  "script": "verificacio/e11_especificitat.py",
+  "nucli_sha256": "8fbb6ad664ddac8bbaf488d883cecd92830a88c473087c8cc2eaba825fd7bf46",
+  "notes": "Generat per execució CLIPS; les traces completes no són reconstruccions del CSV.",
+  "execucions": [
+    {
+      "variant_k": 0,
+      "estrategia": "simplicity",
+      "fitxer_traca": "traces_watch/E11b_k0_simplicity_watch.txt",
+      "sha256_traca": "4f91e54fcd222e364eec3cc2140e3fe2bfa22e92911c8c8d640fa02b262d2f95",
+      "nombre_caracters": 16872,
+      "fitxer_variant": "variants/especificitat_k0.clp",
+      "sha256_variant": "8fbb6ad664ddac8bbaf488d883cecd92830a88c473087c8cc2eaba825fd7bf46"
+    },
+    {
+      "variant_k": 0,
+      "estrategia": "complexity",
+      "fitxer_traca": "traces_watch/E11b_k0_complexity_watch.txt",
+      "sha256_traca": "6178c6ff48acfdd4984149b7e580af069522f296a90fb0cb82f9caaf47481aab",
+      "nombre_caracters": 16866,
+      "fitxer_variant": "variants/especificitat_k0.clp",
+      "sha256_variant": "8fbb6ad664ddac8bbaf488d883cecd92830a88c473087c8cc2eaba825fd7bf46"
+    },
+    {
+      "variant_k": 0,
+      "estrategia": "depth",
+      "fitxer_traca": "traces_watch/E11b_k0_depth_watch.txt",
+      "sha256_traca": "aabbd6627692532b58b650edb6462620652776521b43a2b5e3033376d457c296",
+      "nombre_caracters": 16872,
+      "fitxer_variant": "variants/especificitat_k0.clp",
+      "sha256_variant": "8fbb6ad664ddac8bbaf488d883cecd92830a88c473087c8cc2eaba825fd7bf46"
+    },
+    {
+      "variant_k": 2,
+      "estrategia": "simplicity",
+      "fitxer_traca": "traces_watch/E11b_k2_simplicity_watch.txt",
+      "sha256_traca": "4f91e54fcd222e364eec3cc2140e3fe2bfa22e92911c8c8d640fa02b262d2f95",
+      "nombre_caracters": 16872,
+      "fitxer_variant": "variants/especificitat_k2.clp",
+      "sha256_variant": "51c08b9ed5ee1b22ae1c260123e556c8182782688cf1b312b6d71c459817021b"
+    },
+    {
+      "variant_k": 2,
+      "estrategia": "complexity",
+      "fitxer_traca": "traces_watch/E11b_k2_complexity_watch.txt",
+      "sha256_traca": "2610b2d27a18b0e6737ee9c0f3d5d197d4c32e0e665073124598399249cf1a07",
+      "nombre_caracters": 16866,
+      "fitxer_variant": "variants/especificitat_k2.clp",
+      "sha256_variant": "51c08b9ed5ee1b22ae1c260123e556c8182782688cf1b312b6d71c459817021b"
+    },
+    {
+      "variant_k": 2,
+      "estrategia": "depth",
+      "fitxer_traca": "traces_watch/E11b_k2_depth_watch.txt",
+      "sha256_traca": "aabbd6627692532b58b650edb6462620652776521b43a2b5e3033376d457c296",
+      "nombre_caracters": 16872,
+      "fitxer_variant": "variants/especificitat_k2.clp",
+      "sha256_variant": "51c08b9ed5ee1b22ae1c260123e556c8182782688cf1b312b6d71c459817021b"
+    },
+    {
+      "variant_k": 3,
+      "estrategia": "simplicity",
+      "fitxer_traca": "traces_watch/E11b_k3_simplicity_watch.txt",
+      "sha256_traca": "f7224b80f618f6e8eb61f3ffdec5d39a9ab97225827a960a3db2ada64ab1b2ff",
+      "nombre_caracters": 16872,
+      "fitxer_variant": "variants/especificitat_k3.clp",
+      "sha256_variant": "900ba13f17ceef11070127d13d060bbc4c6fc6d24512f856a8b499993b7c5938"
+    },
+    {
+      "variant_k": 3,
+      "estrategia": "complexity",
+      "fitxer_traca": "traces_watch/E11b_k3_complexity_watch.txt",
+      "sha256_traca": "2610b2d27a18b0e6737ee9c0f3d5d197d4c32e0e665073124598399249cf1a07",
+      "nombre_caracters": 16866,
+      "fitxer_variant": "variants/especificitat_k3.clp",
+      "sha256_variant": "900ba13f17ceef11070127d13d060bbc4c6fc6d24512f856a8b499993b7c5938"
+    },
+    {
+      "variant_k": 3,
+      "estrategia": "depth",
+      "fitxer_traca": "traces_watch/E11b_k3_depth_watch.txt",
+      "sha256_traca": "aabbd6627692532b58b650edb6462620652776521b43a2b5e3033376d457c296",
+      "nombre_caracters": 16872,
+      "fitxer_variant": "variants/especificitat_k3.clp",
+      "sha256_variant": "900ba13f17ceef11070127d13d060bbc4c6fc6d24512f856a8b499993b7c5938"
+    }
+  ]
+}

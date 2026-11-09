@@ -14,6 +14,11 @@ Generat per `verificacio/e11_especificitat.py`. Un cicle amb vent de 18 m/s al s
 | especificitat invertida |                      3 | complexity   | moviment > moviment > moviment > vent-critic |                     4 |                  18 |                  115 |                         1 |                      3 |                        98 | True            | posicio-seguretat 0 | mantenir-posicio 30 | mantenir-posicio 30 | True                           |
 | especificitat invertida |                      3 | depth        | vent-critic > moviment > moviment > moviment |                     1 |                  18 |                  115 |                         1 |                      3 |                        98 | True            | posicio-seguretat 0 | mantenir-posicio 30 | mantenir-posicio 30 | True                           |
 
+Les traces originals completes de `watch rules` i `watch activations`, quan 
+es torna a executar CLIPS, es desen a `traces_watch/` amb hashes 
+al fitxer `E11b_manifest_traces.json`.
+
+
 ## Ordre de dispar a la fase d'avaluació
 
 - **k = 0 (original), simplicity:** avalua-reg-estalvi, avalua-reg-estalvi, avalua-reg-estalvi, avalua-moviment, avalua-moviment, avalua-moviment, avalua-rebuig-per-vent-critic, avalua-memoria-consulta, epmem-processa-query, avalua-memoria-consulta, epmem-processa-query, avalua-memoria-consulta, epmem-processa-query, avalua-memoria-consulta, epmem-processa-query, avalua-energia-mantenir, avalua-energia-mantenir, avalua-energia-mantenir
@@ -25,10 +30,3 @@ Generat per `verificacio/e11_especificitat.py`. Un cicle amb vent de 18 m/s al s
 - **k = 3 (especificitat invertida), simplicity:** avalua-reg-estalvi, avalua-reg-estalvi, avalua-reg-estalvi, avalua-rebuig-per-vent-critic, avalua-moviment, avalua-moviment, avalua-moviment, avalua-memoria-consulta, epmem-processa-query, avalua-memoria-consulta, epmem-processa-query, avalua-memoria-consulta, epmem-processa-query, avalua-memoria-consulta, epmem-processa-query, avalua-energia-mantenir, avalua-energia-mantenir, avalua-energia-mantenir
 - **k = 3 (especificitat invertida), complexity:** avalua-memoria-consulta, epmem-processa-query, avalua-memoria-consulta, epmem-processa-query, avalua-memoria-consulta, epmem-processa-query, avalua-memoria-consulta, epmem-processa-query, avalua-energia-mantenir, avalua-energia-mantenir, avalua-energia-mantenir, avalua-moviment, avalua-moviment, avalua-moviment, avalua-rebuig-per-vent-critic, avalua-reg-estalvi, avalua-reg-estalvi, avalua-reg-estalvi
 - **k = 3 (especificitat invertida), depth:** avalua-rebuig-per-vent-critic, avalua-energia-mantenir, avalua-energia-mantenir, avalua-energia-mantenir, avalua-moviment, avalua-moviment, avalua-moviment, avalua-memoria-consulta, epmem-processa-query, avalua-memoria-consulta, epmem-processa-query, avalua-memoria-consulta, epmem-processa-query, avalua-memoria-consulta, epmem-processa-query, avalua-reg-estalvi, avalua-reg-estalvi, avalua-reg-estalvi
-
-
-## Evidència i límits de la traça
-
-Els ordres de dispar d'aquest informe es van extreure de `watch rules` i el resum `E11_especificitat.csv` inclou els recomptes d'activacions de `watch activations`. **No es conservaven els nou fitxers de sortida originals complets en el ZIP inicial (08/11/2026)**. La versió actualitzada de `verificacio/e11_especificitat.py` els desa, en tornar-lo a executar amb `clipspy`, a `traces_watch/E11b_k<K>_<estrategia>_watch.txt`, amb hashes a `E11b_manifest_traces.json`. Fins llavors, aquest apartat és evidència resumida, no la traça textual completa.
-
-La invariància de les decisions només s'ha comprovat en aquestes 9 configuracions vàlides d'E11b. En canvi, el control negatiu de *salience* d'E11 impedeix completar els cicles; no s'ha de concloure que la decisió sigui independent de la *salience* quan s'altera la seqüència de fases.

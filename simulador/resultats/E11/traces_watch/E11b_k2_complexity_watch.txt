@@ -1,0 +1,294 @@
+<== Activation 0      percep-sense-observacio: f-1,f-2,f-29,*,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-63,f-33,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-63,f-34,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-63,f-35,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-63,f-36,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-63,f-37,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-63,f-38,*
+<== Activation 0      percep-sense-observacio: f-1,f-2,f-39,*,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-66,f-43,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-66,f-44,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-66,f-45,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-66,f-46,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-66,f-47,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-66,f-48,*
+<== Activation 0      percep-sense-observacio: f-1,f-2,f-49,*,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-69,f-53,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-69,f-54,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-69,f-55,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-69,f-56,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-69,f-57,*
+==> Activation -5     percep-recorda-lectura: f-1,f-2,f-69,f-58,*
+FIRE    1 percep-recorda-lectura: f-1,f-2,f-63,f-33,*
+FIRE    2 percep-recorda-lectura: f-1,f-2,f-63,f-34,*
+FIRE    3 percep-recorda-lectura: f-1,f-2,f-63,f-35,*
+FIRE    4 percep-recorda-lectura: f-1,f-2,f-63,f-36,*
+FIRE    5 percep-recorda-lectura: f-1,f-2,f-63,f-37,*
+FIRE    6 percep-recorda-lectura: f-1,f-2,f-63,f-38,*
+FIRE    7 percep-recorda-lectura: f-1,f-2,f-66,f-43,*
+FIRE    8 percep-recorda-lectura: f-1,f-2,f-66,f-44,*
+FIRE    9 percep-recorda-lectura: f-1,f-2,f-66,f-45,*
+FIRE   10 percep-recorda-lectura: f-1,f-2,f-66,f-46,*
+FIRE   11 percep-recorda-lectura: f-1,f-2,f-66,f-47,*
+FIRE   12 percep-recorda-lectura: f-1,f-2,f-66,f-48,*
+FIRE   13 percep-recorda-lectura: f-1,f-2,f-69,f-53,*
+FIRE   14 percep-recorda-lectura: f-1,f-2,f-69,f-54,*
+FIRE   15 percep-recorda-lectura: f-1,f-2,f-69,f-55,*
+FIRE   16 percep-recorda-lectura: f-1,f-2,f-69,f-56,*
+FIRE   17 percep-recorda-lectura: f-1,f-2,f-69,f-57,*
+FIRE   18 percep-recorda-lectura: f-1,f-2,f-69,f-58,*
+FIRE   19 percepcio-a-elaboracio: f-1
+[PERCEPCIO -> ELABORACIO]
+==> Activation 0      activa-objectius-base: f-73,f-9
+==> Activation 0      activa-objectius-base: f-73,f-10
+==> Activation 0      activa-objectius-base: f-73,f-11
+==> Activation 0      activa-objectius-base: f-73,f-59
+==> Activation -10    elaboracio-a-proposta: f-73,f-2
+==> Activation 0      elabora-necessitat-reg: f-73,f-2,f-29,f-30,f-4,f-62,f-63,*
+==> Activation 0      elabora-risc-radiacio: f-73,f-2,f-29,f-30,f-4,f-63,*
+==> Activation 0      elabora-risc-hidric: f-73,f-2,f-29,f-30,f-4,f-63,*
+==> Activation 0      elabora-risc-temperatura: f-73,f-2,f-29,f-30,f-4,f-63,*
+==> Activation 0      elabora-necessitat-reg: f-73,f-2,f-39,f-40,f-5,f-62,f-66,*
+==> Activation 0      elabora-risc-radiacio: f-73,f-2,f-39,f-40,f-5,f-66,*
+==> Activation 0      elabora-risc-hidric: f-73,f-2,f-39,f-40,f-5,f-66,*
+==> Activation 0      elabora-risc-temperatura: f-73,f-2,f-39,f-40,f-5,f-66,*
+==> Activation 0      elabora-necessitat-reg: f-73,f-2,f-49,f-50,f-6,f-62,f-69,*
+==> Activation 0      elabora-risc-radiacio: f-73,f-2,f-49,f-50,f-6,f-69,*
+==> Activation 0      elabora-risc-hidric: f-73,f-2,f-49,f-50,f-6,f-69,*
+==> Activation 0      elabora-risc-temperatura: f-73,f-2,f-49,f-50,f-6,f-69,*
+==> Activation 0      elabora-risc-mecanic: f-73,f-2,f-63,f-31,*
+==> Activation 0      elabora-risc-mecanic: f-73,f-2,f-63,f-32,*
+==> Activation 0      elabora-risc-mecanic: f-73,f-2,f-66,f-41,*
+==> Activation 0      elabora-risc-mecanic: f-73,f-2,f-66,f-42,*
+==> Activation 0      elabora-risc-mecanic: f-73,f-2,f-69,f-51,*
+==> Activation 0      elabora-risc-mecanic: f-73,f-2,f-69,f-52,*
+FIRE   20 elabora-necessitat-reg: f-73,f-2,f-29,f-30,f-4,f-62,f-63,*
+FIRE   21 elabora-risc-radiacio: f-73,f-2,f-29,f-30,f-4,f-63,*
+FIRE   22 elabora-risc-hidric: f-73,f-2,f-29,f-30,f-4,f-63,*
+FIRE   23 elabora-risc-temperatura: f-73,f-2,f-29,f-30,f-4,f-63,*
+FIRE   24 elabora-necessitat-reg: f-73,f-2,f-39,f-40,f-5,f-62,f-66,*
+FIRE   25 elabora-risc-radiacio: f-73,f-2,f-39,f-40,f-5,f-66,*
+FIRE   26 elabora-risc-hidric: f-73,f-2,f-39,f-40,f-5,f-66,*
+FIRE   27 elabora-risc-temperatura: f-73,f-2,f-39,f-40,f-5,f-66,*
+FIRE   28 elabora-necessitat-reg: f-73,f-2,f-49,f-50,f-6,f-62,f-69,*
+FIRE   29 elabora-risc-radiacio: f-73,f-2,f-49,f-50,f-6,f-69,*
+FIRE   30 elabora-risc-hidric: f-73,f-2,f-49,f-50,f-6,f-69,*
+FIRE   31 elabora-risc-temperatura: f-73,f-2,f-49,f-50,f-6,f-69,*
+FIRE   32 elabora-risc-mecanic: f-73,f-2,f-63,f-31,*
+[ELABORACIO] Sector_1: vent 18.0 m/s (previsio 18.0) >= 16.0 m/s. Risc mecanic critic.
+==> Activation 0      activa-objectiu-per-risc: f-73,f-2,f-74,f-23,f-7
+<== Activation 0      elabora-risc-mecanic: f-73,f-2,f-63,f-32,*
+FIRE   33 activa-objectiu-per-risc: f-73,f-2,f-74,f-23,f-7
+[ELABORACIO] El risc mecanic de Sector_1 activa l'objectiu Obj_Seguretat.
+FIRE   34 elabora-risc-mecanic: f-73,f-2,f-66,f-41,*
+FIRE   35 elabora-risc-mecanic: f-73,f-2,f-66,f-42,*
+FIRE   36 elabora-risc-mecanic: f-73,f-2,f-69,f-51,*
+FIRE   37 elabora-risc-mecanic: f-73,f-2,f-69,f-52,*
+FIRE   38 activa-objectius-base: f-73,f-9
+FIRE   39 activa-objectius-base: f-73,f-10
+FIRE   40 activa-objectius-base: f-73,f-11
+FIRE   41 activa-objectius-base: f-73,f-59
+FIRE   42 elaboracio-a-proposta: f-73,f-2
+[ELABORACIO -> PROPOSTA]
+==> Activation -10    proposta-a-avaluacio: f-76
+==> Activation 0      proposa-posicio-seguretat: f-76,f-2,f-74,f-31,*
+==> Activation 0      proposa-posicio-seguretat: f-76,f-2,f-74,f-32,*
+==> Activation 0      proposa-no-regar: f-76,f-2,f-29,*
+==> Activation 0      proposa-mantenir-posicio: f-76,f-2,f-29,f-31,*
+==> Activation 0      proposa-mantenir-posicio: f-76,f-2,f-29,f-32,*
+==> Activation 0      proposa-no-regar: f-76,f-2,f-39,*
+==> Activation 0      proposa-mantenir-posicio: f-76,f-2,f-39,f-41,*
+==> Activation 0      proposa-mantenir-posicio: f-76,f-2,f-39,f-42,*
+==> Activation 0      proposa-no-regar: f-76,f-2,f-49,*
+==> Activation 0      proposa-mantenir-posicio: f-76,f-2,f-49,f-51,*
+==> Activation 0      proposa-mantenir-posicio: f-76,f-2,f-49,f-52,*
+FIRE   43 proposa-posicio-seguretat: f-76,f-2,f-74,f-31,*
+[PROPOSTA] Sector_1: posicio-seguretat (0.0 graus).
+<== Activation 0      proposa-posicio-seguretat: f-76,f-2,f-74,f-32,*
+FIRE   44 proposa-mantenir-posicio: f-76,f-2,f-29,f-31,*
+[PROPOSTA] Sector_1: mantenir-posicio (30.0 graus).
+<== Activation 0      proposa-mantenir-posicio: f-76,f-2,f-29,f-32,*
+FIRE   45 proposa-mantenir-posicio: f-76,f-2,f-39,f-41,*
+[PROPOSTA] Sector_2: mantenir-posicio (30.0 graus).
+<== Activation 0      proposa-mantenir-posicio: f-76,f-2,f-39,f-42,*
+FIRE   46 proposa-mantenir-posicio: f-76,f-2,f-49,f-51,*
+[PROPOSTA] Sector_3: mantenir-posicio (30.0 graus).
+<== Activation 0      proposa-mantenir-posicio: f-76,f-2,f-49,f-52,*
+FIRE   47 proposa-no-regar: f-76,f-2,f-29,*
+FIRE   48 proposa-no-regar: f-76,f-2,f-39,*
+FIRE   49 proposa-no-regar: f-76,f-2,f-49,*
+FIRE   50 proposta-a-avaluacio: f-76
+[PROPOSTA -> AVALUACIO]
+==> Activation -10    avaluacio-a-seleccio: f-91
+==> Activation 0      avalua-reg-estalvi: f-91,f-2,f-59,f-85,*
+==> Activation 0      avalua-reg-estalvi: f-91,f-2,f-59,f-87,*
+==> Activation 0      avalua-reg-estalvi: f-91,f-2,f-59,f-89,*
+==> Activation 0      avalua-memoria-consulta: f-91,f-2,f-25,f-77,*,*
+==> Activation 0      avalua-memoria-consulta: f-91,f-2,f-25,f-79,*,*
+==> Activation 0      avalua-memoria-consulta: f-91,f-2,f-25,f-81,*,*
+==> Activation 0      avalua-memoria-consulta: f-91,f-2,f-25,f-83,*,*
+==> Activation 0      avalua-moviment: f-91,f-2,f-11,f-79,*
+==> Activation 0      avalua-moviment: f-91,f-2,f-11,f-81,*
+==> Activation 0      avalua-moviment: f-91,f-2,f-11,f-83,*
+==> Activation 0      avalua-energia-mantenir: f-91,f-2,f-9,f-79,f-31,f-65,*
+==> Activation 0      avalua-energia-mantenir: f-91,f-2,f-9,f-79,f-32,f-65,*
+==> Activation 0      avalua-energia-mantenir: f-91,f-2,f-9,f-81,f-41,f-68,*
+==> Activation 0      avalua-energia-mantenir: f-91,f-2,f-9,f-81,f-42,f-68,*
+==> Activation 0      avalua-energia-mantenir: f-91,f-2,f-9,f-83,f-51,f-71,*
+==> Activation 0      avalua-energia-mantenir: f-91,f-2,f-9,f-83,f-52,f-71,*
+==> Activation 0      avalua-rebuig-per-vent-critic: f-91,f-2,f-74,f-79,*
+FIRE   51 avalua-memoria-consulta: f-91,f-2,f-25,f-77,*,*
+==> Activation 0      epmem-processa-query: f-25,f-92
+FIRE   52 epmem-processa-query: f-25,f-92
+==> Activation 0      avalua-memoria-consulta: f-91,f-2,f-25,f-77,*,*
+<== Activation 0      avalua-memoria-consulta: f-91,f-2,f-25,f-77,*,*
+FIRE   53 avalua-memoria-consulta: f-91,f-2,f-25,f-79,*,*
+==> Activation 0      epmem-processa-query: f-25,f-94
+FIRE   54 epmem-processa-query: f-25,f-94
+==> Activation 0      avalua-memoria-consulta: f-91,f-2,f-25,f-79,*,*
+<== Activation 0      avalua-memoria-consulta: f-91,f-2,f-25,f-79,*,*
+FIRE   55 avalua-memoria-consulta: f-91,f-2,f-25,f-81,*,*
+==> Activation 0      epmem-processa-query: f-25,f-96
+FIRE   56 epmem-processa-query: f-25,f-96
+==> Activation 0      avalua-memoria-consulta: f-91,f-2,f-25,f-81,*,*
+<== Activation 0      avalua-memoria-consulta: f-91,f-2,f-25,f-81,*,*
+FIRE   57 avalua-memoria-consulta: f-91,f-2,f-25,f-83,*,*
+==> Activation 0      epmem-processa-query: f-25,f-98
+FIRE   58 epmem-processa-query: f-25,f-98
+==> Activation 0      avalua-memoria-consulta: f-91,f-2,f-25,f-83,*,*
+<== Activation 0      avalua-memoria-consulta: f-91,f-2,f-25,f-83,*,*
+FIRE   59 avalua-energia-mantenir: f-91,f-2,f-9,f-79,f-31,f-65,*
+[AVALUACIO] Sector_1: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+<== Activation 0      avalua-energia-mantenir: f-91,f-2,f-9,f-79,f-32,f-65,*
+FIRE   60 avalua-energia-mantenir: f-91,f-2,f-9,f-81,f-41,f-68,*
+[AVALUACIO] Sector_2: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+<== Activation 0      avalua-energia-mantenir: f-91,f-2,f-9,f-81,f-42,f-68,*
+FIRE   61 avalua-energia-mantenir: f-91,f-2,f-9,f-83,f-51,f-71,*
+[AVALUACIO] Sector_3: mantenir-posicio +3 (ja es a l'angle optim, 30.0 vs 30.0).
+<== Activation 0      avalua-energia-mantenir: f-91,f-2,f-9,f-83,f-52,f-71,*
+FIRE   62 avalua-moviment: f-91,f-2,f-11,f-79,*
+[AVALUACIO] Sector_1: mantenir-posicio +1 (sense moviment).
+FIRE   63 avalua-moviment: f-91,f-2,f-11,f-81,*
+[AVALUACIO] Sector_2: mantenir-posicio +1 (sense moviment).
+FIRE   64 avalua-moviment: f-91,f-2,f-11,f-83,*
+[AVALUACIO] Sector_3: mantenir-posicio +1 (sense moviment).
+FIRE   65 avalua-rebuig-per-vent-critic: f-91,f-2,f-74,f-79,*
+[AVALUACIO] Sector_1: REBUIG de mantenir-posicio (vent critic, restriccio de seguretat).
+FIRE   66 avalua-reg-estalvi: f-91,f-2,f-59,f-85,*
+[AVALUACIO] Sector_1: no-regar +1 (estalvi d'aigua).
+FIRE   67 avalua-reg-estalvi: f-91,f-2,f-59,f-87,*
+[AVALUACIO] Sector_2: no-regar +1 (estalvi d'aigua).
+FIRE   68 avalua-reg-estalvi: f-91,f-2,f-59,f-89,*
+[AVALUACIO] Sector_3: no-regar +1 (estalvi d'aigua).
+FIRE   69 avaluacio-a-seleccio: f-91
+[AVALUACIO -> SELECCIO]
+==> Activation 0      selecciona-reg: f-111,f-2,f-85,*,*,*,*
+==> Activation 0      selecciona-reg: f-111,f-2,f-87,*,*,*,*
+==> Activation 0      selecciona-reg: f-111,f-2,f-89,*,*,*,*
+==> Activation 0      descarta-rebutjat: f-111,f-2,f-79,f-106,*
+==> Activation 0      selecciona-operador: f-111,f-2,f-81,*,*,*,*,*,*
+==> Activation 0      selecciona-operador: f-111,f-2,f-83,*,*,*,*,*,*
+FIRE   70 selecciona-operador: f-111,f-2,f-81,*,*,*,*,*,*
+[SELECCIO] Sector_2: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+==> Activation 0      detecta-impas-sense-candidat: f-111,f-2,f-39,*,*,*
+<== Activation 0      detecta-impas-sense-candidat: f-111,f-2,f-39,*,*,*
+==> Activation 10     rl-registra: f-27,f-112,*
+FIRE   71 rl-registra: f-27,f-112,*
+FIRE   72 selecciona-operador: f-111,f-2,f-83,*,*,*,*,*,*
+[SELECCIO] Sector_3: es selecciona mantenir-posicio. Criteri: maxima valoracio (4 punts).
+==> Activation 0      detecta-impas-sense-candidat: f-111,f-2,f-49,*,*,*
+<== Activation 0      detecta-impas-sense-candidat: f-111,f-2,f-49,*,*,*
+==> Activation 10     rl-registra: f-27,f-115,*
+FIRE   73 rl-registra: f-27,f-115,*
+FIRE   74 selecciona-reg: f-111,f-2,f-85,*,*,*,*
+[SELECCIO] Sector_1: reg no-regar. Criteri: maxima valoracio (1 punts).
+FIRE   75 selecciona-reg: f-111,f-2,f-87,*,*,*,*
+[SELECCIO] Sector_2: reg no-regar. Criteri: maxima valoracio (1 punts).
+FIRE   76 selecciona-reg: f-111,f-2,f-89,*,*,*,*
+[SELECCIO] Sector_3: reg no-regar. Criteri: maxima valoracio (1 punts).
+FIRE   77 descarta-rebutjat: f-111,f-2,f-79,f-106,*
+[SELECCIO] Sector_1: mantenir-posicio queda descartat (AV1-vent-critic).
+==> Activation 0      selecciona-operador: f-111,f-2,f-77,*,*,*,*,*,*
+FIRE   78 selecciona-operador: f-111,f-2,f-77,*,*,*,*,*,*
+[SELECCIO] Sector_1: es selecciona posicio-seguretat. Criteri: unica opcio que compleix les restriccions dures.
+==> Activation 0      detecta-impas-sense-candidat: f-111,f-2,f-29,*,*,*
+==> Activation -10    seleccio-a-aplicacio: f-111,f-2,*,*
+<== Activation 0      detecta-impas-sense-candidat: f-111,f-2,f-29,*,*,*
+==> Activation 10     rl-registra: f-27,f-124,*
+FIRE   79 rl-registra: f-27,f-124,*
+FIRE   80 seleccio-a-aplicacio: f-111,f-2,*,*
+[SELECCIO -> APLICACIO]
+==> Activation -10    aplicacio-a-explicacio: f-127
+==> Activation 0      aplica-reg: f-127,f-2,f-118,f-85,*
+==> Activation 0      aplica-reg: f-127,f-2,f-120,f-87,*
+==> Activation 0      aplica-reg: f-127,f-2,f-122,f-89,*
+==> Activation 0      aplica-operador: f-127,f-2,f-112,f-81,*
+==> Activation 0      aplica-operador: f-127,f-2,f-115,f-83,*
+==> Activation 0      aplica-operador: f-127,f-2,f-124,f-77,*
+FIRE   81 aplica-reg: f-127,f-2,f-118,f-85,*
+FIRE   82 aplica-reg: f-127,f-2,f-120,f-87,*
+FIRE   83 aplica-reg: f-127,f-2,f-122,f-89,*
+FIRE   84 aplica-operador: f-127,f-2,f-112,f-81,*
+[APLICACIO] Sector_2: ORDRE mantenir-posicio -> 30.0 graus.
+FIRE   85 aplica-operador: f-127,f-2,f-115,f-83,*
+[APLICACIO] Sector_3: ORDRE mantenir-posicio -> 30.0 graus.
+FIRE   86 aplica-operador: f-127,f-2,f-124,f-77,*
+[APLICACIO] Sector_1: ORDRE posicio-seguretat -> 0.0 graus.
+FIRE   87 aplicacio-a-explicacio: f-127
+[APLICACIO -> EXPLICACIO]
+==> Activation -10    explicacio-a-monitoratge: f-143
+==> Activation 0      explica-reg: f-143,f-2,f-128,*
+==> Activation 0      explica-reg: f-143,f-2,f-130,*
+==> Activation 0      explica-reg: f-143,f-2,f-132,*
+==> Activation 0      explica-decisio: f-143,f-2,f-134,*
+==> Activation 0      explica-decisio: f-143,f-2,f-137,*
+==> Activation 0      explica-decisio: f-143,f-2,f-140,*
+FIRE   88 explica-reg: f-143,f-2,f-128,*
+FIRE   89 explica-reg: f-143,f-2,f-130,*
+FIRE   90 explica-reg: f-143,f-2,f-132,*
+FIRE   91 explica-decisio: f-143,f-2,f-134,*
+
+[EXPLICACIO] Sector_2, cicle 1
+   Accio:      mantenir-posicio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4)
+   Descartats: cap
+   Criteri:    maxima valoracio (4 punts)
+FIRE   92 explica-decisio: f-143,f-2,f-137,*
+
+[EXPLICACIO] Sector_3, cicle 1
+   Accio:      mantenir-posicio a 30.0 graus
+   Riscos:     cap
+   Candidats:  mantenir-posicio(4)
+   Descartats: cap
+   Criteri:    maxima valoracio (4 punts)
+FIRE   93 explica-decisio: f-143,f-2,f-140,*
+
+[EXPLICACIO] Sector_1, cicle 1
+   Accio:      posicio-seguretat a 0.0 graus
+   Riscos:     mecanic=critic
+   Candidats:  posicio-seguretat(0)
+   Descartats: mantenir-posicio
+   Criteri:    unica opcio que compleix les restriccions dures
+FIRE   94 explicacio-a-monitoratge: f-143
+
+[EXPLICACIO -> MONITORATGE]
+==> Activation -10    tanca-cicle: f-150,f-2
+==> Activation 0      epmem-emmagatzema: f-150,f-2,f-25,f-26,f-135,*
+==> Activation 0      epmem-emmagatzema: f-150,f-2,f-25,f-26,f-138,*
+==> Activation 0      epmem-emmagatzema: f-150,f-2,f-25,f-26,f-141,*
+FIRE   95 epmem-emmagatzema: f-150,f-2,f-25,f-26,f-135,*
+[EPMEM] NOU EPISODI #1: Sector_2, cicle 1, mantenir-posicio.
+<== Activation 0      epmem-emmagatzema: f-150,f-2,f-25,f-26,f-141,*
+<== Activation 0      epmem-emmagatzema: f-150,f-2,f-25,f-26,f-138,*
+==> Activation 0      epmem-emmagatzema: f-150,f-2,f-25,f-26,f-138,*
+==> Activation 0      epmem-emmagatzema: f-150,f-2,f-25,f-26,f-141,*
+FIRE   96 epmem-emmagatzema: f-150,f-2,f-25,f-26,f-138,*
+[EPMEM] NOU EPISODI #2: Sector_3, cicle 1, mantenir-posicio.
+<== Activation 0      epmem-emmagatzema: f-150,f-2,f-25,f-26,f-141,*
+==> Activation 0      epmem-emmagatzema: f-150,f-2,f-25,f-26,f-141,*
+FIRE   97 epmem-emmagatzema: f-150,f-2,f-25,f-26,f-141,*
+[EPMEM] NOU EPISODI #3: Sector_1, cicle 1, posicio-seguretat.
+FIRE   98 tanca-cicle: f-150,f-2
+[FI DEL CICLE 1] Ordres enviades. Esperant les dades del cicle 2.
+
