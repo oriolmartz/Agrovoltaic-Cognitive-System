@@ -9,20 +9,6 @@
 ; SAP independentment de quan es va aprendre: per a cada (sector, situacio, operador),
 ; quantes vegades ha anat be, neutre o malament (smem-resum).
 ;
-; D'on surt cada peca:
-;   - Episodis -> coneixement general: "La consolidacio transforma episodis en
-;     coneixement mes general" i "consolidar experiencies repetides"
-;     (Arquitectures Cognitives INTRO, diap. 52 i 79); "Resums de memoria episodica
-;     i creacio d'abstraccions semantiques" (Arquitectura SOAR, diap. 45).
-;   - Que sigui semantica: es coneixement independent del moment (Laird 2022, sec. 6-7).
-;   - Que la desi una regla: Soar no te aprenentatge automatic de la memoria semantica,
-;     pero l'agent hi pot desar deliberadament (Laird 2022, sec. 6).
-;   - Prudencia (minim-casos i k): "Consolidar episodis en coneixement semantic sense
-;     introduir falsedats" (Arquitectura SOAR, diap. 54 i 57).
-;   - Consulta per patro (Rete) i no recorrent el magatzem (Arquitectura SOAR, diap. 24).
-;   - Finestra i arxiu: decisio NOSTRA. Soar no oblida episodis (Laird 2022, sec. 7);
-;     aqui surten de la memoria de treball pero es conserven al fitxer d'arxiu.
-;
 ; Cicle de vida:
 ;   proposta    : smem-situacio-actual calcula la clau de la situacio de cada sector;
 ;                 la valoracio de l'episodi anterior (MEMORIA) dispara la consolidacio
