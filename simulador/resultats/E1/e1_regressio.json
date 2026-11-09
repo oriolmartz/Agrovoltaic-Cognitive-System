@@ -5,7 +5,7 @@
     "fail": 0,
     "fallades": [],
     "errors_clips": [],
-    "segons": 0.26
+    "segons": 0.18
   },
   {
     "versio": "v1_5",
@@ -13,7 +13,7 @@
     "fail": 0,
     "fallades": [],
     "errors_clips": [],
-    "segons": 0.12
+    "segons": 0.13
   },
   {
     "versio": "v1_6",
@@ -21,7 +21,7 @@
     "fail": 0,
     "fallades": [],
     "errors_clips": [],
-    "segons": 0.16
+    "segons": 0.14
   },
   {
     "versio": "v1_7",
@@ -29,7 +29,7 @@
     "fail": 0,
     "fallades": [],
     "errors_clips": [],
-    "segons": 0.17
+    "segons": 0.18
   },
   {
     "versio": "v1_8",
@@ -37,7 +37,7 @@
     "fail": 0,
     "fallades": [],
     "errors_clips": [],
-    "segons": 0.17
+    "segons": 0.16
   },
   {
     "versio": "v1_9",
@@ -45,6 +45,6 @@
     "fail": 0,
     "fallades": [],
     "errors_clips": [],
-    "segons": 0.18
+    "segons": 0.17
   }
 ]
